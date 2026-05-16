@@ -7,8 +7,16 @@
 #define max_token_size 72
 #define LSH_TOK_DELINE "\t\r\n\a"
 
+void lsh_loop();
+char* lsh_getline();
+char* lsh_getline();
+char** lsh_splitline(char *line);
+int lsh_execute(char ** args);
+int lsh_launch(char **args);
 
-int main(int argc,char* argv){
+
+
+int main(int argc,char** argv){
     lsh_loop();
     return EXIT_SUCCESS;
 
@@ -31,7 +39,7 @@ void lsh_loop(){
 
 char* lsh_getline(){
     int buf_size=max_buf;
-    char* buffer=malloc(sizeof(char*)*buf_size);
+    char* buffer=(char*)malloc(sizeof(char*)*buf_size);
     int c;
     int position=0;
 
@@ -54,7 +62,7 @@ char* lsh_getline(){
 
         if(position>=buf_size){
             buf_size+=max_buf;
-            buffer=realloc(buffer,buf_size);
+            buffer=(char*)realloc(buffer,buf_size);
         }
 
         if(!buffer){
@@ -64,10 +72,10 @@ char* lsh_getline(){
     }
 }
 
-char* lsh_splitline(char *line){
+char** lsh_splitline(char *line){
     int bufsize=max_token_size , i=0;
     char* token;
-    char** tokens=malloc(sizeof(char*)*bufsize);
+    char** tokens=(char**)malloc(sizeof(char*)*bufsize);
 
     if(!tokens){
         printf("Exit error");
@@ -82,14 +90,14 @@ char* lsh_splitline(char *line){
 
         if(i>=bufsize){
             bufsize+=max_token_size;
-            tokens=realloc(tokens,bufsize);
+            tokens=(char**)realloc(tokens,bufsize);
         }
 
         if(!tokens){
             printf("Error in allocating tokens");
             exit(EXIT_FAILURE);
         }
-        token=strbok(NULL,LSH_TOK_DELINE);
+        token=strtok(NULL,LSH_TOK_DELINE);
     }
     tokens[i]=NULL;
     return tokens;
@@ -97,14 +105,14 @@ char* lsh_splitline(char *line){
 
 int lsh_launch(char **args){
     pid_t pid ,wpid;
-    int status
+    int status;
 
     pid=fork();
     if(pid==0){
-        if(execvp(pid,args[0])==-1){
+        if(execvp(args[0],args)==-1){
             perror("lsh");
         }
-    exit(EXIT_FAILURE)
+    exit(EXIT_FAILURE);
 }
     else if (pid<0)
     {
@@ -124,21 +132,21 @@ int lsh_cd(char** args);
 int lsh_help(char** args);
 int lsh_exit(char** atgs);
 
-char *buildin_str[]={
+const char *buildin_str[]={
     "cd",
     "help",
     "exit",
 };
 
-int(* builtin_func)(char **){
+int(* builtin_func[])(char**)={
     &lsh_cd,
+    &lsh_help,
     &lsh_exit,
-    &lsh_help
 
-}
+};
 
 int lsh_numbuiltin(){
-    return sizeof(buildin_str)/sizeof(char*)''
+    return sizeof(buildin_str)/sizeof(char*);
 }
 
 
@@ -158,10 +166,10 @@ int lsh_cd(char** args){
 int lsh_help(char ** args){
     printf("This is CHUNG's terminal\n");
     printf("Enter command with its arguments to run it\n");
-    printf("The built in function includes :\n")
+    printf("The built in function includes :\n");
 
     for(int i=0;i<lsh_numbuiltin();i++){
-        print("%d : %s",i,buildin_str[i]);
+        printf("%d : %s",i,buildin_str[i]);
     }
 
     printf("Use the main command for more information\n");
@@ -175,12 +183,12 @@ int lsh_exit(char** args){
 
 int lsh_execute(char ** args){
     int i=0;
-    if(args[0]==null){
+    if(args[0]==NULL){
         return 1;
     }
-    for(int i=0;i<lsh_numbuiltin;i++){
+    for(int i=0;i<lsh_numbuiltin();i++){
         if(strcmp(args[0],buildin_str[i])==0){
-            return (*buildin_func[i])(args);
+            return (*builtin_func[i])(args);
         }
     }
     return lsh_launch(args);
