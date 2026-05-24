@@ -118,3 +118,151 @@ input[type="submit"]:active {
     color: #23527c;
     text-decoration: underline;
 }
+
+/* ==========================================
+   日期选择器与标签的专属样式
+   ========================================== */
+
+/* 1. 表单组容器：将标签和输入框打包，实现垂直排列 */
+.date-group {
+    display: flex;
+    flex-direction: column;   /* 让标签在上，输入框在下 */
+    align-items: flex-start;  /* 靠左对齐 */
+    margin: 15px 0;           /* 上下留出间距，与普通文本框隔开 */
+    width: 100%;              /* 宽度充满父容器 */
+    box-sizing: border-box;
+}
+
+/* 2. 提示标签样式 */
+.date-label {
+    font-size: 14px;          /* 稍微缩小的字体显得更有层次感 */
+    font-weight: 600;         /* 加粗 */
+    color: #555555;           /* 温和的深灰色，比纯黑更现代 */
+    margin-bottom: 6px;       /* 与下方的输入框保持微小间距 */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* 3. 日期输入框专属微调（叠加在你的 .inp 样式之上） */
+.date-inp {
+    cursor: pointer;          /* 鼠标悬停时变成小手，提示可点击 */
+    width: 100%;              /* 确保与文本输入框宽度 100% 对齐 */
+    padding: 10px;            /* 给内部的日历图标和文字留出呼吸空间 */
+    box-sizing: border-box;   /* 防止 padding 撑破宽度 */
+}
+
+/* 4. 鼠标聚焦时的亮色边框提示（可选，提升交互体验） */
+.date-inp:focus {
+    outline: none;
+    border-color: #007bff;    /* 聚焦时变成干净的蓝色 */
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.2);
+}
+
+/* ==========================================
+   任务列表容器与卡片样式 (Todo List Styles)
+   ========================================== */
+
+/* 1. 外层总包裹容器 */
+.todo-list-container {
+    width: 100%;
+    margin-top: 25px;
+    box-sizing: border-box;
+}
+
+/* 2. 单个 Todo 任务卡片 */
+.todo {
+    display: flex;
+    justify-content: space-between; /* 核心：让信息靠左，按钮靠右 */
+    align-items: center;           /* 垂直居中对齐 */
+    background-color: #ffffff;     /* 卡片白色背景 */
+    padding: 14px 18px;
+    margin-bottom: 12px;           /* 卡片之间的间距 */
+    border-radius: 8px;            /* 温和的圆角 */
+    
+    /* 干净利落的微阴影，让卡片看起来浮动在背景上 */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05); 
+    border: 1px solid #eef2f5;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* 鼠标悬停在卡片上时的交互效果 */
+.todo:hover {
+    transform: translateY(-2px);   /* 微微上浮 */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08); /* 阴影加深 */
+}
+
+/* 3. 左侧：文字信息排版 */
+.todo-info {
+    display: flex;
+    flex-direction: column;        /* 手机/垂直排版基础，或让元数据换行 */
+    align-items: flex-start;
+    gap: 4px;                      /* 标题和时间之间的微小间距 */
+    text-align: left;
+}
+
+/* 任务标题 */
+.todo-title {
+    font-size: 16px;
+    color: #2c3e50;
+    word-break: break-all;         /* 防止超长英文字符撑破布局 */
+}
+
+/* 任务的时间元数据（通用样式） */
+.todo-meta, 
+.todo-expected {
+    font-size: 12px;
+    color: #7f8c8d;                /* 优雅的烟灰色 */
+    display: inline-block;
+    margin-right: 10px;
+}
+
+/* 特别突出预期完成时间 */
+.todo-expected {
+    color: #e67e22;                /* 暖橙色，起到温和的提醒作用 */
+    font-weight: 500;
+}
+
+/* 4. 右侧：操作按钮区域 */
+.todo-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;                     /* 编辑和删除按钮之间的间距 */
+}
+
+/* 按钮图标包裹层 */
+.action-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px;
+    border-radius: 6px;
+    transition: background-color 0.2s;
+}
+
+/* 鼠标悬停在图标上时的浅色背景反馈 */
+.action-btn:hover {
+    background-color: #f0f3f6;
+}
+
+/* 限制图标内图片的表现 */
+.action-btn img {
+    display: block;
+    opacity: 0.7;                  /* 默认半透明，显得不刺眼 */
+    transition: opacity 0.2s;
+}
+
+/* 悬停时图标变清晰 */
+.action-btn:hover img {
+    opacity: 1.0;
+}
+
+/* 5. 空白列表状态提示 */
+.empty-todo {
+    text-align: center;
+    padding: 30px 10px;
+    color: #95a5a6;
+    font-size: 14px;
+    font-style: italic;
+    background-color: #f9fbfc;
+    border: 1px dashed #d2d7db;    /* 虚线边框显得很有设计感 */
+    border-radius: 8px;
+}

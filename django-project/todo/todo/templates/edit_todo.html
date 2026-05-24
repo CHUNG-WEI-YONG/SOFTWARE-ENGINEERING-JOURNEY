@@ -1,0 +1,37 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device_width, initial-scale=1.0">
+    <title>Edit Todo</title>
+    <link rel="stylesheet" href="{% static 'css/index.css' %}">
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+<body>
+    <div class="hello">
+        <h1>Editing Your Task</h1>
+    </div>
+    
+    <div class="signup_body">
+        <div class="signup_box">
+            <div class="heading">
+                Edit task 
+            </div>
+            
+            <form method="post">
+                {% csrf_token %}
+                <input type="text" required class="inp" placeholder="Update task" name='task' value="{{ obj.title }}">
+                <br><br>
+                <div class="date-group">
+                    <label for="expected_date" class="date-label">Your expect to finish at:</label>
+                    <input type="date" id="expected_date" name="expected_date" required class="date-inp" value="{{ obj.expected_date|date:'Y-m-d' }}"> 
+                </div>
+                <input type="submit" class="submit-button" value="Save Changes">
+            </form>
+
+                <div style="margin-top: 15px;">
+                    <a href="/todolist/" class="action-btn"><img src="{% static 'exit.png' %}" alt="quit" width="16"> Cancel & Back</a>
+                </div>
+            </div> </div> </div> </body>
+</html>

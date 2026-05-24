@@ -34,3 +34,29 @@ def login(request):
 
     
     return render(request,'login.html')
+
+def todolist(request):
+    if(request.method=='POST'):
+        tasks=request.POST.get('task')
+        time=request.POST.get('expected_date')
+        print(tasks)
+        obj=models.Todo(title=tasks,expected_date=time,user=request.user)
+        obj.save()
+        res=models.Todo.objects.filter(user=request.user).order_by('-date')
+        return redirect('/todolist/',{'res':res})
+    res=models.Todo.objects.filter(user=request.user).order_by('-date')
+    return render(request,'todo.html',{'res':res})
+
+def edit_todo(request,num):
+    if(request.method=='POST'):
+        tasks=request.POST.get('task')
+        time=request.POST.get('expected_date')
+        print(tasks)
+        obj=models.Todo.objects.get(num=num)
+        obj.title=tasks
+        obj.expected_date=time;
+        obj.save()
+        return redirect('/todolist/')
+    obj=models.Todo.objects.get(num=num)
+    res=models.Todo.objects.filter(user=request.user).order_by('-date')
+    return render(request,'edit_todo.html',{'obj':obj,'res':res})
