@@ -21,6 +21,7 @@
             
             <form method="post">
                 {% csrf_token %}
+
                 <input type="text" required class="inp" placeholder="Enter Today's task" name='task'>
                 <br><br>
                 <div class="date-group">
@@ -45,7 +46,7 @@
                             <img src="{% static 'edit.png' %}" alt="Edit" width="16">
                         </a>
                         
-                        <a href="" class="action-btn" onclick="return confirm('Are you sure you want to delete this task?');">
+                        <a href="/delete/{{a.num}}" class="action-btn" onclick="return confirm('Are you sure you want to delete this task?');">
                             <img src="{% static 'del.png' %}" alt="Delete" width="16">
                         </a>
                     </div>
@@ -55,7 +56,7 @@
                 {% endfor %}
                 
                 <div style="margin-top: 15px; text-align: left;">
-                    <a href="/login/" class="action-btn" title="Logout">
+                    <a href="/logout/" class="action-btn" title="Logout">
                         <img src="{% static 'exit.png' %}" alt="quit" width="16"> Logout
                     </a>
                 </div>

@@ -8,5 +8,7 @@ urlpatterns = [
     path('',views.signup),
     path('login/',views.login),
     path('todolist/',views.todolist),
-    path('edit_todo/<int:num>',views.edit_todo,name='edit_todo')
+    path('edit_todo/<int:num>',views.edit_todo,name='edit_todo'),
+    path('delete/<int:num>',views.delete),
+    path('logout/',views.signout),
 ]

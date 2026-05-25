@@ -4,6 +4,7 @@ from todo import models
 from todo.models import Todo
 from django.contrib.auth import authenticate,login as auth_login,logout
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 
 def signup(request):
     if request.method =='POST':
@@ -35,6 +36,7 @@ def login(request):
     
     return render(request,'login.html')
 
+@login_required(login_url="/login/")
 def todolist(request):
     if(request.method=='POST'):
         tasks=request.POST.get('task')
@@ -60,3 +62,21 @@ def edit_todo(request,num):
     obj=models.Todo.objects.get(num=num)
     res=models.Todo.objects.filter(user=request.user).order_by('-date')
     return render(request,'edit_todo.html',{'obj':obj,'res':res})
+
+def delete(request,num):
+    if not request.user.is_authenticated:
+        return redirect("/login")
+    try:
+        obj=models.Todo.objects.get(num=num)
+        obj.delete()
+    except models.Todo.DoesNotExist:
+        print("Error occur")
+    return redirect("/todolist")
+
+def signout(request):
+    logout(request);
+    return redirect("/login/")
+
+
+
+
