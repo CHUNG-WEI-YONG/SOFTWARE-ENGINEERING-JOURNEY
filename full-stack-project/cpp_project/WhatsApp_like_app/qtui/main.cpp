@@ -11,7 +11,7 @@ int main(int argc, char *argv[])
         qDebug("open success");
         QString style=QLatin1String(qss.readAll());
         qDebug()<<style;
-        a.setStyle(style);
+        a.setStyleSheet(style);
         qss.close();
     }
     else{

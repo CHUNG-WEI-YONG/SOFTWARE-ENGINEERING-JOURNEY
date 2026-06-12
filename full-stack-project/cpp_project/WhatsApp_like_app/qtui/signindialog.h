@@ -2,6 +2,7 @@
 #define SIGNINDIALOG_H
 
 #include <QDialog>
+#include "global.h"
 namespace Ui {
     class SigninDialog;
 }
@@ -17,6 +18,7 @@ public:
 private slots:
     void on_get_Code_clicked();
     void showTip(QString str,bool b_ok);
+    void sig_reg_mod_finish(ReqId id,QString res,ErrorCode error);
 
 private:
     Ui::SigninDialog *ui;

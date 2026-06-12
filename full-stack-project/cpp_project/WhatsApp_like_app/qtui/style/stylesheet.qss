@@ -1,4 +1,4 @@
-QDIALOG#LoginDialog , #SigninDialog{
+QDialog#LoginDialog,#SigninDialog{
 background-color:rgb(255,255,255);
 
 }
@@ -7,10 +7,10 @@ background-color:rgb(255,255,255);
     color:black;
 }
 
-#error_label[state='normal']{
+#error_label[state="normal"]{
     color:green;
 }
 
-#error_label[state='err']{
+#error_label[state="err"]{
     color:red;
 }

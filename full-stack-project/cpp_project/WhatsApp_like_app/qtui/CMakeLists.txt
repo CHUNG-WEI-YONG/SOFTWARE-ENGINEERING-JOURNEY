@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.19)
 project(qtui LANGUAGES CXX)
 
-find_package(Qt6 6.5 REQUIRED COMPONENTS Core Widgets)
+find_package(Qt6 6.5 REQUIRED COMPONENTS Core Widgets Network)
 
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
@@ -25,6 +25,8 @@ qt_add_executable(qtui
     global.h
     global.cpp
     singleton.h
+    httpmgr.h httpmgr.cpp
+
 
 )
 
@@ -32,6 +34,7 @@ target_link_libraries(qtui
     PRIVATE
         Qt::Core
         Qt::Widgets
+        Qt::Network
 )
 
 set_target_properties(qtui PROPERTIES QT_WINDOWS_FINAL_EXECUTABLE_ICON "${CMAKE_CURRENT_SOURCE_DIR}/icon.ico")
