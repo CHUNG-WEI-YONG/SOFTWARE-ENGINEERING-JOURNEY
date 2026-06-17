@@ -9,6 +9,9 @@
 #include <mutex>
 #include <QByteArray>
 #include <QNetworkReply>
+#include <QJsonObject>
+#include <QDir>
+#include <QSettings>
 
 enum class ReqId{
     ID_GET_VERIFY_CODE=1001,//code
@@ -27,5 +30,6 @@ enum class ErrorCode{
 };
 
 extern std::function <void(QWidget*)>repolish;
+extern QString gate_url_prefix;
 
 #endif // GLOBAL_H

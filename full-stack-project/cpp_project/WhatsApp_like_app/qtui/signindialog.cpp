@@ -10,7 +10,9 @@ SigninDialog::SigninDialog(QWidget *parent)
     ui->setupUi(this);
     ui->error_label->setProperty("state","normal");
     repolish(ui->error_label);
-    connect(Httpmgr::getInstance(),&Httpmgr::sig_reg_mod_finish,this,&SigninDialog::sig_reg_mod_finish);
+    auto httpmgr_instance=Httpmgr::getInstance();
+    connect(httpmgr_instance.get(),&Httpmgr::sig_reg_mod_finish,this,&SigninDialog::sig_reg_mod_finish);
+    initHttpHandlers();
 }
 
 SigninDialog::~SigninDialog()
@@ -25,6 +27,11 @@ void SigninDialog::on_get_Code_clicked()
     QRegularExpression regex(R"((\w+)(\.|_)?(\w*)@(\w+)(\.(\w+))+)");
     bool match=regex.match(email).hasMatch();
     if(match){
+        QJsonObject json_obj;
+        json_obj["email"]=email;
+        json_obj["key"] = "2026_safe_handshake";
+        Httpmgr::getInstance()->PostHttp(QUrl(gate_url_prefix+"/get_verifycode"),json_obj,ReqId ::ID_GET_VERIFY_CODE,Modules::REGISTERMOD);
+        showTip(tr("Code send to your email.Please check"),true);
 
     }
     else{
@@ -56,5 +63,27 @@ void SigninDialog::sig_reg_mod_finish(ReqId id, QString res, ErrorCode error)
         return;
     }
 
+    jsonDoc.object();
+    if(!_handlers.contains(id)){
+        qWarning() << "警告：收到了未注册的请求 ID 回执，调度雷达拒绝分发！ID code:" << static_cast<int>(id);
+        return;
+    }
+    _handlers[id](jsonDoc.object());
+    return;
+}
+
+void SigninDialog::initHttpHandlers()
+{
+//register
+    _handlers.insert(ReqId::ID_GET_VERIFY_CODE,[this](const QJsonObject& JsonObj){
+    int error=JsonObj["error"].toInt();
+    if(static_cast<ErrorCode>(error)!=ErrorCode::SUCCESS){
+        showTip(tr("Error in argument"),false);
+        return;
+    }
+    auto email=JsonObj["email"].toString();
+    showTip(tr("Code sent to email"),true);
+    qDebug()<<"email is"<<email;
+});
 }
 

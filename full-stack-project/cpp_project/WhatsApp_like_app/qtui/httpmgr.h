@@ -13,11 +13,11 @@ class Httpmgr:public QObject,public Singleton<Httpmgr>,public std::enable_shared
     Q_OBJECT;
 public:
     ~Httpmgr();
+    void PostHttp(QUrl url,QJsonObject json,ReqId req_id,Modules mod);
 private:
     friend class Singleton<Httpmgr>;
     Httpmgr();
     QNetworkAccessManager _manager;
-    void PostHttp(QUrl url,QJsonObject json,ReqId req_id,Modules mod);
 
 private slots:
     void slot_http_finish(ReqId id,QString res,ErrorCode error,Modules mod);

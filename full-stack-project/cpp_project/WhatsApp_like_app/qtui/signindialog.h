@@ -21,7 +21,9 @@ private slots:
     void sig_reg_mod_finish(ReqId id,QString res,ErrorCode error);
 
 private:
+    void initHttpHandlers();
     Ui::SigninDialog *ui;
+    QMap<ReqId , std::function<void(const QJsonObject& )>>_handlers;
 };
 
 #endif // SIGNINDIALOG_H
