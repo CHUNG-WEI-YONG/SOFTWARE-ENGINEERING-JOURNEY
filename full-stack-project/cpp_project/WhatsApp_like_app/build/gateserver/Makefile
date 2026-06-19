@@ -174,6 +174,78 @@ GateServer/fast:
 	cd /d C:\Users\ASUSTUF\Desktop\SE_JOURNEY\full-stack-project\cpp_project\WhatsApp_like_app\build && $(MAKE) $(MAKESILENT) -f gateserver\CMakeFiles\GateServer.dir\build.make gateserver/CMakeFiles/GateServer.dir/build
 .PHONY : GateServer/fast
 
+message.grpc.pb.obj: message.grpc.pb.cc.obj
+.PHONY : message.grpc.pb.obj
+
+# target to build an object file
+message.grpc.pb.cc.obj:
+	cd /d C:\Users\ASUSTUF\Desktop\SE_JOURNEY\full-stack-project\cpp_project\WhatsApp_like_app\build && $(MAKE) $(MAKESILENT) -f gateserver\CMakeFiles\GateServer.dir\build.make gateserver/CMakeFiles/GateServer.dir/message.grpc.pb.cc.obj
+.PHONY : message.grpc.pb.cc.obj
+
+message.grpc.pb.i: message.grpc.pb.cc.i
+.PHONY : message.grpc.pb.i
+
+# target to preprocess a source file
+message.grpc.pb.cc.i:
+	cd /d C:\Users\ASUSTUF\Desktop\SE_JOURNEY\full-stack-project\cpp_project\WhatsApp_like_app\build && $(MAKE) $(MAKESILENT) -f gateserver\CMakeFiles\GateServer.dir\build.make gateserver/CMakeFiles/GateServer.dir/message.grpc.pb.cc.i
+.PHONY : message.grpc.pb.cc.i
+
+message.grpc.pb.s: message.grpc.pb.cc.s
+.PHONY : message.grpc.pb.s
+
+# target to generate assembly for a file
+message.grpc.pb.cc.s:
+	cd /d C:\Users\ASUSTUF\Desktop\SE_JOURNEY\full-stack-project\cpp_project\WhatsApp_like_app\build && $(MAKE) $(MAKESILENT) -f gateserver\CMakeFiles\GateServer.dir\build.make gateserver/CMakeFiles/GateServer.dir/message.grpc.pb.cc.s
+.PHONY : message.grpc.pb.cc.s
+
+message.pb.obj: message.pb.cc.obj
+.PHONY : message.pb.obj
+
+# target to build an object file
+message.pb.cc.obj:
+	cd /d C:\Users\ASUSTUF\Desktop\SE_JOURNEY\full-stack-project\cpp_project\WhatsApp_like_app\build && $(MAKE) $(MAKESILENT) -f gateserver\CMakeFiles\GateServer.dir\build.make gateserver/CMakeFiles/GateServer.dir/message.pb.cc.obj
+.PHONY : message.pb.cc.obj
+
+message.pb.i: message.pb.cc.i
+.PHONY : message.pb.i
+
+# target to preprocess a source file
+message.pb.cc.i:
+	cd /d C:\Users\ASUSTUF\Desktop\SE_JOURNEY\full-stack-project\cpp_project\WhatsApp_like_app\build && $(MAKE) $(MAKESILENT) -f gateserver\CMakeFiles\GateServer.dir\build.make gateserver/CMakeFiles/GateServer.dir/message.pb.cc.i
+.PHONY : message.pb.cc.i
+
+message.pb.s: message.pb.cc.s
+.PHONY : message.pb.s
+
+# target to generate assembly for a file
+message.pb.cc.s:
+	cd /d C:\Users\ASUSTUF\Desktop\SE_JOURNEY\full-stack-project\cpp_project\WhatsApp_like_app\build && $(MAKE) $(MAKESILENT) -f gateserver\CMakeFiles\GateServer.dir\build.make gateserver/CMakeFiles/GateServer.dir/message.pb.cc.s
+.PHONY : message.pb.cc.s
+
+source_file/ConfigMgr.obj: source_file/ConfigMgr.cpp.obj
+.PHONY : source_file/ConfigMgr.obj
+
+# target to build an object file
+source_file/ConfigMgr.cpp.obj:
+	cd /d C:\Users\ASUSTUF\Desktop\SE_JOURNEY\full-stack-project\cpp_project\WhatsApp_like_app\build && $(MAKE) $(MAKESILENT) -f gateserver\CMakeFiles\GateServer.dir\build.make gateserver/CMakeFiles/GateServer.dir/source_file/ConfigMgr.cpp.obj
+.PHONY : source_file/ConfigMgr.cpp.obj
+
+source_file/ConfigMgr.i: source_file/ConfigMgr.cpp.i
+.PHONY : source_file/ConfigMgr.i
+
+# target to preprocess a source file
+source_file/ConfigMgr.cpp.i:
+	cd /d C:\Users\ASUSTUF\Desktop\SE_JOURNEY\full-stack-project\cpp_project\WhatsApp_like_app\build && $(MAKE) $(MAKESILENT) -f gateserver\CMakeFiles\GateServer.dir\build.make gateserver/CMakeFiles/GateServer.dir/source_file/ConfigMgr.cpp.i
+.PHONY : source_file/ConfigMgr.cpp.i
+
+source_file/ConfigMgr.s: source_file/ConfigMgr.cpp.s
+.PHONY : source_file/ConfigMgr.s
+
+# target to generate assembly for a file
+source_file/ConfigMgr.cpp.s:
+	cd /d C:\Users\ASUSTUF\Desktop\SE_JOURNEY\full-stack-project\cpp_project\WhatsApp_like_app\build && $(MAKE) $(MAKESILENT) -f gateserver\CMakeFiles\GateServer.dir\build.make gateserver/CMakeFiles/GateServer.dir/source_file/ConfigMgr.cpp.s
+.PHONY : source_file/ConfigMgr.cpp.s
+
 source_file/Cserver.obj: source_file/Cserver.cpp.obj
 .PHONY : source_file/Cserver.obj
 
@@ -270,6 +342,30 @@ source_file/LogicSystem.cpp.s:
 	cd /d C:\Users\ASUSTUF\Desktop\SE_JOURNEY\full-stack-project\cpp_project\WhatsApp_like_app\build && $(MAKE) $(MAKESILENT) -f gateserver\CMakeFiles\GateServer.dir\build.make gateserver/CMakeFiles/GateServer.dir/source_file/LogicSystem.cpp.s
 .PHONY : source_file/LogicSystem.cpp.s
 
+source_file/VerifyGrpcClient.obj: source_file/VerifyGrpcClient.cpp.obj
+.PHONY : source_file/VerifyGrpcClient.obj
+
+# target to build an object file
+source_file/VerifyGrpcClient.cpp.obj:
+	cd /d C:\Users\ASUSTUF\Desktop\SE_JOURNEY\full-stack-project\cpp_project\WhatsApp_like_app\build && $(MAKE) $(MAKESILENT) -f gateserver\CMakeFiles\GateServer.dir\build.make gateserver/CMakeFiles/GateServer.dir/source_file/VerifyGrpcClient.cpp.obj
+.PHONY : source_file/VerifyGrpcClient.cpp.obj
+
+source_file/VerifyGrpcClient.i: source_file/VerifyGrpcClient.cpp.i
+.PHONY : source_file/VerifyGrpcClient.i
+
+# target to preprocess a source file
+source_file/VerifyGrpcClient.cpp.i:
+	cd /d C:\Users\ASUSTUF\Desktop\SE_JOURNEY\full-stack-project\cpp_project\WhatsApp_like_app\build && $(MAKE) $(MAKESILENT) -f gateserver\CMakeFiles\GateServer.dir\build.make gateserver/CMakeFiles/GateServer.dir/source_file/VerifyGrpcClient.cpp.i
+.PHONY : source_file/VerifyGrpcClient.cpp.i
+
+source_file/VerifyGrpcClient.s: source_file/VerifyGrpcClient.cpp.s
+.PHONY : source_file/VerifyGrpcClient.s
+
+# target to generate assembly for a file
+source_file/VerifyGrpcClient.cpp.s:
+	cd /d C:\Users\ASUSTUF\Desktop\SE_JOURNEY\full-stack-project\cpp_project\WhatsApp_like_app\build && $(MAKE) $(MAKESILENT) -f gateserver\CMakeFiles\GateServer.dir\build.make gateserver/CMakeFiles/GateServer.dir/source_file/VerifyGrpcClient.cpp.s
+.PHONY : source_file/VerifyGrpcClient.cpp.s
+
 # Help Target
 help:
 	@echo The following are some of the valid targets for this Makefile:
@@ -283,6 +379,15 @@ help:
 	@echo ... list_install_components
 	@echo ... rebuild_cache
 	@echo ... GateServer
+	@echo ... message.grpc.pb.obj
+	@echo ... message.grpc.pb.i
+	@echo ... message.grpc.pb.s
+	@echo ... message.pb.obj
+	@echo ... message.pb.i
+	@echo ... message.pb.s
+	@echo ... source_file/ConfigMgr.obj
+	@echo ... source_file/ConfigMgr.i
+	@echo ... source_file/ConfigMgr.s
 	@echo ... source_file/Cserver.obj
 	@echo ... source_file/Cserver.i
 	@echo ... source_file/Cserver.s
@@ -295,6 +400,9 @@ help:
 	@echo ... source_file/LogicSystem.obj
 	@echo ... source_file/LogicSystem.i
 	@echo ... source_file/LogicSystem.s
+	@echo ... source_file/VerifyGrpcClient.obj
+	@echo ... source_file/VerifyGrpcClient.i
+	@echo ... source_file/VerifyGrpcClient.s
 .PHONY : help
 
 

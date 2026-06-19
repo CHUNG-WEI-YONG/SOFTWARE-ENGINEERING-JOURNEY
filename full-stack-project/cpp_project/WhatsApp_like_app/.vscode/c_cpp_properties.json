@@ -1,0 +1,25 @@
+{
+    "configurations": [
+        {
+            "name": "Win32",
+            "includePath": [
+                "${workspaceFolder}/**",
+                // 🥇 终极物理钢钉：强行锁定你硬盘里 Boost 的绝对路径，让红线一枪熄灭！
+                "C:/Users/ASUSTUF/Downloads/boost_1_91_0/boost_1_91_0"
+            ],
+            "defines": [
+                "_DEBUG",
+                "UNICODE",
+                "_UNICODE"
+            ],
+            // ⚡ 锁死你之前调教好的 MinGW 13 官方编译器物理坐标
+            "compilerPath": "C:/Qt/Tools/mingw1310_64/bin/g++.exe",
+            "cStandard": "c17",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "windows-gcc-x64",
+            // 🔄 让 VS Code 雷达同步抄录 CMake 编译时吐出来的路径地图
+            "compileCommands": "${workspaceFolder}/../build/compile_commands.json"
+        }
+    ],
+    "version": 4
+}

@@ -1,0 +1,18 @@
+# 🔒 绝对死锁！屏蔽 Visual Studio 的运行期临时缓存
+.vs/
+*.user
+*.suo
+*.sln.docstates
+
+# 🔒 屏蔽 C++ / CMake 编译出来的巨大二进制大坑和缓存
+out/
+build/
+CMakeFiles/
+CMakeCache.txt
+*.exe
+*.o
+*.obj
+
+# 🔒 屏蔽 Node.js 运进来的海量依赖包（别人通过 npm install 自动装，不需要你提交）
+node_modules/
+.pnpm-store/
