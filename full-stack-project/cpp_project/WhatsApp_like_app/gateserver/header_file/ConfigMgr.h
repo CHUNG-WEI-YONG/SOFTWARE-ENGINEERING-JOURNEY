@@ -16,6 +16,7 @@ struct SectionInfo {
 		return *this;
 	}
 
+
 	std::string operator [](const std::string& key) {
 		if (_section_datas.find(key) == _section_datas.end()) {
 			return "";
@@ -32,6 +33,11 @@ public :
 		_config_map.clear();
 	};
 
+	static ConfigMgr& Inst() {
+		static ConfigMgr cfg_mgr;
+		return cfg_mgr;
+	}
+
 	SectionInfo operator [](const std::string& section) {
 		if (_config_map.find(section) == _config_map.end()) {
 			return SectionInfo();
@@ -39,7 +45,6 @@ public :
 		return _config_map[section];
 	}
 
-	ConfigMgr();
 	ConfigMgr(const ConfigMgr& src) {
 		_config_map = src._config_map;
 	};
@@ -53,5 +58,6 @@ public :
 
 private:
 	std::map<std::string, SectionInfo> _config_map;
+	ConfigMgr();
 
 };

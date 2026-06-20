@@ -222,6 +222,30 @@ message.pb.cc.s:
 	cd /d C:\Users\ASUSTUF\Desktop\SE_JOURNEY\full-stack-project\cpp_project\WhatsApp_like_app\build && $(MAKE) $(MAKESILENT) -f gateserver\CMakeFiles\GateServer.dir\build.make gateserver/CMakeFiles/GateServer.dir/message.pb.cc.s
 .PHONY : message.pb.cc.s
 
+source_file/AsioIOServicePool.obj: source_file/AsioIOServicePool.cpp.obj
+.PHONY : source_file/AsioIOServicePool.obj
+
+# target to build an object file
+source_file/AsioIOServicePool.cpp.obj:
+	cd /d C:\Users\ASUSTUF\Desktop\SE_JOURNEY\full-stack-project\cpp_project\WhatsApp_like_app\build && $(MAKE) $(MAKESILENT) -f gateserver\CMakeFiles\GateServer.dir\build.make gateserver/CMakeFiles/GateServer.dir/source_file/AsioIOServicePool.cpp.obj
+.PHONY : source_file/AsioIOServicePool.cpp.obj
+
+source_file/AsioIOServicePool.i: source_file/AsioIOServicePool.cpp.i
+.PHONY : source_file/AsioIOServicePool.i
+
+# target to preprocess a source file
+source_file/AsioIOServicePool.cpp.i:
+	cd /d C:\Users\ASUSTUF\Desktop\SE_JOURNEY\full-stack-project\cpp_project\WhatsApp_like_app\build && $(MAKE) $(MAKESILENT) -f gateserver\CMakeFiles\GateServer.dir\build.make gateserver/CMakeFiles/GateServer.dir/source_file/AsioIOServicePool.cpp.i
+.PHONY : source_file/AsioIOServicePool.cpp.i
+
+source_file/AsioIOServicePool.s: source_file/AsioIOServicePool.cpp.s
+.PHONY : source_file/AsioIOServicePool.s
+
+# target to generate assembly for a file
+source_file/AsioIOServicePool.cpp.s:
+	cd /d C:\Users\ASUSTUF\Desktop\SE_JOURNEY\full-stack-project\cpp_project\WhatsApp_like_app\build && $(MAKE) $(MAKESILENT) -f gateserver\CMakeFiles\GateServer.dir\build.make gateserver/CMakeFiles/GateServer.dir/source_file/AsioIOServicePool.cpp.s
+.PHONY : source_file/AsioIOServicePool.cpp.s
+
 source_file/ConfigMgr.obj: source_file/ConfigMgr.cpp.obj
 .PHONY : source_file/ConfigMgr.obj
 
@@ -385,6 +409,9 @@ help:
 	@echo ... message.pb.obj
 	@echo ... message.pb.i
 	@echo ... message.pb.s
+	@echo ... source_file/AsioIOServicePool.obj
+	@echo ... source_file/AsioIOServicePool.i
+	@echo ... source_file/AsioIOServicePool.s
 	@echo ... source_file/ConfigMgr.obj
 	@echo ... source_file/ConfigMgr.i
 	@echo ... source_file/ConfigMgr.s

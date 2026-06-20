@@ -52,7 +52,7 @@ file(GLOB ALL_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/source_file/*.cpp")
 # =================================================================
 # 🚀 4. 总装可执行肉身
 # =================================================================
-add_executable(GateServer ${ALL_SOURCES} ${PROTO_SRCS} ${PROTO_HDRS} "source_file/ConfigMgr.cpp")
+add_executable(GateServer ${ALL_SOURCES} ${PROTO_SRCS} ${PROTO_HDRS} "source_file/ConfigMgr.cpp" "source_file/AsioIOServicePool.cpp")
 
 # =================================================================
 # 🛠️ 5. 链接底层二进制肌肉
@@ -98,5 +98,24 @@ if(EXISTS "${TargetConfig}")
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
         "${TargetConfig}"
         "${OutputDir}/config.ini"
+    )
+endif()
+
+add_custom_command(TARGET GateServer POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+    ${CMAKE_CURRENT_SOURCE_DIR}/config.ini
+    $<TARGET_FILE_DIR:GateServer>/config.ini
+)
+
+set(TargetConfig "${CMAKE_CURRENT_SOURCE_DIR}/config.ini")
+set(OutputDir "${CMAKE_BINARY_DIR}") # 锁死 Ninja 编译输出沙盒目录
+
+if(EXISTS "${TargetConfig}")
+    add_custom_command(
+        TARGET GateServer POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "${TargetConfig}"
+        "${OutputDir}/config.ini"
+        COMMENT "📡 [CMake] 正在全自动同步 config.ini 到可执行文件输出目录..."
     )
 endif()

@@ -3,7 +3,7 @@
 #include "ConfigMgr.h"
 
 int main(){
-	ConfigMgr gcfg;
+	auto& gcfg=ConfigMgr::Inst();
 	std::string port_number_str = gcfg["server"]["port"];
 	unsigned short port = atoi(port_number_str.c_str());
 

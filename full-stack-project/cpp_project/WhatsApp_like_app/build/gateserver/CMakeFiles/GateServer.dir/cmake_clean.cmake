@@ -3,6 +3,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/GateServer.dir/message.grpc.pb.cc.obj.d"
   "CMakeFiles/GateServer.dir/message.pb.cc.obj"
   "CMakeFiles/GateServer.dir/message.pb.cc.obj.d"
+  "CMakeFiles/GateServer.dir/source_file/AsioIOServicePool.cpp.obj"
+  "CMakeFiles/GateServer.dir/source_file/AsioIOServicePool.cpp.obj.d"
   "CMakeFiles/GateServer.dir/source_file/ConfigMgr.cpp.obj"
   "CMakeFiles/GateServer.dir/source_file/ConfigMgr.cpp.obj.d"
   "CMakeFiles/GateServer.dir/source_file/Cserver.cpp.obj"
