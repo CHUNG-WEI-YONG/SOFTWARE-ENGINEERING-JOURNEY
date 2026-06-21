@@ -22,4 +22,11 @@ The handle get function help to search at _get_handles based on the requested st
 Using config.ini to set up the port for both gateserver and qtui with class config to manage the port and ip address to make the code easier to be read
 
 ## DAY 7
-Adding a new VarifyServer by using nodejs and javascipt to send email to verification to the user entered email in qtui so by now three server with qtui accept email and send rquest to gateserver port then the gateserver initialise a server class with logic system to handdle the post request then send it to varifyserver with what message.proto set up then the varifyserver continue to read and send the email to the sign in email
+Adding a new VarifyServer by using nodejs and javascipt to send email to verification to the user entered email 
+in qtui so by now three server with qtui accept email and send rquest to gateserver port then the gateserver initialise 
+a server class with logic system to handdle the post request then send it to varifyserver with what message.proto set up then the varifyserver continue 
+to read and send the email to the sign in email
+
+## DAY 8
+Using a connection pool to manage httpconnection class and also grpc connection to handle the high concurrency request to allow gateserver and webserver to handle more request at the same time 
+and also using a thread pool to manage the thread for each connection to avoid blocking the main thread

@@ -17,6 +17,9 @@
 #include <mutex>
 #include <condition_variable>
 #include <vector>
+#include <sw/redis++/redis++.h>
+#include <cassert>
+
 
 
 
