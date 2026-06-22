@@ -1,6 +1,7 @@
 #include "LogicSystem.h"
 #include "HttpConnection.h"
 #include "VerifyGrpcClient.h"
+#include "RedisMjr.h"
 
 void LogicSystem::RegGet(std::string s, HttpHandler handler){
     _get_handles.insert(make_pair(s,handler));
@@ -52,6 +53,64 @@ LogicSystem::LogicSystem(){
         return true ;
     
     });
+
+    RegPost("/user_register", [](std::shared_ptr<HttpConnection> conn) {
+        auto body = boost::beast::buffers_to_string(conn->_request.body().data());
+        std::cout << "receive body is " << body << std::endl;
+        conn->_response.set(http::field::content_type, "text/json");
+        // Json::Value root;
+        // Json::Reader reader;
+        // Json::Value source_root;
+        json root;
+        json src_root;
+        try {
+            src_root = nlohmann::json::parse(body);
+            if(src_root["error"]!=ErrorCodes::Success){
+                throw json::out_of_range::create(403, "Failed to parse redis data", &src_root);
+            }
+
+            std::string varify_code;
+            bool result = RedisMjr::GetInstance()->Get(src_root["email"].get<std::string>(), varify_code);
+            if (!result) {
+                std::cout << " get varify code expired" << std::endl;
+                root["error"] = ErrorCodes::VarifyExpired;
+                root["msg"] = "Verify Code expired ";
+                auto resp = root.dump();
+                boost::beast::ostream(conn->_request.body()) << resp;
+                conn->WriteResponse();
+                return true;
+            }
+            
+            if (varify_code != src_root["varifycode"].get<std::string>()) {
+                std::cout << " get varify code wrong" << std::endl;
+                root["error"] = ErrorCodes::VarifyCodeErr;
+                root["msg"] = "Verify Code Wrong ";
+                std::string resp = root.dump();
+                boost::beast::ostream(conn->_request.body()) << resp;
+                conn->WriteResponse();
+                return true;
+
+            }
+
+           
+       
+            root["error"] = ErrorCodes::Success;
+            root["email"] = src_root["email"].get<std::string>();
+            root["user"] = src_root["user"].get<std::string>();
+            root["passwd"] = src_root["passwd"].get<std::string>();
+            root["confirm"] = src_root["confirm"].get<std::string>();
+            root["varifycode"] = src_root["varifycode"].get<std::string>();
+            std::string jsonstr = root.dump();
+            boost::beast::ostream(conn->_response.body()) << jsonstr;
+            return true;
+
+        }
+        catch (const std::exception& e) {
+            root["error"] = ErrorCodes::Error_Json;
+            root["msg"] = "Failed to parse JSON data or missing core keys";
+            return true;
+        }
+        });
 };
 
 

@@ -85,5 +85,58 @@ void SigninDialog::initHttpHandlers()
     showTip(tr("Code sent to email"),true);
     qDebug()<<"email is"<<email;
 });
+
+_handlers.insert(ReqId::ID_REG_USER,[this](const QJsonObject& JsonObj){
+        int error = JsonObj["error"].toInt();
+        if(error != int(ErrorCode::SUCCESS)){
+            showTip(tr("Error Argument"),false);
+            return;
+        }
+        auto email = JsonObj["email"].toString();
+        showTip(tr("User registered successfully"), true);
+        qDebug()<< "email is " << email ;
+    });
+}
+
+
+void SigninDialog::on_sure_btn_clicked()
+{
+    if(ui->user_edit->text() == ""){
+        showTip(tr("用户名不能为空"), false);
+        return;
+    }
+    if(ui->email_edit->text() == ""){
+        showTip(tr("邮箱不能为空"), false);
+        return;
+    }
+    if(ui->pass_edit->text() == ""){
+        showTip(tr("密码不能为空"), false);
+        return;
+    }
+    std::string ec;
+    if(!ValidatePasswordStyle(ui->pass_edit->text().toStdString(),ec)){
+        showTip(QString::fromStdString(ec),false);
+    }
+    if(ui->repass_edit->text() == ""){
+        showTip(tr("确认密码不能为空"), false);
+        return;
+    }
+    if(ui->repass_edit->text() != ui->pass_edit->text()){
+        showTip(tr("密码和确认密码不匹配"), false);
+        return;
+    }
+    if(ui->code_edit->text() == ""){
+        showTip(tr("验证码不能为空"), false);
+        return;
+    }
+    //day11 发送http请求注册用户
+    QJsonObject json_obj;
+    json_obj["user"] = ui->user_edit->text();
+    json_obj["email"] = ui->email_edit->text();
+    json_obj["passwd"] = ui->pass_edit->text();
+    json_obj["confirm"] = ui->repass_edit->text();
+    json_obj["varifycode"] = ui->code_edit->text();
+    Httpmgr::getInstance()->PostHttp(QUrl(gate_url_prefix+"/user_register"),
+                                    json_obj, ReqId::ID_REG_USER,Modules::REGISTERMOD);
 }
 

@@ -39,8 +39,8 @@ void Httpmgr::PostHttp(QUrl url,QJsonObject json ,ReqId id,Modules mod ){
 void Httpmgr::slot_http_finish(ReqId id,QString res,ErrorCode error,Modules mod){
     if(mod==Modules::REGISTERMOD){
         emit sig_reg_mod_finish(id,res,error);
-
     }
+
 
 
 

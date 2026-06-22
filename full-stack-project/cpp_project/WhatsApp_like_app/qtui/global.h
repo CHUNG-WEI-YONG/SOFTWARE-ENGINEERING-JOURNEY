@@ -31,5 +31,6 @@ enum class ErrorCode{
 
 extern std::function <void(QWidget*)>repolish;
 extern QString gate_url_prefix;
+extern bool ValidatePasswordStyle(const std::string& password, std::string& error_msg);
 
 #endif // GLOBAL_H

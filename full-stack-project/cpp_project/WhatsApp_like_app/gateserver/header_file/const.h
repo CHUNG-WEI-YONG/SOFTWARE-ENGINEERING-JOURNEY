@@ -19,7 +19,7 @@
 #include <vector>
 #include <sw/redis++/redis++.h>
 #include <cassert>
-
+#define CODEPREFIX "code_"
 
 
 
@@ -30,10 +30,17 @@ namespace net   = boost::asio;
 using tcp   = boost::asio::ip::tcp;
 using json = nlohmann::json;
 
-enum ErrorCodes{
-    Success=0,
-    Error_Json=1001,
-    RPC_Failed=1002,
+enum ErrorCodes {
+    Success = 0,
+    Error_Json = 1001,      // Json解析错误
+    RPC_Failed = 1002,       // RPC请求错误
+    VarifyExpired = 1003,   // 验证码过期
+    VarifyCodeErr = 1004,   // 验证码错误
+    UserExist = 1005,       // 用户已经存在
+    PasswdErr = 1006,       // 密码错误
+    EmailNotMatch = 1007,   // 邮箱不匹配
+    PasswdUpFailed = 1008,  // 更新密码失败
+    PasswdInvalid = 1009,   // 密码更新失败 (注: 图片中注释为密码更新失败/无效)
 };
 
 class ConfigMgr;

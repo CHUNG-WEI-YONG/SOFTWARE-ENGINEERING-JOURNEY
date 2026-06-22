@@ -20,6 +20,8 @@ private slots:
     void showTip(QString str,bool b_ok);
     void sig_reg_mod_finish(ReqId id,QString res,ErrorCode error);
 
+    void on_sure_btn_clicked();
+
 private:
     void initHttpHandlers();
     Ui::SigninDialog *ui;
