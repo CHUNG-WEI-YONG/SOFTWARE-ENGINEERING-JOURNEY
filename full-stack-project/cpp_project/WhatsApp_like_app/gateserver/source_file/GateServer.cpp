@@ -103,7 +103,7 @@ void TestRedisMgr() {
 
     // 🚀 1. 一枪通电连接：直接把 123456 密码作为参数喂进去
     // 底层在 reset 的万分之一秒内自动完成了三次握手与 AUTH 密码认证！
-    assert(RedisMjr::GetInstance()->Connect("81.68.86.146", 6380, "123456"));
+    assert(RedisMjr::GetInstance()->Connect("81.68.86.146", 6380, "123456",5));
     std::cout << "🧪 [Test 1] Connect & Auto-Auth passed!" << std::endl;
 
     // 🚀 2. 键值对基础读写测试 (SET & GET)
@@ -157,7 +157,7 @@ void TestRedisMgr() {
 
 int main(){
     //TestRedis();
-    TestRedisMgr();
+    //TestRedisMgr();
 	auto& gcfg=ConfigMgr::Inst();
 	std::string port_number_str = gcfg["server"]["port"];
 	unsigned short port = atoi(port_number_str.c_str());

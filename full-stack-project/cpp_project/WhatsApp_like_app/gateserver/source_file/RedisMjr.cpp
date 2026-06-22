@@ -1,13 +1,16 @@
 #include "RedisMjr.h"
 
-bool RedisMjr::Connect(const std::string& host, int port, const std::string& password) {
+bool RedisMjr::Connect(const std::string& host, int port, const std::string& password,int size) {
     try {
         sw::redis::ConnectionOptions opts;
         opts.host = host;
         opts.port = port;
         opts.password = password;
 
-        this->_redis_client.reset(new sw::redis::Redis(opts));
+		sw::redis::ConnectionPoolOptions pool_opts;
+        pool_opts.size = size;
+
+        this->_redis_client.reset(new sw::redis::Redis(opts,pool_opts));
         this->_redis_client->ping();
         std::cout << "Connected to the Redis server " << host << ":" << port << std::endl;
         return true;
@@ -149,4 +152,25 @@ bool RedisMjr::Del(const std::string& key) {
         std::cout << "Redis DEL command failed: " << e.what() << std::endl;
         return false;
     }
+}
+
+RedisMjr::~RedisMjr() {
+    std::cout << "🟢 [RAII 断电] RedisMjr 析构，底层 TCP 套接字池已全自动安全回收！" << std::endl;
+}
+
+// 🚀 复活构造函数：把单例初期的初始化逻辑安排上
+RedisMjr::RedisMjr() : _redis_client(nullptr) {
+    // 可以在这里做一些基础的成员变量初始化
+}
+
+bool RedisMjr::Exists(const std::string& key) {
+	try {
+		bool exists = this->_redis_client->exists(key);
+		std::cout << "Exists check for key '" << key << "': " << (exists ? "true" : "false") << std::endl;
+		return exists;
+	}
+	catch (const sw::redis::Error& e) {
+		std::cout << "Redis EXISTS command failed: " << e.what() << std::endl;
+		return false;
+	}
 }

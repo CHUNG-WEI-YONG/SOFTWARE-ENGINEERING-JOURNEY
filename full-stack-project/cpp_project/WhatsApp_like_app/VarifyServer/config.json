@@ -9,8 +9,8 @@
     "passwd":123456
   },
   "redis": {
-    "host": "127.0.0.1",
-    "port": 6379,
-    "passwd": "your_redis_password"
+    "host": "81.68.86.146",
+    "port": 6380,
+    "passwd": "123456"
   }
 }

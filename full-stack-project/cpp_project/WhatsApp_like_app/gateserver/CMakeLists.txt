@@ -54,7 +54,7 @@ file(GLOB ALL_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/source_file/*.cpp")
 # =================================================================
 # 🚀 4. 总装可执行肉身
 # =================================================================
-add_executable(GateServer ${ALL_SOURCES} ${PROTO_SRCS} ${PROTO_HDRS} "source_file/ConfigMgr.cpp" "source_file/AsioIOServicePool.cpp"  "source_file/RedisMjr.cpp" "header_file/RedisConnPool.h" "source_file/RedisConnPool.cpp")
+add_executable(GateServer ${ALL_SOURCES} ${PROTO_SRCS} ${PROTO_HDRS} "source_file/ConfigMgr.cpp" "source_file/AsioIOServicePool.cpp"  "source_file/RedisMjr.cpp" )
 
 # =================================================================
 # 🛠️ 5. 链接底层二进制肌肉

@@ -6,7 +6,7 @@ public:
     ~RedisMjr();
 
     // 🔑 连通大闸：所有输入参数，一律 const 焊死
-    bool Connect(const std::string& host, int port, const std::string& password);
+    bool Connect(const std::string& host, int port, const std::string& password,int size);
 
     // 🎯 基础键值对：Key 只读(const)，Value 是隔空改值的肉身输出通道(非常量 &)
     bool Get(const std::string& key, std::string& value);
