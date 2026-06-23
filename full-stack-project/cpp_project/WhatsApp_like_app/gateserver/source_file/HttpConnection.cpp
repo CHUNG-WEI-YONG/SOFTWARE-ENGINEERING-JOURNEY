@@ -173,13 +173,28 @@ void HttpConnection::HandleReq(){
 
 
 void HttpConnection::WriteResponse(){
-    auto self=shared_from_this();
-    _response.content_length(_response.body().size());
-    http::async_write(_socket,_response,[self](boost::system::error_code ec,std::size_t size_transferred){
-        self->_socket.shutdown(boost::asio::socket_base::shutdown_send,ec);
+    //auto self=shared_from_this();
+    //_response.content_length(_response.body().size());
+    //http::async_write(_socket,_response,[self](boost::system::error_code ec,std::size_t size_transferred){
+    //    self->_socket.shutdown(boost::asio::socket_base::shutdown_send,ec);
+    //    self->deadline_.cancel();
+    //});
+    auto self = shared_from_this();
+    _response.prepare_payload();
+
+    http::async_write(_socket, _response, [self](boost::system::error_code ec, std::size_t size_transferred) {
+        boost::ignore_unused(size_transferred);
+        if (ec) {
+            std::cout << "🔴 [Http Connection] Write buffer failed: " << ec.message() << std::endl;
+        }
+
+        // 🚀 核心修复二：使用符合套接字基类的优雅规范实施关闭
+        boost::system::error_code ignored_ec;
+        self->_socket.shutdown(boost::asio::ip::tcp::socket::shutdown_both, ignored_ec);
         self->deadline_.cancel();
-    });
+        });
 }
+
 
 void HttpConnection::CheckDeadline(){
     auto self=shared_from_this();

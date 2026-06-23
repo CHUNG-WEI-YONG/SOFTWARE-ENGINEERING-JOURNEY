@@ -3,6 +3,7 @@
 Httpmgr::~Httpmgr(){}
 
 Httpmgr::Httpmgr() {
+    connect(this,&Httpmgr::sig_http_finish,this,&Httpmgr::slot_http_finish);
 
 }
 
@@ -22,6 +23,7 @@ void Httpmgr::PostHttp(QUrl url,QJsonObject json ,ReqId id,Modules mod ){
         }
         //no error
         QByteArray res=reply->readAll();
+        qDebug()<<"response: "<<res;
         QJsonParseError parseError;
         QJsonDocument resDoc = QJsonDocument::fromJson(res, &parseError);
         QJsonObject resObj = resDoc.object();

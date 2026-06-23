@@ -53,6 +53,8 @@ void SigninDialog::showTip(QString str,bool b_ok){
 
 void SigninDialog::sig_reg_mod_finish(ReqId id, QString res, ErrorCode error)
 {
+    qDebug() << "response id =" << int(id);
+    qDebug() << "_handlers contains =" << _handlers.contains(id);
     if(error!=ErrorCode::SUCCESS){
         showTip(tr("Request Error"),false);
         return;
@@ -86,10 +88,10 @@ void SigninDialog::initHttpHandlers()
     qDebug()<<"email is"<<email;
 });
 
-_handlers.insert(ReqId::ID_REG_USER,[this](const QJsonObject& JsonObj){
+    _handlers.insert(ReqId::ID_REG_USER,[this](const QJsonObject& JsonObj){
         int error = JsonObj["error"].toInt();
         if(error != int(ErrorCode::SUCCESS)){
-            showTip(tr("Error Argument"),false);
+            showTip(tr("Error in register user"),false);
             return;
         }
         auto email = JsonObj["email"].toString();
@@ -116,6 +118,7 @@ void SigninDialog::on_sure_btn_clicked()
     std::string ec;
     if(!ValidatePasswordStyle(ui->pass_edit->text().toStdString(),ec)){
         showTip(QString::fromStdString(ec),false);
+        return;
     }
     if(ui->repass_edit->text() == ""){
         showTip(tr("确认密码不能为空"), false);
@@ -136,7 +139,8 @@ void SigninDialog::on_sure_btn_clicked()
     json_obj["passwd"] = ui->pass_edit->text();
     json_obj["confirm"] = ui->repass_edit->text();
     json_obj["varifycode"] = ui->code_edit->text();
-    Httpmgr::getInstance()->PostHttp(QUrl(gate_url_prefix+"/user_register"),
+    Httpmgr::getInstance()->PostHttp(QUrl(gate_url_prefix+"/register_user"),
                                     json_obj, ReqId::ID_REG_USER,Modules::REGISTERMOD);
+
 }
 

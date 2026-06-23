@@ -158,8 +158,10 @@ void TestRedisMgr() {
 int main(){
     //TestRedis();
     //TestRedisMgr();
+    RedisMjr::GetInstance()->Connect("127.0.0.1", 6380, "123456", 5);
 	auto& gcfg=ConfigMgr::Inst();
 	std::string port_number_str = gcfg["server"]["port"];
+    std::cout << port_number_str<<std::endl;
 	unsigned short port = atoi(port_number_str.c_str());
 
     try{

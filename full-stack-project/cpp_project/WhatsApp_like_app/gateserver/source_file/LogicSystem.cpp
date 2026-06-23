@@ -48,13 +48,19 @@ LogicSystem::LogicSystem(){
         }
 
         std::string jsonstr=root.dump();
-        boost::beast::ostream(connection->_request.body())<<jsonstr;
+        boost::beast::ostream(connection->_response.body())<<jsonstr;
+
         connection->WriteResponse();
         return true ;
+        //connection->_response.body() = root.dump();
+        //connection->WriteResponse();
+        //return true;
     
     });
 
-    RegPost("/user_register", [](std::shared_ptr<HttpConnection> conn) {
+    RegPost("/register_user", [](std::shared_ptr<HttpConnection> conn) {
+        std::cout << "/register_user Correctly run"<<std::endl;
+        //beast::ostream(conn->_response.body()) << "Receive register request response";
         auto body = boost::beast::buffers_to_string(conn->_request.body().data());
         std::cout << "receive body is " << body << std::endl;
         conn->_response.set(http::field::content_type, "text/json");
@@ -65,18 +71,17 @@ LogicSystem::LogicSystem(){
         json src_root;
         try {
             src_root = nlohmann::json::parse(body);
-            if(src_root["error"]!=ErrorCodes::Success){
-                throw json::out_of_range::create(403, "Failed to parse redis data", &src_root);
-            }
+            //if(src_root["error"]!=ErrorCodes::Success){
+            //    throw json::out_of_range::create(403, "Failed to parse redis data", &src_root);
+            //}
 
             std::string varify_code;
-            bool result = RedisMjr::GetInstance()->Get(src_root["email"].get<std::string>(), varify_code);
+            bool result = RedisMjr::GetInstance()->Get(CODEPREFIX+src_root["email"].get<std::string>(), varify_code);
             if (!result) {
                 std::cout << " get varify code expired" << std::endl;
                 root["error"] = ErrorCodes::VarifyExpired;
                 root["msg"] = "Verify Code expired ";
-                auto resp = root.dump();
-                boost::beast::ostream(conn->_request.body()) << resp;
+                boost::beast::ostream(conn->_response.body()) << root.dump();
                 conn->WriteResponse();
                 return true;
             }
@@ -85,8 +90,10 @@ LogicSystem::LogicSystem(){
                 std::cout << " get varify code wrong" << std::endl;
                 root["error"] = ErrorCodes::VarifyCodeErr;
                 root["msg"] = "Verify Code Wrong ";
-                std::string resp = root.dump();
-                boost::beast::ostream(conn->_request.body()) << resp;
+                //std::string resp = root.dump();
+
+                boost::beast::ostream(conn->_response.body()) << root.dump();
+                std::cout <<boost::beast::buffers_to_string(conn->_response.body().data());
                 conn->WriteResponse();
                 return true;
 
@@ -100,15 +107,20 @@ LogicSystem::LogicSystem(){
             root["passwd"] = src_root["passwd"].get<std::string>();
             root["confirm"] = src_root["confirm"].get<std::string>();
             root["varifycode"] = src_root["varifycode"].get<std::string>();
-            std::string jsonstr = root.dump();
-            boost::beast::ostream(conn->_response.body()) << jsonstr;
+            //std::string jsonstr = root.dump();
+            boost::beast::ostream(conn->_response.body()) << root.dump();
+            conn->WriteResponse();
             return true;
 
         }
         catch (const std::exception& e) {
             root["error"] = ErrorCodes::Error_Json;
             root["msg"] = "Failed to parse JSON data or missing core keys";
+            boost::beast::ostream(conn->_response.body()) << root.dump();
+
+            conn->WriteResponse();
             return true;
+            
         }
         });
 };
