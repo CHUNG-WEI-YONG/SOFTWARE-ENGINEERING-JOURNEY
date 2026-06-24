@@ -19,6 +19,7 @@
 #include <vector>
 #include <sw/redis++/redis++.h>
 #include <cassert>
+#include <mysqlx/xdevapi.h>
 #define CODEPREFIX "code_"
 
 
@@ -45,3 +46,14 @@ enum ErrorCodes {
 
 class ConfigMgr;
 extern ConfigMgr gCfg;
+
+class Defer {
+public:
+    Defer(std::function<void()> func) :_function(func) {};
+    ~Defer() {
+        _function();
+    };
+
+private:
+    std::function<void()> _function;
+};

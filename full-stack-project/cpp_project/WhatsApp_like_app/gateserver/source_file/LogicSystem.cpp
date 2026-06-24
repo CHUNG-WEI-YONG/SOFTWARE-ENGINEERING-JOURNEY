@@ -2,6 +2,7 @@
 #include "HttpConnection.h"
 #include "VerifyGrpcClient.h"
 #include "RedisMjr.h"
+#include "MysqlMgr.h"
 
 void LogicSystem::RegGet(std::string s, HttpHandler handler){
     _get_handles.insert(make_pair(s,handler));
@@ -77,6 +78,9 @@ LogicSystem::LogicSystem(){
 
             std::string varify_code;
             bool result = RedisMjr::GetInstance()->Get(CODEPREFIX+src_root["email"].get<std::string>(), varify_code);
+            std::string email = src_root["email"];
+            std::string name = src_root["user"];
+            std::string passwd = src_root["passwd"];
             if (!result) {
                 std::cout << " get varify code expired" << std::endl;
                 root["error"] = ErrorCodes::VarifyExpired;
@@ -99,8 +103,18 @@ LogicSystem::LogicSystem(){
 
             }
 
-           
-       
+            int uid = MysqlMgr::GetInstance()->RegUser(name, email, passwd);
+            if (uid == 0 || uid == -1) {
+                std::cout << "User exist." << std::endl;
+                root["error"] = ErrorCodes::UserExist;
+                root["msg"] = (uid == -2) ? "Email already registered" : "Username already exists";
+                boost::beast::ostream(conn->_response.body()) << root.dump();
+                conn->WriteResponse();
+                return true;
+
+
+            }
+            root["uid"] = uid;
             root["error"] = ErrorCodes::Success;
             root["email"] = src_root["email"].get<std::string>();
             root["user"] = src_root["user"].get<std::string>();
@@ -108,6 +122,7 @@ LogicSystem::LogicSystem(){
             root["confirm"] = src_root["confirm"].get<std::string>();
             root["varifycode"] = src_root["varifycode"].get<std::string>();
             //std::string jsonstr = root.dump();
+            std::cout << "Root is " << root << endl;
             boost::beast::ostream(conn->_response.body()) << root.dump();
             conn->WriteResponse();
             return true;

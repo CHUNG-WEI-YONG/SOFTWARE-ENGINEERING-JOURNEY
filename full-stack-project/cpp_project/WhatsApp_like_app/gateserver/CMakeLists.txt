@@ -10,7 +10,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_package(gRPC CONFIG REQUIRED)
 find_package(Protobuf REQUIRED)
 find_package(Threads REQUIRED)
-
+find_package(unofficial-mysql-connector-cpp CONFIG REQUIRED)
 
 
 # =================================================================
@@ -54,7 +54,13 @@ file(GLOB ALL_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/source_file/*.cpp")
 # =================================================================
 # 🚀 4. 总装可执行肉身
 # =================================================================
-add_executable(GateServer ${ALL_SOURCES} ${PROTO_SRCS} ${PROTO_HDRS} "source_file/ConfigMgr.cpp" "source_file/AsioIOServicePool.cpp"  "source_file/RedisMjr.cpp" )
+add_executable(GateServer ${ALL_SOURCES} ${PROTO_SRCS} ${PROTO_HDRS} 
+    "source_file/ConfigMgr.cpp" 
+    "source_file/AsioIOServicePool.cpp"  
+    "source_file/RedisMjr.cpp"  
+    "source_file/MysqlPool.cpp" 
+    "header_file/MysqlMgr.h" 
+    "source_file/MysqlMgr.cpp")
 
 # =================================================================
 # 🛠️ 5. 链接底层二进制肌肉
@@ -68,6 +74,7 @@ target_link_libraries(GateServer PRIVATE
     gRPC::grpc++_reflection
     protobuf::libprotobuf
     redis++::redis++
+    unofficial::mysql-connector-cpp::connector
 )
 
 # =================================================================

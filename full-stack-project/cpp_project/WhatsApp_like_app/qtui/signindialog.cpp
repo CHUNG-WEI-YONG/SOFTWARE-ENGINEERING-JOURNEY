@@ -96,6 +96,7 @@ void SigninDialog::initHttpHandlers()
         }
         auto email = JsonObj["email"].toString();
         showTip(tr("User registered successfully"), true);
+        qDebug()<<"user uuid is "<<JsonObj["uuid"].toString();
         qDebug()<< "email is " << email ;
     });
 }
