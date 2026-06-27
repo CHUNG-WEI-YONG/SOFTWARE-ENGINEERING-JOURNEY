@@ -40,7 +40,7 @@ void MysqlPool :: checkConnection() {
 		//	_conns.push(std::move(con));
 		//	});
 		bool b_conn_ok = false;
-		if (time_stamp - con->_last_time <= 60) {
+		if (time_stamp - con->_last_time >= 60) {
 			try {
 				con->_session->sql("SELECT 1").execute();
 				con->_last_time = time_stamp;
