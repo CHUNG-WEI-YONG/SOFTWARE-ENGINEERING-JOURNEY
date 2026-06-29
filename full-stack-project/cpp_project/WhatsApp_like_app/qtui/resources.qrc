@@ -2,5 +2,8 @@
     <qresource prefix="/">
         <file>rc/loginlogo.png</file>
         <file>style/stylesheet.qss</file>
+        <file>rc/show.png</file>
+        <file>rc/visual.png</file>
+        <file>rc/hidden.png</file>
     </qresource>
 </RCC>

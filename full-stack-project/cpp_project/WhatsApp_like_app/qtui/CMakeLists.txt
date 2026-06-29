@@ -38,6 +38,9 @@ qt_add_executable(qtui
     singleton.h
     httpmgr.h httpmgr.cpp
     config.ini
+    timerbtn.h timerbtn.cpp
+    clickedlabel.h clickedlabel.cpp
+    resetdialog.h resetdialog.cpp resetdialog.ui
 )
 
 # 6. 🛰️【规范化现代 CMake】管理头文件包含路径

@@ -6,6 +6,7 @@
 SigninDialog::SigninDialog(QWidget *parent)
     : QDialog(parent)
     , ui(new Ui::SigninDialog)
+    ,_countdown(5)
 {
     ui->setupUi(this);
     ui->error_label->setProperty("state","normal");
@@ -13,6 +14,67 @@ SigninDialog::SigninDialog(QWidget *parent)
     auto httpmgr_instance=Httpmgr::getInstance();
     connect(httpmgr_instance.get(),&Httpmgr::sig_reg_mod_finish,this,&SigninDialog::sig_reg_mod_finish);
     initHttpHandlers();
+    ui->error_label->clear();
+
+    // connect(ui->user_edit,&QLineEdit::editingFinished(),this,[this](){
+    //     checkUserValid();
+    // });
+    connect(ui->user_edit,&QLineEdit::editingFinished,this,[this](){
+        checkUserValid();
+    });
+    connect(ui->email_edit, &QLineEdit::editingFinished, this, [this](){
+        //on_get_Code_clicked();
+        checkEmailValid();
+    });
+    connect(ui->pass_edit, &QLineEdit::editingFinished, this, [this](){
+        checkPassValid();
+    });
+    connect(ui->repass_edit, &QLineEdit::editingFinished, this, [this](){
+        checkPassValid();
+    });
+    connect(ui->code_edit, &QLineEdit::editingFinished, this, [this](){
+        checkVarifyValid();
+    });
+    ui->pass_visible->setCursor(Qt::PointingHandCursor);
+    ui->repass_visible->setCursor(Qt::PointingHandCursor);
+    ui->pass_visible->setState("unvisible","unvisible_hover","","visible",
+                               "visible_hover","");
+    ui->repass_visible->setState("unvisible","unvisible_hover","","visible",
+                                  "visible_hover","");
+
+    connect(ui->pass_visible,&ClickedLabel::clicked,this,[this](){
+        auto state=ui->pass_visible->GetCurState();
+        if(state==ClickLbState::Normal){
+            ui->pass_edit->setEchoMode(QLineEdit::Password);
+        }
+        else{
+            ui->pass_edit->setEchoMode(QLineEdit::Normal);
+        }
+    });
+
+    connect(ui->repass_visible,&ClickedLabel::clicked,this,[this](){
+        auto state=ui->repass_visible->GetCurState();
+        if(state==ClickLbState::Normal){
+            ui->repass_edit->setEchoMode(QLineEdit::Password);
+        }
+        else{
+            ui->repass_edit->setEchoMode(QLineEdit::Normal);
+        }
+    });
+
+    _countdown_timer=new QTimer(this);
+    connect(_countdown_timer,&QTimer::timeout,[this](){
+        if(_countdown==0){
+            _countdown_timer->stop();
+            emit sigSwitchLogin();
+            return ;
+        }
+        else{
+            _countdown--;
+            auto str=QString("Sign in Successful. Return to login page in %1 s").arg(_countdown);
+            ui->tip2_lb->setText(str);
+        }
+    });
 }
 
 SigninDialog::~SigninDialog()
@@ -32,10 +94,12 @@ void SigninDialog::on_get_Code_clicked()
         json_obj["key"] = "2026_safe_handshake";
         Httpmgr::getInstance()->PostHttp(QUrl(gate_url_prefix+"/get_verifycode"),json_obj,ReqId ::ID_GET_VERIFY_CODE,Modules::REGISTERMOD);
         showTip(tr("Code send to your email.Please check"),true);
+        DelTipErr(TipErr::TIP_EMAIL_ERR);
 
     }
     else{
-        showTip(tr("Wrong Email!"),true);
+        AddTipErr(TipErr::TIP_EMAIL_ERR,"Wrong Email!");
+        //showTip(tr("Wrong Email!"),true);
     }
 }
 
@@ -96,8 +160,9 @@ void SigninDialog::initHttpHandlers()
         }
         auto email = JsonObj["email"].toString();
         showTip(tr("User registered successfully"), true);
-        qDebug()<<"user uuid is "<<JsonObj["uuid"].toString();
+        qDebug()<<"user uid is "<<JsonObj["uid"].toString();
         qDebug()<< "email is " << email ;
+        changeTipPage();
     });
 }
 
@@ -137,11 +202,95 @@ void SigninDialog::on_sure_btn_clicked()
     QJsonObject json_obj;
     json_obj["user"] = ui->user_edit->text();
     json_obj["email"] = ui->email_edit->text();
-    json_obj["passwd"] = ui->pass_edit->text();
-    json_obj["confirm"] = ui->repass_edit->text();
+    json_obj["passwd"] = xorString(ui->pass_edit->text());
+    json_obj["confirm"] = xorString(ui->repass_edit->text());
     json_obj["varifycode"] = ui->code_edit->text();
     Httpmgr::getInstance()->PostHttp(QUrl(gate_url_prefix+"/register_user"),
                                     json_obj, ReqId::ID_REG_USER,Modules::REGISTERMOD);
 
+}
+
+void SigninDialog::AddTipErr(TipErr te,QString tips){
+    _tips_errors[te]=tips;
+    showTip(tips,false);
+}
+
+void SigninDialog::DelTipErr(TipErr te){
+    _tips_errors.remove(te);
+    if(_tips_errors.empty()){
+        ui->error_label->clear();
+        return ;
+    }
+    showTip(_tips_errors.first(),false);
+
+}
+
+void SigninDialog::changeTipPage()
+{
+    _countdown_timer->stop();
+    ui->stackedWidget->setCurrentWidget(ui->page_2);
+    _countdown_timer->start(1000);
+}
+
+
+bool SigninDialog::checkUserValid(){
+    if(ui->user_edit->text()==""){
+        AddTipErr(TipErr::TIP_USER_ERR,tr("Username cannot be empty"));
+        return false;
+    }
+    DelTipErr(TipErr::TIP_USER_ERR);
+    return true;
+
+}
+
+bool SigninDialog::checkPassValid(){
+    std::string error;
+    bool result=ValidatePasswordStyle((ui->pass_edit->text().toStdString()),error);
+    if(!result){
+        AddTipErr(TipErr::TIP_PWD_ERR,QString :: fromStdString(error));
+        return false;
+    }
+    DelTipErr(TipErr::TIP_PWD_ERR);
+    if(ui->pass_edit->text()!=ui->repass_edit->text()){
+        AddTipErr(TipErr::TIP_CONFIRM_ERR,tr("Password and the reenter password are not the same"));
+        return false;
+    }
+    DelTipErr(TipErr::TIP_CONFIRM_ERR);
+    return result;
+}
+
+
+bool SigninDialog::checkVarifyValid(){
+    if(ui->code_edit->text()==""){
+        AddTipErr(TipErr::TIP_VARIFY_ERR,tr("Varify Code cannot be empty"));
+        return false;
+    }
+    DelTipErr(TipErr::TIP_VARIFY_ERR);
+    return true;
+
+}
+
+bool SigninDialog::checkEmailValid(){
+    auto email=ui->email_edit->text();
+    QRegularExpression regex(R"((\w+)(\.|_)?(\w*)@(\w+)(\.(\w+))+)");
+    bool match=regex.match(email).hasMatch();
+    if(!match){
+        AddTipErr(TipErr::TIP_EMAIL_ERR,tr("Wrong email format"));
+        return false;
+    }
+    DelTipErr(TipErr::TIP_EMAIL_ERR);
+    return true;
+}
+void SigninDialog::on_returnbtn_clicked()
+{
+    _countdown_timer->stop();
+    emit sigSwitchLogin();
+}
+
+
+void SigninDialog::on_cancel_btn_clicked()
+{
+    _countdown_timer->stop();
+    emit sigSwitchLogin();
 }
 

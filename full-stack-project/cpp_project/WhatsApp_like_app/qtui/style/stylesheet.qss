@@ -14,3 +14,46 @@ background-color:rgb(255,255,255);
 #error_label[state="err"]{
     color:red;
 }
+
+#pass_visible[state='unvisible']{
+    border-image:url(:/rc/hidden.png);
+}
+
+#pass_visible[state='unvisible_hover']{
+    border-image:url(:/rc/visual.png);
+}
+
+#pass_visible[state='visible']{
+    border-image:url(:/rc/show.png);
+}
+
+#pass_visible[state='visible_hover']{
+    border-image:url(:/rc/visual.png);
+}
+
+
+
+#repass_visible[state='visible_hover']{
+    border-image:url(:/rc/visual.png);
+}
+
+#repass_visible[state='unvisible']{
+    border-image:url(:/rc/hidden.png);
+}
+
+#repass_visible[state='unvisible_hover']{
+    border-image:url(:/rc/visual.png);
+}
+
+#repass_visible[state='visible']{
+    border-image:url(:/rc/show.png);
+}
+
+
+#forgot_label[state='normal'],#forgot_label[state='selected']{
+    color:black;
+}
+
+#forgot_label[state='normal_hover'],#forgot_label[state='selected_hover']{
+    color:rgb(42,112,241);
+}

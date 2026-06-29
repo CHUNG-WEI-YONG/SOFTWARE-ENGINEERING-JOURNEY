@@ -26,6 +26,8 @@ private slots:
 signals:
     void sig_http_finish(ReqId id,QString res,ErrorCode error,Modules mod);
     void sig_reg_mod_finish(ReqId id,QString res,ErrorCode error);
+    void sig_reset_mod_finish(ReqId id,QString res,ErrorCode error);
+    void sig_login_mod_finish(ReqId id,QString res,ErrorCode error);
 };
 
 #endif // HTTPMGR_H

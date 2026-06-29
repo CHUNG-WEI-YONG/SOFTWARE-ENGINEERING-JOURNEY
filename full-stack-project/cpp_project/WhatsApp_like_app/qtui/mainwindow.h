@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include "logindialog.h"
 #include "signindialog.h"
+#include "resetdialog.h"
 /*************************************************************************
  * @file:     mainwindow.h
  * @brief:
@@ -27,12 +28,16 @@ public:
     ~MainWindow() override;
 public slots:
     void SlotSwitchRegister();
-
+    void SlotSwitchLogin();
+    void SlotSwitchReset();
+    void SlotResetSwitchLogin();
 private:
     Ui::MainWindow *ui;
     LoginDialog * _login_dlg;
     SigninDialog * _sigin_dlg;
+    ResetDialog *_reset_dlg;
 };
+
 #endif // MAINWINDOW_H
 
 

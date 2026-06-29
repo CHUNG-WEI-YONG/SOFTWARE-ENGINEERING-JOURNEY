@@ -30,3 +30,10 @@ to read and send the email to the sign in email
 ## DAY 8
 Using a connection pool to manage httpconnection class and also grpc connection to handle the high concurrency request to allow gateserver and webserver to handle more request at the same time 
 and also using a thread pool to manage the thread for each connection to avoid blocking the main thread
+
+## DAY 9
+Adding the small function for user to see the password when entering in line edit for password and confirm password by changing the state with qss file design
+
+## DAY 10
+By using a timer in the sign in dialog in qt , after successfully sign in the account , user will directed to a page showing sign in successful and return to log in page in 5 s,
+this using the slot and signal function in qt.

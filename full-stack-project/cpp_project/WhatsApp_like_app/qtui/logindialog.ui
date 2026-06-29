@@ -53,6 +53,16 @@
     </spacer>
    </item>
    <item>
+    <widget class="QLabel" name="error_label">
+     <property name="text">
+      <string/>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignmentFlag::AlignCenter</set>
+     </property>
+    </widget>
+   </item>
+   <item>
     <layout class="QVBoxLayout" name="verticalLayout">
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout">
@@ -69,7 +79,7 @@
         <number>5</number>
        </property>
        <item>
-        <widget class="QLabel" name="user_label">
+        <widget class="QLabel" name="email_label">
          <property name="minimumSize">
           <size>
            <width>0</width>
@@ -83,12 +93,12 @@
           </size>
          </property>
          <property name="text">
-          <string>UserName: </string>
+          <string>Email:</string>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QLineEdit" name="user_edit">
+        <widget class="QLineEdit" name="email_edit">
          <property name="minimumSize">
           <size>
            <width>0</width>
@@ -162,7 +172,7 @@
       </spacer>
      </item>
      <item>
-      <widget class="QLabel" name="forgot_label">
+      <widget class="ClickedLabel" name="forgot_label">
        <property name="text">
         <string>Forgot Password</string>
        </property>
@@ -301,6 +311,13 @@
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>ClickedLabel</class>
+   <extends>QLabel</extends>
+   <header>clickedlabel.h</header>
+  </customwidget>
+ </customwidgets>
  <resources>
   <include location="resources.qrc"/>
  </resources>

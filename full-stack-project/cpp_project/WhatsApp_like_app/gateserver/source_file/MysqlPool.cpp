@@ -141,3 +141,58 @@ int MysqlDao::RegUser(const std::string& name, const std::string& email, const s
 
 	}
 }
+
+bool MysqlDao::CheckEmail(const std::string& name, const std::string& email) {
+	auto conn = _pool->getConn();
+	if (conn == nullptr) {
+		return false;
+	}
+	try {
+		auto result = conn->_session->sql("SELECT email from user_table where name= ?").bind(name).execute();
+		auto row = result.fetchOne();
+		if (!row) {
+			std::cout << "[MySQL] 查无此人，用户名对撞脱靶: " << name << std::endl;
+			_pool->returnConn(std::move(conn)); 
+			return false;
+		}
+		std::string real_email = row[0].get<std::string>();
+		if (real_email!=email) {
+			std::cout << "No user exists";
+			_pool->returnConn(std::move(conn));
+			return false;
+		}
+		_pool->returnConn(std::move(conn));
+		return true;
+
+	}
+	catch (mysqlx::Error& e) {
+		_pool->returnConn(std::move(conn));
+		std::cerr << "Sql error: " << e.what();
+		return false;
+	}
+}
+
+
+bool MysqlDao::UpdatePwd(const std::string& name, const std::string& email, const string& newpasswd) {
+	auto conn = _pool->getConn();
+	if (conn == nullptr) {
+		return false;
+	}
+	try {
+		auto result = conn->_session->sql("UPDATE user_table set pwd=? where email= ?").bind(newpasswd).bind(email).execute();
+		if (result.getAffectedItemsCount() == 0) {
+			std::cout << "FAILED TO RESET PASSWORD" << std::endl;
+		}
+		else {
+			std::cout << "Affected sql row:" << result.getAffectedItemsCount() << std::endl;
+
+		}
+		_pool->returnConn(std::move(conn));
+	}
+	catch (mysqlx::Error& e) {
+		_pool->returnConn(std::move(conn));
+		std::cerr << "Sql error: " << e.what();
+		return false;
+	}
+}
+

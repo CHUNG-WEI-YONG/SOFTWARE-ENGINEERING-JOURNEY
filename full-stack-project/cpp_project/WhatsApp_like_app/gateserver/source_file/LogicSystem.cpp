@@ -138,6 +138,81 @@ LogicSystem::LogicSystem(){
             
         }
         });
+
+    RegPost("/reset_pwd", [](std::shared_ptr<HttpConnection> conn) {
+        std::cout << "/reset_pwd Correctly run" << std::endl;
+        //beast::ostream(conn->_response.body()) << "Receive register request response";
+        auto body = boost::beast::buffers_to_string(conn->_request.body().data());
+        std::cout << "receive body is " << body << std::endl;
+        conn->_response.set(http::field::content_type, "text/json");
+        json root;
+        json src_root;
+        try {
+            src_root = nlohmann::json::parse(body);
+            std::string email = src_root["email"];
+            std::string name = src_root["user"];
+            std::string passwd = src_root["passwd"];
+            std::string varifycode;
+            bool result = RedisMjr::GetInstance()->Get(CODEPREFIX + src_root["email"].get<std::string>(), varifycode);
+            if (!result) {
+                std::cout << " get varify code expired" << std::endl;
+                root["error"] = ErrorCodes::VarifyExpired;
+                root["msg"] = "Verify Code expired ";
+                boost::beast::ostream(conn->_response.body()) << root.dump();
+                conn->WriteResponse();
+                return true;
+            }
+            if (varifycode != src_root["varifycode"].get<std::string>()) {
+                std::cout << "varify code wrong" << std::endl;
+                root["error"] = ErrorCodes::VarifyCodeErr;
+                root["msg"] = "Verify Code  Wrong ";
+                boost::beast::ostream(conn->_response.body()) << root.dump();
+                conn->WriteResponse();
+                return true;
+            }
+
+            bool email_valid = MysqlMgr::GetInstance()->CheckEmail(name, email);
+            if (!email_valid) {
+                std::cout << " user email not match" << std::endl;
+                root["error"] = ErrorCodes::EmailNotMatch;
+                root["msg"] = "User not exist";
+                boost::beast::ostream(conn->_response.body()) << root.dump();
+                conn->WriteResponse();
+                
+                return true;
+            }
+
+            bool exist = MysqlMgr::GetInstance()->UpdatePwd(name,email,passwd);
+            if (!exist) {
+                std::cout << "User does not exist" << std::endl;
+                root["error"] = ErrorCodes::PasswdUpFailed;
+                root["msg"] = "User does not exist";
+                boost:beast::ostream(conn->_response.body()) << root.dump();
+                conn->WriteResponse();
+                return true;
+            }
+            std::cout << "Succeed to update user" << std::endl;
+            root["error"] = ErrorCodes::Success;
+            root["email"] = src_root["email"].get<std::string>();
+            root["user"] = src_root["user"].get<std::string>();
+            root["passwd"] = src_root["passwd"].get<std::string>();
+            root["varifycode"] = src_root["varifycode"].get<std::string>();
+            //std::string jsonstr = root.dump();
+            std::cout << "Root is " << root << endl;
+            boost::beast::ostream(conn->_response.body()) << root.dump();
+            conn->WriteResponse();
+            return true;
+
+        }
+        catch (const std::exception &e) {
+            root["error"] = ErrorCodes::Error_Json;
+            root["msg"] = "Failed to parse JSON data or missing core keys";
+            boost::beast::ostream(conn->_response.body()) << root.dump();
+
+            conn->WriteResponse();
+            return true;
+        }
+        });
 };
 
 

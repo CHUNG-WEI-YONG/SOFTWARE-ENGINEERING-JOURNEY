@@ -43,6 +43,14 @@ void Httpmgr::slot_http_finish(ReqId id,QString res,ErrorCode error,Modules mod)
         emit sig_reg_mod_finish(id,res,error);
     }
 
+    if(mod==Modules::RESETMOD){
+        emit sig_reset_mod_finish(id,res,error);
+    }
+
+    if(mod==Modules::LOGINMOD){
+        emit sig_login_mod_finish(id,res,error);
+    }
+
 
 
 
