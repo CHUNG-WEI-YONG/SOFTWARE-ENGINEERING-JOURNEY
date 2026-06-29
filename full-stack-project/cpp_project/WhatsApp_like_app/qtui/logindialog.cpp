@@ -13,7 +13,7 @@ LoginDialog::LoginDialog(QWidget *parent)
     ui->forgot_label->setState("normal","normal_hover","","selected","selected_hover","");
     connect(ui->forgot_label,&ClickedLabel::clicked,this,&LoginDialog::slot_forget_pwd);
     initHttpHandlers();
-    connect(Httpmgr::getInstance(),&Httpmgr::sig_login_mod_finish,this,&LoginDialog::slot_login_mod_finish);
+    connect(Httpmgr::getInstance().get(),&Httpmgr::sig_login_mod_finish,this,&LoginDialog::slot_login_mod_finish);
 
 }
 
