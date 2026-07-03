@@ -52,52 +52,52 @@ struct TableStruct_message_2eproto {
 extern "C" {
 extern const ::google::protobuf::internal::DescriptorTable descriptor_table_message_2eproto;
 }  // extern "C"
-namespace auth {
-class LoginRequest;
-struct LoginRequestDefaultTypeInternal;
-extern LoginRequestDefaultTypeInternal _LoginRequest_default_instance_;
-extern const ::google::protobuf::internal::ClassDataFull LoginRequest_class_data_;
-class LoginResponse;
-struct LoginResponseDefaultTypeInternal;
-extern LoginResponseDefaultTypeInternal _LoginResponse_default_instance_;
-extern const ::google::protobuf::internal::ClassDataFull LoginResponse_class_data_;
-}  // namespace auth
+namespace message {
+class GetVarifyReq;
+struct GetVarifyReqDefaultTypeInternal;
+extern GetVarifyReqDefaultTypeInternal _GetVarifyReq_default_instance_;
+extern const ::google::protobuf::internal::ClassDataFull GetVarifyReq_class_data_;
+class GetVarifyRsp;
+struct GetVarifyRspDefaultTypeInternal;
+extern GetVarifyRspDefaultTypeInternal _GetVarifyRsp_default_instance_;
+extern const ::google::protobuf::internal::ClassDataFull GetVarifyRsp_class_data_;
+}  // namespace message
 namespace google {
 namespace protobuf {
 }  // namespace protobuf
 }  // namespace google
 
-namespace auth {
+namespace message {
 
 // ===================================================================
 
 
 // -------------------------------------------------------------------
 
-class LoginResponse final : public ::google::protobuf::Message
-/* @@protoc_insertion_point(class_definition:auth.LoginResponse) */ {
+class GetVarifyRsp final : public ::google::protobuf::Message
+/* @@protoc_insertion_point(class_definition:message.GetVarifyRsp) */ {
  public:
-  inline LoginResponse() : LoginResponse(nullptr) {}
-  ~LoginResponse() PROTOBUF_FINAL;
+  inline GetVarifyRsp() : GetVarifyRsp(nullptr) {}
+  ~GetVarifyRsp() PROTOBUF_FINAL;
 
 #if defined(PROTOBUF_CUSTOM_VTABLE)
-  void operator delete(LoginResponse* PROTOBUF_NONNULL msg, ::std::destroying_delete_t) {
+  void operator delete(GetVarifyRsp* PROTOBUF_NONNULL msg, ::std::destroying_delete_t) {
     SharedDtor(*msg);
-    ::google::protobuf::internal::SizedDelete(msg, sizeof(LoginResponse));
+    ::google::protobuf::internal::SizedDelete(msg, sizeof(GetVarifyRsp));
   }
 #endif
 
   template <typename = void>
-  explicit PROTOBUF_CONSTEXPR LoginResponse(::google::protobuf::internal::ConstantInitialized);
+  explicit PROTOBUF_CONSTEXPR GetVarifyRsp(::google::protobuf::internal::ConstantInitialized);
 
-  inline LoginResponse(const LoginResponse& from) : LoginResponse(nullptr, from) {}
-  inline LoginResponse(LoginResponse&& from) noexcept
-      : LoginResponse(nullptr, ::std::move(from)) {}
-  inline LoginResponse& operator=(const LoginResponse& from) {
+  inline GetVarifyRsp(const GetVarifyRsp& from) : GetVarifyRsp(nullptr, from) {}
+  inline GetVarifyRsp(GetVarifyRsp&& from) noexcept
+      : GetVarifyRsp(nullptr, ::std::move(from)) {}
+  inline GetVarifyRsp& operator=(const GetVarifyRsp& from) {
     CopyFrom(from);
     return *this;
   }
-  inline LoginResponse& operator=(LoginResponse&& from) noexcept {
+  inline GetVarifyRsp& operator=(GetVarifyRsp&& from) noexcept {
     if (this == &from) return *this;
     if (::google::protobuf::internal::CanMoveWithInternalSwap(GetArena(), from.GetArena())) {
       InternalSwap(&from);
@@ -125,13 +125,13 @@ class LoginResponse final : public ::google::protobuf::Message
   static const ::google::protobuf::Reflection* PROTOBUF_NONNULL GetReflection() {
     return default_instance().GetMetadata().reflection;
   }
-  static const LoginResponse& default_instance() {
-    return *reinterpret_cast<const LoginResponse*>(
-        &_LoginResponse_default_instance_);
+  static const GetVarifyRsp& default_instance() {
+    return *reinterpret_cast<const GetVarifyRsp*>(
+        &_GetVarifyRsp_default_instance_);
   }
   static constexpr int kIndexInFileMessages = 1;
-  friend void swap(LoginResponse& a, LoginResponse& b) { a.Swap(&b); }
-  inline void Swap(LoginResponse* PROTOBUF_NONNULL other) {
+  friend void swap(GetVarifyRsp& a, GetVarifyRsp& b) { a.Swap(&b); }
+  inline void Swap(GetVarifyRsp* PROTOBUF_NONNULL other) {
     if (other == this) return;
     if (::google::protobuf::internal::CanUseInternalSwap(GetArena(), other->GetArena())) {
       InternalSwap(other);
@@ -139,7 +139,7 @@ class LoginResponse final : public ::google::protobuf::Message
       ::google::protobuf::internal::GenericSwap(this, other);
     }
   }
-  void UnsafeArenaSwap(LoginResponse* PROTOBUF_NONNULL other) {
+  void UnsafeArenaSwap(GetVarifyRsp* PROTOBUF_NONNULL other) {
     if (other == this) return;
     ABSL_DCHECK(GetArena() == other->GetArena());
     InternalSwap(other);
@@ -147,13 +147,13 @@ class LoginResponse final : public ::google::protobuf::Message
 
   // implements Message ----------------------------------------------
 
-  LoginResponse* PROTOBUF_NONNULL New(::google::protobuf::Arena* PROTOBUF_NULLABLE arena = nullptr) const {
-    return ::google::protobuf::Message::DefaultConstruct<LoginResponse>(arena);
+  GetVarifyRsp* PROTOBUF_NONNULL New(::google::protobuf::Arena* PROTOBUF_NULLABLE arena = nullptr) const {
+    return ::google::protobuf::Message::DefaultConstruct<GetVarifyRsp>(arena);
   }
   using ::google::protobuf::Message::CopyFrom;
-  void CopyFrom(const LoginResponse& from);
+  void CopyFrom(const GetVarifyRsp& from);
   using ::google::protobuf::Message::MergeFrom;
-  void MergeFrom(const LoginResponse& from) { LoginResponse::MergeImpl(*this, from); }
+  void MergeFrom(const GetVarifyRsp& from) { GetVarifyRsp::MergeImpl(*this, from); }
 
   private:
   static void MergeImpl(::google::protobuf::MessageLite& to_msg,
@@ -189,17 +189,17 @@ class LoginResponse final : public ::google::protobuf::Message
   private:
   void SharedCtor(::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
   static void SharedDtor(MessageLite& self);
-  void InternalSwap(LoginResponse* PROTOBUF_NONNULL other);
+  void InternalSwap(GetVarifyRsp* PROTOBUF_NONNULL other);
  private:
   template <typename T>
   friend ::absl::string_view(::google::protobuf::internal::GetAnyMessageName)();
-  static ::absl::string_view FullMessageName() { return "auth.LoginResponse"; }
+  static ::absl::string_view FullMessageName() { return "message.GetVarifyRsp"; }
 
-  explicit LoginResponse(::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
-  LoginResponse(::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const LoginResponse& from);
-  LoginResponse(
-      ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, LoginResponse&& from) noexcept
-      : LoginResponse(arena) {
+  explicit GetVarifyRsp(::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  GetVarifyRsp(::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const GetVarifyRsp& from);
+  GetVarifyRsp(
+      ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, GetVarifyRsp&& from) noexcept
+      : GetVarifyRsp(arena) {
     *this = ::std::move(from);
   }
   const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL GetClassData() const PROTOBUF_FINAL;
@@ -216,56 +216,56 @@ class LoginResponse final : public ::google::protobuf::Message
 
   // accessors -------------------------------------------------------
   enum : int {
-    kErrorMsgFieldNumber = 2,
-    kTokenFieldNumber = 3,
-    kErrorCodeFieldNumber = 1,
+    kEmailFieldNumber = 2,
+    kCodeFieldNumber = 3,
+    kErrorFieldNumber = 1,
   };
-  // string error_msg = 2;
-  void clear_error_msg() ;
-  const ::std::string& error_msg() const;
+  // string email = 2;
+  void clear_email() ;
+  const ::std::string& email() const;
   template <typename Arg_ = const ::std::string&, typename... Args_>
-  void set_error_msg(Arg_&& arg, Args_... args);
-  ::std::string* PROTOBUF_NONNULL mutable_error_msg();
-  [[nodiscard]] ::std::string* PROTOBUF_NULLABLE release_error_msg();
-  void set_allocated_error_msg(::std::string* PROTOBUF_NULLABLE value);
+  void set_email(Arg_&& arg, Args_... args);
+  ::std::string* PROTOBUF_NONNULL mutable_email();
+  [[nodiscard]] ::std::string* PROTOBUF_NULLABLE release_email();
+  void set_allocated_email(::std::string* PROTOBUF_NULLABLE value);
 
   private:
-  const ::std::string& _internal_error_msg() const;
-  PROTOBUF_ALWAYS_INLINE void _internal_set_error_msg(const ::std::string& value);
-  ::std::string* PROTOBUF_NONNULL _internal_mutable_error_msg();
+  const ::std::string& _internal_email() const;
+  PROTOBUF_ALWAYS_INLINE void _internal_set_email(const ::std::string& value);
+  ::std::string* PROTOBUF_NONNULL _internal_mutable_email();
 
   public:
-  // string token = 3;
-  void clear_token() ;
-  const ::std::string& token() const;
+  // string code = 3;
+  void clear_code() ;
+  const ::std::string& code() const;
   template <typename Arg_ = const ::std::string&, typename... Args_>
-  void set_token(Arg_&& arg, Args_... args);
-  ::std::string* PROTOBUF_NONNULL mutable_token();
-  [[nodiscard]] ::std::string* PROTOBUF_NULLABLE release_token();
-  void set_allocated_token(::std::string* PROTOBUF_NULLABLE value);
+  void set_code(Arg_&& arg, Args_... args);
+  ::std::string* PROTOBUF_NONNULL mutable_code();
+  [[nodiscard]] ::std::string* PROTOBUF_NULLABLE release_code();
+  void set_allocated_code(::std::string* PROTOBUF_NULLABLE value);
 
   private:
-  const ::std::string& _internal_token() const;
-  PROTOBUF_ALWAYS_INLINE void _internal_set_token(const ::std::string& value);
-  ::std::string* PROTOBUF_NONNULL _internal_mutable_token();
+  const ::std::string& _internal_code() const;
+  PROTOBUF_ALWAYS_INLINE void _internal_set_code(const ::std::string& value);
+  ::std::string* PROTOBUF_NONNULL _internal_mutable_code();
 
   public:
-  // int32 error_code = 1;
-  void clear_error_code() ;
-  ::int32_t error_code() const;
-  void set_error_code(::int32_t value);
+  // int32 error = 1;
+  void clear_error() ;
+  ::int32_t error() const;
+  void set_error(::int32_t value);
 
   private:
-  ::int32_t _internal_error_code() const;
-  void _internal_set_error_code(::int32_t value);
+  ::int32_t _internal_error() const;
+  void _internal_set_error(::int32_t value);
 
   public:
-  // @@protoc_insertion_point(class_scope:auth.LoginResponse)
+  // @@protoc_insertion_point(class_scope:message.GetVarifyRsp)
  private:
   class _Internal;
   friend class ::google::protobuf::internal::TcParser;
   static const ::google::protobuf::internal::TcParseTable<2, 3,
-                                   0, 41,
+                                   0, 38,
                                    2>
       _table_;
 
@@ -283,45 +283,45 @@ class LoginResponse final : public ::google::protobuf::Message
     inline explicit Impl_(
         ::google::protobuf::internal::InternalVisibility visibility,
         ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const Impl_& from,
-        const LoginResponse& from_msg);
+        const GetVarifyRsp& from_msg);
     ::google::protobuf::internal::HasBits<1> _has_bits_;
     ::google::protobuf::internal::CachedSize _cached_size_;
-    ::google::protobuf::internal::ArenaStringPtr error_msg_;
-    ::google::protobuf::internal::ArenaStringPtr token_;
-    ::int32_t error_code_;
+    ::google::protobuf::internal::ArenaStringPtr email_;
+    ::google::protobuf::internal::ArenaStringPtr code_;
+    ::int32_t error_;
     PROTOBUF_TSAN_DECLARE_MEMBER
   };
   union { Impl_ _impl_; };
   friend struct ::TableStruct_message_2eproto;
 };
 
-extern const ::google::protobuf::internal::ClassDataFull LoginResponse_class_data_;
+extern const ::google::protobuf::internal::ClassDataFull GetVarifyRsp_class_data_;
 // -------------------------------------------------------------------
 
-class LoginRequest final : public ::google::protobuf::Message
-/* @@protoc_insertion_point(class_definition:auth.LoginRequest) */ {
+class GetVarifyReq final : public ::google::protobuf::Message
+/* @@protoc_insertion_point(class_definition:message.GetVarifyReq) */ {
  public:
-  inline LoginRequest() : LoginRequest(nullptr) {}
-  ~LoginRequest() PROTOBUF_FINAL;
+  inline GetVarifyReq() : GetVarifyReq(nullptr) {}
+  ~GetVarifyReq() PROTOBUF_FINAL;
 
 #if defined(PROTOBUF_CUSTOM_VTABLE)
-  void operator delete(LoginRequest* PROTOBUF_NONNULL msg, ::std::destroying_delete_t) {
+  void operator delete(GetVarifyReq* PROTOBUF_NONNULL msg, ::std::destroying_delete_t) {
     SharedDtor(*msg);
-    ::google::protobuf::internal::SizedDelete(msg, sizeof(LoginRequest));
+    ::google::protobuf::internal::SizedDelete(msg, sizeof(GetVarifyReq));
   }
 #endif
 
   template <typename = void>
-  explicit PROTOBUF_CONSTEXPR LoginRequest(::google::protobuf::internal::ConstantInitialized);
+  explicit PROTOBUF_CONSTEXPR GetVarifyReq(::google::protobuf::internal::ConstantInitialized);
 
-  inline LoginRequest(const LoginRequest& from) : LoginRequest(nullptr, from) {}
-  inline LoginRequest(LoginRequest&& from) noexcept
-      : LoginRequest(nullptr, ::std::move(from)) {}
-  inline LoginRequest& operator=(const LoginRequest& from) {
+  inline GetVarifyReq(const GetVarifyReq& from) : GetVarifyReq(nullptr, from) {}
+  inline GetVarifyReq(GetVarifyReq&& from) noexcept
+      : GetVarifyReq(nullptr, ::std::move(from)) {}
+  inline GetVarifyReq& operator=(const GetVarifyReq& from) {
     CopyFrom(from);
     return *this;
   }
-  inline LoginRequest& operator=(LoginRequest&& from) noexcept {
+  inline GetVarifyReq& operator=(GetVarifyReq&& from) noexcept {
     if (this == &from) return *this;
     if (::google::protobuf::internal::CanMoveWithInternalSwap(GetArena(), from.GetArena())) {
       InternalSwap(&from);
@@ -349,13 +349,13 @@ class LoginRequest final : public ::google::protobuf::Message
   static const ::google::protobuf::Reflection* PROTOBUF_NONNULL GetReflection() {
     return default_instance().GetMetadata().reflection;
   }
-  static const LoginRequest& default_instance() {
-    return *reinterpret_cast<const LoginRequest*>(
-        &_LoginRequest_default_instance_);
+  static const GetVarifyReq& default_instance() {
+    return *reinterpret_cast<const GetVarifyReq*>(
+        &_GetVarifyReq_default_instance_);
   }
   static constexpr int kIndexInFileMessages = 0;
-  friend void swap(LoginRequest& a, LoginRequest& b) { a.Swap(&b); }
-  inline void Swap(LoginRequest* PROTOBUF_NONNULL other) {
+  friend void swap(GetVarifyReq& a, GetVarifyReq& b) { a.Swap(&b); }
+  inline void Swap(GetVarifyReq* PROTOBUF_NONNULL other) {
     if (other == this) return;
     if (::google::protobuf::internal::CanUseInternalSwap(GetArena(), other->GetArena())) {
       InternalSwap(other);
@@ -363,7 +363,7 @@ class LoginRequest final : public ::google::protobuf::Message
       ::google::protobuf::internal::GenericSwap(this, other);
     }
   }
-  void UnsafeArenaSwap(LoginRequest* PROTOBUF_NONNULL other) {
+  void UnsafeArenaSwap(GetVarifyReq* PROTOBUF_NONNULL other) {
     if (other == this) return;
     ABSL_DCHECK(GetArena() == other->GetArena());
     InternalSwap(other);
@@ -371,13 +371,13 @@ class LoginRequest final : public ::google::protobuf::Message
 
   // implements Message ----------------------------------------------
 
-  LoginRequest* PROTOBUF_NONNULL New(::google::protobuf::Arena* PROTOBUF_NULLABLE arena = nullptr) const {
-    return ::google::protobuf::Message::DefaultConstruct<LoginRequest>(arena);
+  GetVarifyReq* PROTOBUF_NONNULL New(::google::protobuf::Arena* PROTOBUF_NULLABLE arena = nullptr) const {
+    return ::google::protobuf::Message::DefaultConstruct<GetVarifyReq>(arena);
   }
   using ::google::protobuf::Message::CopyFrom;
-  void CopyFrom(const LoginRequest& from);
+  void CopyFrom(const GetVarifyReq& from);
   using ::google::protobuf::Message::MergeFrom;
-  void MergeFrom(const LoginRequest& from) { LoginRequest::MergeImpl(*this, from); }
+  void MergeFrom(const GetVarifyReq& from) { GetVarifyReq::MergeImpl(*this, from); }
 
   private:
   static void MergeImpl(::google::protobuf::MessageLite& to_msg,
@@ -413,17 +413,17 @@ class LoginRequest final : public ::google::protobuf::Message
   private:
   void SharedCtor(::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
   static void SharedDtor(MessageLite& self);
-  void InternalSwap(LoginRequest* PROTOBUF_NONNULL other);
+  void InternalSwap(GetVarifyReq* PROTOBUF_NONNULL other);
  private:
   template <typename T>
   friend ::absl::string_view(::google::protobuf::internal::GetAnyMessageName)();
-  static ::absl::string_view FullMessageName() { return "auth.LoginRequest"; }
+  static ::absl::string_view FullMessageName() { return "message.GetVarifyReq"; }
 
-  explicit LoginRequest(::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
-  LoginRequest(::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const LoginRequest& from);
-  LoginRequest(
-      ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, LoginRequest&& from) noexcept
-      : LoginRequest(arena) {
+  explicit GetVarifyReq(::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  GetVarifyReq(::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const GetVarifyReq& from);
+  GetVarifyReq(
+      ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, GetVarifyReq&& from) noexcept
+      : GetVarifyReq(arena) {
     *this = ::std::move(from);
   }
   const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL GetClassData() const PROTOBUF_FINAL;
@@ -473,12 +473,12 @@ class LoginRequest final : public ::google::protobuf::Message
   ::std::string* PROTOBUF_NONNULL _internal_mutable_password();
 
   public:
-  // @@protoc_insertion_point(class_scope:auth.LoginRequest)
+  // @@protoc_insertion_point(class_scope:message.GetVarifyReq)
  private:
   class _Internal;
   friend class ::google::protobuf::internal::TcParser;
   static const ::google::protobuf::internal::TcParseTable<1, 2,
-                                   0, 39,
+                                   0, 42,
                                    2>
       _table_;
 
@@ -496,7 +496,7 @@ class LoginRequest final : public ::google::protobuf::Message
     inline explicit Impl_(
         ::google::protobuf::internal::InternalVisibility visibility,
         ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const Impl_& from,
-        const LoginRequest& from_msg);
+        const GetVarifyReq& from_msg);
     ::google::protobuf::internal::HasBits<1> _has_bits_;
     ::google::protobuf::internal::CachedSize _cached_size_;
     ::google::protobuf::internal::ArenaStringPtr email_;
@@ -507,7 +507,7 @@ class LoginRequest final : public ::google::protobuf::Message
   friend struct ::TableStruct_message_2eproto;
 };
 
-extern const ::google::protobuf::internal::ClassDataFull LoginRequest_class_data_;
+extern const ::google::protobuf::internal::ClassDataFull GetVarifyReq_class_data_;
 
 // ===================================================================
 
@@ -523,49 +523,49 @@ extern const ::google::protobuf::internal::ClassDataFull LoginRequest_class_data
 #endif  // __GNUC__
 // -------------------------------------------------------------------
 
-// LoginRequest
+// GetVarifyReq
 
 // string email = 1;
-inline void LoginRequest::clear_email() {
+inline void GetVarifyReq::clear_email() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.email_.ClearToEmpty();
   ClearHasBit(_impl_._has_bits_[0],
                   0x00000001U);
 }
-inline const ::std::string& LoginRequest::email() const
+inline const ::std::string& GetVarifyReq::email() const
     ABSL_ATTRIBUTE_LIFETIME_BOUND {
-  // @@protoc_insertion_point(field_get:auth.LoginRequest.email)
+  // @@protoc_insertion_point(field_get:message.GetVarifyReq.email)
   return _internal_email();
 }
 template <typename Arg_, typename... Args_>
-PROTOBUF_ALWAYS_INLINE void LoginRequest::set_email(Arg_&& arg, Args_... args) {
+PROTOBUF_ALWAYS_INLINE void GetVarifyReq::set_email(Arg_&& arg, Args_... args) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   SetHasBit(_impl_._has_bits_[0], 0x00000001U);
   _impl_.email_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
-  // @@protoc_insertion_point(field_set:auth.LoginRequest.email)
+  // @@protoc_insertion_point(field_set:message.GetVarifyReq.email)
 }
-inline ::std::string* PROTOBUF_NONNULL LoginRequest::mutable_email()
+inline ::std::string* PROTOBUF_NONNULL GetVarifyReq::mutable_email()
     ABSL_ATTRIBUTE_LIFETIME_BOUND {
   SetHasBit(_impl_._has_bits_[0], 0x00000001U);
   ::std::string* _s = _internal_mutable_email();
-  // @@protoc_insertion_point(field_mutable:auth.LoginRequest.email)
+  // @@protoc_insertion_point(field_mutable:message.GetVarifyReq.email)
   return _s;
 }
-inline const ::std::string& LoginRequest::_internal_email() const {
+inline const ::std::string& GetVarifyReq::_internal_email() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
   return _impl_.email_.Get();
 }
-inline void LoginRequest::_internal_set_email(const ::std::string& value) {
+inline void GetVarifyReq::_internal_set_email(const ::std::string& value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.email_.Set(value, GetArena());
 }
-inline ::std::string* PROTOBUF_NONNULL LoginRequest::_internal_mutable_email() {
+inline ::std::string* PROTOBUF_NONNULL GetVarifyReq::_internal_mutable_email() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   return _impl_.email_.Mutable( GetArena());
 }
-inline ::std::string* PROTOBUF_NULLABLE LoginRequest::release_email() {
+inline ::std::string* PROTOBUF_NULLABLE GetVarifyReq::release_email() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
-  // @@protoc_insertion_point(field_release:auth.LoginRequest.email)
+  // @@protoc_insertion_point(field_release:message.GetVarifyReq.email)
   if (!CheckHasBit(_impl_._has_bits_[0], 0x00000001U)) {
     return nullptr;
   }
@@ -576,7 +576,7 @@ inline ::std::string* PROTOBUF_NULLABLE LoginRequest::release_email() {
   }
   return released;
 }
-inline void LoginRequest::set_allocated_email(::std::string* PROTOBUF_NULLABLE value) {
+inline void GetVarifyReq::set_allocated_email(::std::string* PROTOBUF_NULLABLE value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   if (value != nullptr) {
     SetHasBit(_impl_._has_bits_[0], 0x00000001U);
@@ -587,50 +587,50 @@ inline void LoginRequest::set_allocated_email(::std::string* PROTOBUF_NULLABLE v
   if (::google::protobuf::internal::DebugHardenForceCopyDefaultString() && _impl_.email_.IsDefault()) {
     _impl_.email_.Set("", GetArena());
   }
-  // @@protoc_insertion_point(field_set_allocated:auth.LoginRequest.email)
+  // @@protoc_insertion_point(field_set_allocated:message.GetVarifyReq.email)
 }
 
 // string password = 2;
-inline void LoginRequest::clear_password() {
+inline void GetVarifyReq::clear_password() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.password_.ClearToEmpty();
   ClearHasBit(_impl_._has_bits_[0],
                   0x00000002U);
 }
-inline const ::std::string& LoginRequest::password() const
+inline const ::std::string& GetVarifyReq::password() const
     ABSL_ATTRIBUTE_LIFETIME_BOUND {
-  // @@protoc_insertion_point(field_get:auth.LoginRequest.password)
+  // @@protoc_insertion_point(field_get:message.GetVarifyReq.password)
   return _internal_password();
 }
 template <typename Arg_, typename... Args_>
-PROTOBUF_ALWAYS_INLINE void LoginRequest::set_password(Arg_&& arg, Args_... args) {
+PROTOBUF_ALWAYS_INLINE void GetVarifyReq::set_password(Arg_&& arg, Args_... args) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   SetHasBit(_impl_._has_bits_[0], 0x00000002U);
   _impl_.password_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
-  // @@protoc_insertion_point(field_set:auth.LoginRequest.password)
+  // @@protoc_insertion_point(field_set:message.GetVarifyReq.password)
 }
-inline ::std::string* PROTOBUF_NONNULL LoginRequest::mutable_password()
+inline ::std::string* PROTOBUF_NONNULL GetVarifyReq::mutable_password()
     ABSL_ATTRIBUTE_LIFETIME_BOUND {
   SetHasBit(_impl_._has_bits_[0], 0x00000002U);
   ::std::string* _s = _internal_mutable_password();
-  // @@protoc_insertion_point(field_mutable:auth.LoginRequest.password)
+  // @@protoc_insertion_point(field_mutable:message.GetVarifyReq.password)
   return _s;
 }
-inline const ::std::string& LoginRequest::_internal_password() const {
+inline const ::std::string& GetVarifyReq::_internal_password() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
   return _impl_.password_.Get();
 }
-inline void LoginRequest::_internal_set_password(const ::std::string& value) {
+inline void GetVarifyReq::_internal_set_password(const ::std::string& value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.password_.Set(value, GetArena());
 }
-inline ::std::string* PROTOBUF_NONNULL LoginRequest::_internal_mutable_password() {
+inline ::std::string* PROTOBUF_NONNULL GetVarifyReq::_internal_mutable_password() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   return _impl_.password_.Mutable( GetArena());
 }
-inline ::std::string* PROTOBUF_NULLABLE LoginRequest::release_password() {
+inline ::std::string* PROTOBUF_NULLABLE GetVarifyReq::release_password() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
-  // @@protoc_insertion_point(field_release:auth.LoginRequest.password)
+  // @@protoc_insertion_point(field_release:message.GetVarifyReq.password)
   if (!CheckHasBit(_impl_._has_bits_[0], 0x00000002U)) {
     return nullptr;
   }
@@ -641,7 +641,7 @@ inline ::std::string* PROTOBUF_NULLABLE LoginRequest::release_password() {
   }
   return released;
 }
-inline void LoginRequest::set_allocated_password(::std::string* PROTOBUF_NULLABLE value) {
+inline void GetVarifyReq::set_allocated_password(::std::string* PROTOBUF_NULLABLE value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   if (value != nullptr) {
     SetHasBit(_impl_._has_bits_[0], 0x00000002U);
@@ -652,166 +652,166 @@ inline void LoginRequest::set_allocated_password(::std::string* PROTOBUF_NULLABL
   if (::google::protobuf::internal::DebugHardenForceCopyDefaultString() && _impl_.password_.IsDefault()) {
     _impl_.password_.Set("", GetArena());
   }
-  // @@protoc_insertion_point(field_set_allocated:auth.LoginRequest.password)
+  // @@protoc_insertion_point(field_set_allocated:message.GetVarifyReq.password)
 }
 
 // -------------------------------------------------------------------
 
-// LoginResponse
+// GetVarifyRsp
 
-// int32 error_code = 1;
-inline void LoginResponse::clear_error_code() {
+// int32 error = 1;
+inline void GetVarifyRsp::clear_error() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
-  _impl_.error_code_ = 0;
+  _impl_.error_ = 0;
   ClearHasBit(_impl_._has_bits_[0],
                   0x00000004U);
 }
-inline ::int32_t LoginResponse::error_code() const {
-  // @@protoc_insertion_point(field_get:auth.LoginResponse.error_code)
-  return _internal_error_code();
+inline ::int32_t GetVarifyRsp::error() const {
+  // @@protoc_insertion_point(field_get:message.GetVarifyRsp.error)
+  return _internal_error();
 }
-inline void LoginResponse::set_error_code(::int32_t value) {
-  _internal_set_error_code(value);
+inline void GetVarifyRsp::set_error(::int32_t value) {
+  _internal_set_error(value);
   SetHasBit(_impl_._has_bits_[0], 0x00000004U);
-  // @@protoc_insertion_point(field_set:auth.LoginResponse.error_code)
+  // @@protoc_insertion_point(field_set:message.GetVarifyRsp.error)
 }
-inline ::int32_t LoginResponse::_internal_error_code() const {
+inline ::int32_t GetVarifyRsp::_internal_error() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
-  return _impl_.error_code_;
+  return _impl_.error_;
 }
-inline void LoginResponse::_internal_set_error_code(::int32_t value) {
+inline void GetVarifyRsp::_internal_set_error(::int32_t value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
-  _impl_.error_code_ = value;
+  _impl_.error_ = value;
 }
 
-// string error_msg = 2;
-inline void LoginResponse::clear_error_msg() {
+// string email = 2;
+inline void GetVarifyRsp::clear_email() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
-  _impl_.error_msg_.ClearToEmpty();
+  _impl_.email_.ClearToEmpty();
   ClearHasBit(_impl_._has_bits_[0],
                   0x00000001U);
 }
-inline const ::std::string& LoginResponse::error_msg() const
+inline const ::std::string& GetVarifyRsp::email() const
     ABSL_ATTRIBUTE_LIFETIME_BOUND {
-  // @@protoc_insertion_point(field_get:auth.LoginResponse.error_msg)
-  return _internal_error_msg();
+  // @@protoc_insertion_point(field_get:message.GetVarifyRsp.email)
+  return _internal_email();
 }
 template <typename Arg_, typename... Args_>
-PROTOBUF_ALWAYS_INLINE void LoginResponse::set_error_msg(Arg_&& arg, Args_... args) {
+PROTOBUF_ALWAYS_INLINE void GetVarifyRsp::set_email(Arg_&& arg, Args_... args) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   SetHasBit(_impl_._has_bits_[0], 0x00000001U);
-  _impl_.error_msg_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
-  // @@protoc_insertion_point(field_set:auth.LoginResponse.error_msg)
+  _impl_.email_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
+  // @@protoc_insertion_point(field_set:message.GetVarifyRsp.email)
 }
-inline ::std::string* PROTOBUF_NONNULL LoginResponse::mutable_error_msg()
+inline ::std::string* PROTOBUF_NONNULL GetVarifyRsp::mutable_email()
     ABSL_ATTRIBUTE_LIFETIME_BOUND {
   SetHasBit(_impl_._has_bits_[0], 0x00000001U);
-  ::std::string* _s = _internal_mutable_error_msg();
-  // @@protoc_insertion_point(field_mutable:auth.LoginResponse.error_msg)
+  ::std::string* _s = _internal_mutable_email();
+  // @@protoc_insertion_point(field_mutable:message.GetVarifyRsp.email)
   return _s;
 }
-inline const ::std::string& LoginResponse::_internal_error_msg() const {
+inline const ::std::string& GetVarifyRsp::_internal_email() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
-  return _impl_.error_msg_.Get();
+  return _impl_.email_.Get();
 }
-inline void LoginResponse::_internal_set_error_msg(const ::std::string& value) {
+inline void GetVarifyRsp::_internal_set_email(const ::std::string& value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
-  _impl_.error_msg_.Set(value, GetArena());
+  _impl_.email_.Set(value, GetArena());
 }
-inline ::std::string* PROTOBUF_NONNULL LoginResponse::_internal_mutable_error_msg() {
+inline ::std::string* PROTOBUF_NONNULL GetVarifyRsp::_internal_mutable_email() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
-  return _impl_.error_msg_.Mutable( GetArena());
+  return _impl_.email_.Mutable( GetArena());
 }
-inline ::std::string* PROTOBUF_NULLABLE LoginResponse::release_error_msg() {
+inline ::std::string* PROTOBUF_NULLABLE GetVarifyRsp::release_email() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
-  // @@protoc_insertion_point(field_release:auth.LoginResponse.error_msg)
+  // @@protoc_insertion_point(field_release:message.GetVarifyRsp.email)
   if (!CheckHasBit(_impl_._has_bits_[0], 0x00000001U)) {
     return nullptr;
   }
   ClearHasBit(_impl_._has_bits_[0], 0x00000001U);
-  auto* released = _impl_.error_msg_.Release();
+  auto* released = _impl_.email_.Release();
   if (::google::protobuf::internal::DebugHardenForceCopyDefaultString()) {
-    _impl_.error_msg_.Set("", GetArena());
+    _impl_.email_.Set("", GetArena());
   }
   return released;
 }
-inline void LoginResponse::set_allocated_error_msg(::std::string* PROTOBUF_NULLABLE value) {
+inline void GetVarifyRsp::set_allocated_email(::std::string* PROTOBUF_NULLABLE value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   if (value != nullptr) {
     SetHasBit(_impl_._has_bits_[0], 0x00000001U);
   } else {
     ClearHasBit(_impl_._has_bits_[0], 0x00000001U);
   }
-  _impl_.error_msg_.SetAllocated(value, GetArena());
-  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString() && _impl_.error_msg_.IsDefault()) {
-    _impl_.error_msg_.Set("", GetArena());
+  _impl_.email_.SetAllocated(value, GetArena());
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString() && _impl_.email_.IsDefault()) {
+    _impl_.email_.Set("", GetArena());
   }
-  // @@protoc_insertion_point(field_set_allocated:auth.LoginResponse.error_msg)
+  // @@protoc_insertion_point(field_set_allocated:message.GetVarifyRsp.email)
 }
 
-// string token = 3;
-inline void LoginResponse::clear_token() {
+// string code = 3;
+inline void GetVarifyRsp::clear_code() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
-  _impl_.token_.ClearToEmpty();
+  _impl_.code_.ClearToEmpty();
   ClearHasBit(_impl_._has_bits_[0],
                   0x00000002U);
 }
-inline const ::std::string& LoginResponse::token() const
+inline const ::std::string& GetVarifyRsp::code() const
     ABSL_ATTRIBUTE_LIFETIME_BOUND {
-  // @@protoc_insertion_point(field_get:auth.LoginResponse.token)
-  return _internal_token();
+  // @@protoc_insertion_point(field_get:message.GetVarifyRsp.code)
+  return _internal_code();
 }
 template <typename Arg_, typename... Args_>
-PROTOBUF_ALWAYS_INLINE void LoginResponse::set_token(Arg_&& arg, Args_... args) {
+PROTOBUF_ALWAYS_INLINE void GetVarifyRsp::set_code(Arg_&& arg, Args_... args) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   SetHasBit(_impl_._has_bits_[0], 0x00000002U);
-  _impl_.token_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
-  // @@protoc_insertion_point(field_set:auth.LoginResponse.token)
+  _impl_.code_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
+  // @@protoc_insertion_point(field_set:message.GetVarifyRsp.code)
 }
-inline ::std::string* PROTOBUF_NONNULL LoginResponse::mutable_token()
+inline ::std::string* PROTOBUF_NONNULL GetVarifyRsp::mutable_code()
     ABSL_ATTRIBUTE_LIFETIME_BOUND {
   SetHasBit(_impl_._has_bits_[0], 0x00000002U);
-  ::std::string* _s = _internal_mutable_token();
-  // @@protoc_insertion_point(field_mutable:auth.LoginResponse.token)
+  ::std::string* _s = _internal_mutable_code();
+  // @@protoc_insertion_point(field_mutable:message.GetVarifyRsp.code)
   return _s;
 }
-inline const ::std::string& LoginResponse::_internal_token() const {
+inline const ::std::string& GetVarifyRsp::_internal_code() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
-  return _impl_.token_.Get();
+  return _impl_.code_.Get();
 }
-inline void LoginResponse::_internal_set_token(const ::std::string& value) {
+inline void GetVarifyRsp::_internal_set_code(const ::std::string& value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
-  _impl_.token_.Set(value, GetArena());
+  _impl_.code_.Set(value, GetArena());
 }
-inline ::std::string* PROTOBUF_NONNULL LoginResponse::_internal_mutable_token() {
+inline ::std::string* PROTOBUF_NONNULL GetVarifyRsp::_internal_mutable_code() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
-  return _impl_.token_.Mutable( GetArena());
+  return _impl_.code_.Mutable( GetArena());
 }
-inline ::std::string* PROTOBUF_NULLABLE LoginResponse::release_token() {
+inline ::std::string* PROTOBUF_NULLABLE GetVarifyRsp::release_code() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
-  // @@protoc_insertion_point(field_release:auth.LoginResponse.token)
+  // @@protoc_insertion_point(field_release:message.GetVarifyRsp.code)
   if (!CheckHasBit(_impl_._has_bits_[0], 0x00000002U)) {
     return nullptr;
   }
   ClearHasBit(_impl_._has_bits_[0], 0x00000002U);
-  auto* released = _impl_.token_.Release();
+  auto* released = _impl_.code_.Release();
   if (::google::protobuf::internal::DebugHardenForceCopyDefaultString()) {
-    _impl_.token_.Set("", GetArena());
+    _impl_.code_.Set("", GetArena());
   }
   return released;
 }
-inline void LoginResponse::set_allocated_token(::std::string* PROTOBUF_NULLABLE value) {
+inline void GetVarifyRsp::set_allocated_code(::std::string* PROTOBUF_NULLABLE value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   if (value != nullptr) {
     SetHasBit(_impl_._has_bits_[0], 0x00000002U);
   } else {
     ClearHasBit(_impl_._has_bits_[0], 0x00000002U);
   }
-  _impl_.token_.SetAllocated(value, GetArena());
-  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString() && _impl_.token_.IsDefault()) {
-    _impl_.token_.Set("", GetArena());
+  _impl_.code_.SetAllocated(value, GetArena());
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString() && _impl_.code_.IsDefault()) {
+    _impl_.code_.Set("", GetArena());
   }
-  // @@protoc_insertion_point(field_set_allocated:auth.LoginResponse.token)
+  // @@protoc_insertion_point(field_set_allocated:message.GetVarifyRsp.code)
 }
 
 #ifdef __GNUC__
@@ -819,7 +819,7 @@ inline void LoginResponse::set_allocated_token(::std::string* PROTOBUF_NULLABLE 
 #endif  // __GNUC__
 
 // @@protoc_insertion_point(namespace_scope)
-}  // namespace auth
+}  // namespace message
 
 
 // @@protoc_insertion_point(global_scope)

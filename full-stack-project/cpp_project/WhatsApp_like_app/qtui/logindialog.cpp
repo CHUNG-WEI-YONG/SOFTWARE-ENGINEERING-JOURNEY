@@ -2,7 +2,7 @@
 #include "ui_logindialog.h"
 #include "httpmgr.h"
 #include <QMap>
-
+#include "tcpmgr.h"
 
 LoginDialog::LoginDialog(QWidget *parent)
     : QDialog(parent)
@@ -14,6 +14,10 @@ LoginDialog::LoginDialog(QWidget *parent)
     connect(ui->forgot_label,&ClickedLabel::clicked,this,&LoginDialog::slot_forget_pwd);
     initHttpHandlers();
     connect(Httpmgr::getInstance().get(),&Httpmgr::sig_login_mod_finish,this,&LoginDialog::slot_login_mod_finish);
+
+    connect(this,&LoginDialog::sig_connect_Tcp,TcpMgr::getInstance().get(),&TcpMgr::slot_tcp_connect);
+    connect(TcpMgr::getInstance().get(),&TcpMgr::sig_con_success,this,&LoginDialog::slot_conn_success);
+    connect(TcpMgr::getInstance().get(),&TcpMgr::sig_login_failed,this,&LoginDialog::slot_conn_failed);
 
 }
 
@@ -94,6 +98,30 @@ void LoginDialog::slot_login_mod_finish(ReqId id, QString res, ErrorCode err)
         return;
     }
     _handlers[id](jsonDoc.object());
+}
+
+void LoginDialog::slot_conn_success(bool success)
+{
+    if(success){
+        showTip(tr("Login Successful. Waiting to connect to server"),true);
+        QJsonObject obj;
+        obj["uid"]=_uid;
+        obj["token"]=_token;
+        QJsonDocument doc(obj);
+        QString jsonString=doc.toJson(QJsonDocument::Indented);
+        TcpMgr::getInstance()->sig_send_data(ReqId::ID_CHAT_LOGIN,jsonString);
+    }
+    else{
+        showTip(tr("Wifi Error"),false);
+        enableBtn(true);
+    }
+}
+
+void LoginDialog::slot_conn_failed(int err)
+{
+    QString result=QString("Login failde , Error as %1").arg(err);
+    showTip(result,false);
+    enableBtn(true);
 }
 
 void LoginDialog::showTip(QString str,bool b_ok){

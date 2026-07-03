@@ -145,6 +145,10 @@ void ResetDialog::initHandlers(){
         showTip(tr("Reset Password Successfully"),true);
         qDebug()<<"Reset password user: "<<email;
         qDebug()<<"User uid is "<<jsonObj["uid"].toString();
+        qDebug()<<"User uid is "<<jsonObj["u_id"].toString();
+        qDebug()<<"User uid is "<<jsonObj["uuid"].toString();
+        emit switchLogin();
+
 
     });
 }

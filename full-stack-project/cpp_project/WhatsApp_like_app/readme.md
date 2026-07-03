@@ -37,3 +37,10 @@ Adding the small function for user to see the password when entering in line edi
 ## DAY 10
 By using a timer in the sign in dialog in qt , after successfully sign in the account , user will directed to a page showing sign in successful and return to log in page in 5 s,
 this using the slot and signal function in qt.
+
+## DAY 11 
+Adding ui page for reset password function and adding a new route at LogicSystem to manage the logic then a new function in class MysqlDao and Mysqlmgr to reset the password
+
+## DAY 12
+Adding logic in log in ui of qtui to allow user login function that send a Httphandlepost to gateserver , the function of handle user_login in logicsystem done , mgr and dao of sql is
+added with a checkpassword function and return the query of userinfo with name,token and id.

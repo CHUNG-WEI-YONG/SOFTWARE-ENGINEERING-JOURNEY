@@ -20,62 +20,62 @@
 #include <grpcpp/impl/service_type.h>
 #include <grpcpp/support/sync_stream.h>
 #include <grpcpp/ports_def.inc>
-namespace auth {
+namespace message {
 
-static const char* AuthService_method_names[] = {
-  "/auth.AuthService/VerifyUserLogin",
+static const char* VarifyService_method_names[] = {
+  "/message.VarifyService/GetVarifyCode",
 };
 
-std::unique_ptr< AuthService::Stub> AuthService::NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options) {
+std::unique_ptr< VarifyService::Stub> VarifyService::NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options) {
   (void)options;
-  std::unique_ptr< AuthService::Stub> stub(new AuthService::Stub(channel, options));
+  std::unique_ptr< VarifyService::Stub> stub(new VarifyService::Stub(channel, options));
   return stub;
 }
 
-AuthService::Stub::Stub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options)
-  : channel_(channel), rpcmethod_VerifyUserLogin_(AuthService_method_names[0], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+VarifyService::Stub::Stub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options)
+  : channel_(channel), rpcmethod_GetVarifyCode_(VarifyService_method_names[0], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
   {}
 
-::grpc::Status AuthService::Stub::VerifyUserLogin(::grpc::ClientContext* context, const ::auth::LoginRequest& request, ::auth::LoginResponse* response) {
-  return ::grpc::internal::BlockingUnaryCall< ::auth::LoginRequest, ::auth::LoginResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_VerifyUserLogin_, context, request, response);
+::grpc::Status VarifyService::Stub::GetVarifyCode(::grpc::ClientContext* context, const ::message::GetVarifyReq& request, ::message::GetVarifyRsp* response) {
+  return ::grpc::internal::BlockingUnaryCall< ::message::GetVarifyReq, ::message::GetVarifyRsp, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_GetVarifyCode_, context, request, response);
 }
 
-void AuthService::Stub::async::VerifyUserLogin(::grpc::ClientContext* context, const ::auth::LoginRequest* request, ::auth::LoginResponse* response, std::function<void(::grpc::Status)> f) {
-  ::grpc::internal::CallbackUnaryCall< ::auth::LoginRequest, ::auth::LoginResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_VerifyUserLogin_, context, request, response, std::move(f));
+void VarifyService::Stub::async::GetVarifyCode(::grpc::ClientContext* context, const ::message::GetVarifyReq* request, ::message::GetVarifyRsp* response, std::function<void(::grpc::Status)> f) {
+  ::grpc::internal::CallbackUnaryCall< ::message::GetVarifyReq, ::message::GetVarifyRsp, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_GetVarifyCode_, context, request, response, std::move(f));
 }
 
-void AuthService::Stub::async::VerifyUserLogin(::grpc::ClientContext* context, const ::auth::LoginRequest* request, ::auth::LoginResponse* response, ::grpc::ClientUnaryReactor* reactor) {
-  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_VerifyUserLogin_, context, request, response, reactor);
+void VarifyService::Stub::async::GetVarifyCode(::grpc::ClientContext* context, const ::message::GetVarifyReq* request, ::message::GetVarifyRsp* response, ::grpc::ClientUnaryReactor* reactor) {
+  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_GetVarifyCode_, context, request, response, reactor);
 }
 
-::grpc::ClientAsyncResponseReader< ::auth::LoginResponse>* AuthService::Stub::PrepareAsyncVerifyUserLoginRaw(::grpc::ClientContext* context, const ::auth::LoginRequest& request, ::grpc::CompletionQueue* cq) {
-  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::auth::LoginResponse, ::auth::LoginRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_VerifyUserLogin_, context, request);
+::grpc::ClientAsyncResponseReader< ::message::GetVarifyRsp>* VarifyService::Stub::PrepareAsyncGetVarifyCodeRaw(::grpc::ClientContext* context, const ::message::GetVarifyReq& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::message::GetVarifyRsp, ::message::GetVarifyReq, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_GetVarifyCode_, context, request);
 }
 
-::grpc::ClientAsyncResponseReader< ::auth::LoginResponse>* AuthService::Stub::AsyncVerifyUserLoginRaw(::grpc::ClientContext* context, const ::auth::LoginRequest& request, ::grpc::CompletionQueue* cq) {
+::grpc::ClientAsyncResponseReader< ::message::GetVarifyRsp>* VarifyService::Stub::AsyncGetVarifyCodeRaw(::grpc::ClientContext* context, const ::message::GetVarifyReq& request, ::grpc::CompletionQueue* cq) {
   auto* result =
-    this->PrepareAsyncVerifyUserLoginRaw(context, request, cq);
+    this->PrepareAsyncGetVarifyCodeRaw(context, request, cq);
   result->StartCall();
   return result;
 }
 
-AuthService::Service::Service() {
+VarifyService::Service::Service() {
   AddMethod(new ::grpc::internal::RpcServiceMethod(
-      AuthService_method_names[0],
+      VarifyService_method_names[0],
       ::grpc::internal::RpcMethod::NORMAL_RPC,
-      new ::grpc::internal::RpcMethodHandler< AuthService::Service, ::auth::LoginRequest, ::auth::LoginResponse, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
-          [](AuthService::Service* service,
+      new ::grpc::internal::RpcMethodHandler< VarifyService::Service, ::message::GetVarifyReq, ::message::GetVarifyRsp, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
+          [](VarifyService::Service* service,
              ::grpc::ServerContext* ctx,
-             const ::auth::LoginRequest* req,
-             ::auth::LoginResponse* resp) {
-               return service->VerifyUserLogin(ctx, req, resp);
+             const ::message::GetVarifyReq* req,
+             ::message::GetVarifyRsp* resp) {
+               return service->GetVarifyCode(ctx, req, resp);
              }, this)));
 }
 
-AuthService::Service::~Service() {
+VarifyService::Service::~Service() {
 }
 
-::grpc::Status AuthService::Service::VerifyUserLogin(::grpc::ServerContext* context, const ::auth::LoginRequest* request, ::auth::LoginResponse* response) {
+::grpc::Status VarifyService::Service::GetVarifyCode(::grpc::ServerContext* context, const ::message::GetVarifyReq* request, ::message::GetVarifyRsp* response) {
   (void) context;
   (void) request;
   (void) response;
@@ -83,6 +83,6 @@ AuthService::Service::~Service() {
 }
 
 
-}  // namespace auth
+}  // namespace message
 #include <grpcpp/ports_undef.inc>
 

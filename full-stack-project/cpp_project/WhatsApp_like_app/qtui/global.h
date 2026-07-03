@@ -19,7 +19,7 @@ enum class ReqId{
     ID_RESET_PWD=1003,
     ID_LOGIN_USER=1004,
     ID_CHAT_LOGIN=1005,
-    ID_LOGIN_RSP=1006,
+    ID_CHAT_LOGIN_RSP=1006,
 
 };
 

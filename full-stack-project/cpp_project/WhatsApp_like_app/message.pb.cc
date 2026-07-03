@@ -24,40 +24,40 @@ PROTOBUF_PRAGMA_INIT_SEG
 namespace _pb = ::google::protobuf;
 namespace _pbi = ::google::protobuf::internal;
 namespace _fl = ::google::protobuf::internal::field_layout;
-namespace auth {
+namespace message {
 
-inline constexpr LoginResponse::Impl_::Impl_(
+inline constexpr GetVarifyRsp::Impl_::Impl_(
     ::_pbi::ConstantInitialized) noexcept
       : _cached_size_{0},
-        error_msg_(
+        email_(
             &::google::protobuf::internal::fixed_address_empty_string,
             ::_pbi::ConstantInitialized()),
-        token_(
+        code_(
             &::google::protobuf::internal::fixed_address_empty_string,
             ::_pbi::ConstantInitialized()),
-        error_code_{0} {}
+        error_{0} {}
 
 template <typename>
-PROTOBUF_CONSTEXPR LoginResponse::LoginResponse(::_pbi::ConstantInitialized)
+PROTOBUF_CONSTEXPR GetVarifyRsp::GetVarifyRsp(::_pbi::ConstantInitialized)
 #if defined(PROTOBUF_CUSTOM_VTABLE)
-    : ::google::protobuf::Message(LoginResponse_class_data_.base()),
+    : ::google::protobuf::Message(GetVarifyRsp_class_data_.base()),
 #else   // PROTOBUF_CUSTOM_VTABLE
     : ::google::protobuf::Message(),
 #endif  // PROTOBUF_CUSTOM_VTABLE
       _impl_(::_pbi::ConstantInitialized()) {
 }
-struct LoginResponseDefaultTypeInternal {
-  PROTOBUF_CONSTEXPR LoginResponseDefaultTypeInternal() : _instance(::_pbi::ConstantInitialized{}) {}
-  ~LoginResponseDefaultTypeInternal() {}
+struct GetVarifyRspDefaultTypeInternal {
+  PROTOBUF_CONSTEXPR GetVarifyRspDefaultTypeInternal() : _instance(::_pbi::ConstantInitialized{}) {}
+  ~GetVarifyRspDefaultTypeInternal() {}
   union {
-    LoginResponse _instance;
+    GetVarifyRsp _instance;
   };
 };
 
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
-    PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 LoginResponseDefaultTypeInternal _LoginResponse_default_instance_;
+    PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 GetVarifyRspDefaultTypeInternal _GetVarifyRsp_default_instance_;
 
-inline constexpr LoginRequest::Impl_::Impl_(
+inline constexpr GetVarifyReq::Impl_::Impl_(
     ::_pbi::ConstantInitialized) noexcept
       : _cached_size_{0},
         email_(
@@ -68,25 +68,25 @@ inline constexpr LoginRequest::Impl_::Impl_(
             ::_pbi::ConstantInitialized()) {}
 
 template <typename>
-PROTOBUF_CONSTEXPR LoginRequest::LoginRequest(::_pbi::ConstantInitialized)
+PROTOBUF_CONSTEXPR GetVarifyReq::GetVarifyReq(::_pbi::ConstantInitialized)
 #if defined(PROTOBUF_CUSTOM_VTABLE)
-    : ::google::protobuf::Message(LoginRequest_class_data_.base()),
+    : ::google::protobuf::Message(GetVarifyReq_class_data_.base()),
 #else   // PROTOBUF_CUSTOM_VTABLE
     : ::google::protobuf::Message(),
 #endif  // PROTOBUF_CUSTOM_VTABLE
       _impl_(::_pbi::ConstantInitialized()) {
 }
-struct LoginRequestDefaultTypeInternal {
-  PROTOBUF_CONSTEXPR LoginRequestDefaultTypeInternal() : _instance(::_pbi::ConstantInitialized{}) {}
-  ~LoginRequestDefaultTypeInternal() {}
+struct GetVarifyReqDefaultTypeInternal {
+  PROTOBUF_CONSTEXPR GetVarifyReqDefaultTypeInternal() : _instance(::_pbi::ConstantInitialized{}) {}
+  ~GetVarifyReqDefaultTypeInternal() {}
   union {
-    LoginRequest _instance;
+    GetVarifyReq _instance;
   };
 };
 
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
-    PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 LoginRequestDefaultTypeInternal _LoginRequest_default_instance_;
-}  // namespace auth
+    PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 GetVarifyReqDefaultTypeInternal _GetVarifyReq_default_instance_;
+}  // namespace message
 static constexpr const ::_pb::EnumDescriptor* PROTOBUF_NONNULL* PROTOBUF_NULLABLE
     file_level_enum_descriptors_message_2eproto = nullptr;
 static constexpr const ::_pb::ServiceDescriptor* PROTOBUF_NONNULL* PROTOBUF_NULLABLE
@@ -95,18 +95,18 @@ const ::uint32_t
     TableStruct_message_2eproto::offsets[] ABSL_ATTRIBUTE_SECTION_VARIABLE(
         protodesc_cold) = {
         0x081, // bitmap
-        PROTOBUF_FIELD_OFFSET(::auth::LoginRequest, _impl_._has_bits_),
+        PROTOBUF_FIELD_OFFSET(::message::GetVarifyReq, _impl_._has_bits_),
         5, // hasbit index offset
-        PROTOBUF_FIELD_OFFSET(::auth::LoginRequest, _impl_.email_),
-        PROTOBUF_FIELD_OFFSET(::auth::LoginRequest, _impl_.password_),
+        PROTOBUF_FIELD_OFFSET(::message::GetVarifyReq, _impl_.email_),
+        PROTOBUF_FIELD_OFFSET(::message::GetVarifyReq, _impl_.password_),
         0,
         1,
         0x081, // bitmap
-        PROTOBUF_FIELD_OFFSET(::auth::LoginResponse, _impl_._has_bits_),
+        PROTOBUF_FIELD_OFFSET(::message::GetVarifyRsp, _impl_._has_bits_),
         6, // hasbit index offset
-        PROTOBUF_FIELD_OFFSET(::auth::LoginResponse, _impl_.error_code_),
-        PROTOBUF_FIELD_OFFSET(::auth::LoginResponse, _impl_.error_msg_),
-        PROTOBUF_FIELD_OFFSET(::auth::LoginResponse, _impl_.token_),
+        PROTOBUF_FIELD_OFFSET(::message::GetVarifyRsp, _impl_.error_),
+        PROTOBUF_FIELD_OFFSET(::message::GetVarifyRsp, _impl_.email_),
+        PROTOBUF_FIELD_OFFSET(::message::GetVarifyRsp, _impl_.code_),
         2,
         0,
         1,
@@ -114,27 +114,27 @@ const ::uint32_t
 
 static const ::_pbi::MigrationSchema
     schemas[] ABSL_ATTRIBUTE_SECTION_VARIABLE(protodesc_cold) = {
-        {0, sizeof(::auth::LoginRequest)},
-        {7, sizeof(::auth::LoginResponse)},
+        {0, sizeof(::message::GetVarifyReq)},
+        {7, sizeof(::message::GetVarifyRsp)},
 };
 static const ::_pb::Message* PROTOBUF_NONNULL const file_default_instances[] = {
-    &::auth::_LoginRequest_default_instance_._instance,
-    &::auth::_LoginResponse_default_instance_._instance,
+    &::message::_GetVarifyReq_default_instance_._instance,
+    &::message::_GetVarifyRsp_default_instance_._instance,
 };
 const char descriptor_table_protodef_message_2eproto[] ABSL_ATTRIBUTE_SECTION_VARIABLE(
     protodesc_cold) = {
-    "\n\rmessage.proto\022\004auth\"/\n\014LoginRequest\022\r\n"
-    "\005email\030\001 \001(\t\022\020\n\010password\030\002 \001(\t\"E\n\rLoginR"
-    "esponse\022\022\n\nerror_code\030\001 \001(\005\022\021\n\terror_msg"
-    "\030\002 \001(\t\022\r\n\005token\030\003 \001(\t2I\n\013AuthService\022:\n\017"
-    "VerifyUserLogin\022\022.auth.LoginRequest\032\023.au"
-    "th.LoginResponseb\006proto3"
+    "\n\rmessage.proto\022\007message\"/\n\014GetVarifyReq"
+    "\022\r\n\005email\030\001 \001(\t\022\020\n\010password\030\002 \001(\t\":\n\014Get"
+    "VarifyRsp\022\r\n\005error\030\001 \001(\005\022\r\n\005email\030\002 \001(\t\022"
+    "\014\n\004code\030\003 \001(\t2P\n\rVarifyService\022\?\n\rGetVar"
+    "ifyCode\022\025.message.GetVarifyReq\032\025.message"
+    ".GetVarifyRsp\"\000b\006proto3"
 };
 static ::absl::once_flag descriptor_table_message_2eproto_once;
 PROTOBUF_CONSTINIT const ::_pbi::DescriptorTable descriptor_table_message_2eproto = {
     false,
     false,
-    224,
+    223,
     descriptor_table_protodef_message_2eproto,
     "message.proto",
     &descriptor_table_message_2eproto_once,
@@ -147,67 +147,67 @@ PROTOBUF_CONSTINIT const ::_pbi::DescriptorTable descriptor_table_message_2eprot
     file_level_enum_descriptors_message_2eproto,
     file_level_service_descriptors_message_2eproto,
 };
-namespace auth {
+namespace message {
 // ===================================================================
 
-class LoginRequest::_Internal {
+class GetVarifyReq::_Internal {
  public:
   using HasBits =
-      decltype(::std::declval<LoginRequest>()._impl_._has_bits_);
+      decltype(::std::declval<GetVarifyReq>()._impl_._has_bits_);
   static constexpr ::int32_t kHasBitsOffset =
-      8 * PROTOBUF_FIELD_OFFSET(LoginRequest, _impl_._has_bits_);
+      8 * PROTOBUF_FIELD_OFFSET(GetVarifyReq, _impl_._has_bits_);
 };
 
-LoginRequest::LoginRequest(::google::protobuf::Arena* PROTOBUF_NULLABLE arena)
+GetVarifyReq::GetVarifyReq(::google::protobuf::Arena* PROTOBUF_NULLABLE arena)
 #if defined(PROTOBUF_CUSTOM_VTABLE)
-    : ::google::protobuf::Message(arena, LoginRequest_class_data_.base()) {
+    : ::google::protobuf::Message(arena, GetVarifyReq_class_data_.base()) {
 #else   // PROTOBUF_CUSTOM_VTABLE
     : ::google::protobuf::Message(arena) {
 #endif  // PROTOBUF_CUSTOM_VTABLE
   SharedCtor(arena);
-  // @@protoc_insertion_point(arena_constructor:auth.LoginRequest)
+  // @@protoc_insertion_point(arena_constructor:message.GetVarifyReq)
 }
-PROTOBUF_NDEBUG_INLINE LoginRequest::Impl_::Impl_(
+PROTOBUF_NDEBUG_INLINE GetVarifyReq::Impl_::Impl_(
     [[maybe_unused]] ::google::protobuf::internal::InternalVisibility visibility,
     [[maybe_unused]] ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const Impl_& from,
-    [[maybe_unused]] const ::auth::LoginRequest& from_msg)
+    [[maybe_unused]] const ::message::GetVarifyReq& from_msg)
       : _has_bits_{from._has_bits_},
         _cached_size_{0},
         email_(arena, from.email_),
         password_(arena, from.password_) {}
 
-LoginRequest::LoginRequest(
+GetVarifyReq::GetVarifyReq(
     ::google::protobuf::Arena* PROTOBUF_NULLABLE arena,
-    const LoginRequest& from)
+    const GetVarifyReq& from)
 #if defined(PROTOBUF_CUSTOM_VTABLE)
-    : ::google::protobuf::Message(arena, LoginRequest_class_data_.base()) {
+    : ::google::protobuf::Message(arena, GetVarifyReq_class_data_.base()) {
 #else   // PROTOBUF_CUSTOM_VTABLE
     : ::google::protobuf::Message(arena) {
 #endif  // PROTOBUF_CUSTOM_VTABLE
-  LoginRequest* const _this = this;
+  GetVarifyReq* const _this = this;
   (void)_this;
   _internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
       from._internal_metadata_);
   new (&_impl_) Impl_(internal_visibility(), arena, from._impl_, from);
 
-  // @@protoc_insertion_point(copy_constructor:auth.LoginRequest)
+  // @@protoc_insertion_point(copy_constructor:message.GetVarifyReq)
 }
-PROTOBUF_NDEBUG_INLINE LoginRequest::Impl_::Impl_(
+PROTOBUF_NDEBUG_INLINE GetVarifyReq::Impl_::Impl_(
     [[maybe_unused]] ::google::protobuf::internal::InternalVisibility visibility,
     [[maybe_unused]] ::google::protobuf::Arena* PROTOBUF_NULLABLE arena)
       : _cached_size_{0},
         email_(arena),
         password_(arena) {}
 
-inline void LoginRequest::SharedCtor(::_pb::Arena* PROTOBUF_NULLABLE arena) {
+inline void GetVarifyReq::SharedCtor(::_pb::Arena* PROTOBUF_NULLABLE arena) {
   new (&_impl_) Impl_(internal_visibility(), arena);
 }
-LoginRequest::~LoginRequest() {
-  // @@protoc_insertion_point(destructor:auth.LoginRequest)
+GetVarifyReq::~GetVarifyReq() {
+  // @@protoc_insertion_point(destructor:message.GetVarifyReq)
   SharedDtor(*this);
 }
-inline void LoginRequest::SharedDtor(MessageLite& self) {
-  LoginRequest& this_ = static_cast<LoginRequest&>(self);
+inline void GetVarifyReq::SharedDtor(MessageLite& self) {
+  GetVarifyReq& this_ = static_cast<GetVarifyReq&>(self);
   if constexpr (::_pbi::DebugHardenCheckHasBitConsistency()) {
     this_.CheckHasBitConsistency();
   }
@@ -218,53 +218,53 @@ inline void LoginRequest::SharedDtor(MessageLite& self) {
   this_._impl_.~Impl_();
 }
 
-inline void* PROTOBUF_NONNULL LoginRequest::PlacementNew_(
+inline void* PROTOBUF_NONNULL GetVarifyReq::PlacementNew_(
     const void* PROTOBUF_NONNULL, void* PROTOBUF_NONNULL mem,
     ::google::protobuf::Arena* PROTOBUF_NULLABLE arena) {
-  return ::new (mem) LoginRequest(arena);
+  return ::new (mem) GetVarifyReq(arena);
 }
-constexpr auto LoginRequest::InternalNewImpl_() {
-  return ::google::protobuf::internal::MessageCreator::CopyInit(sizeof(LoginRequest),
-                                            alignof(LoginRequest));
+constexpr auto GetVarifyReq::InternalNewImpl_() {
+  return ::google::protobuf::internal::MessageCreator::CopyInit(sizeof(GetVarifyReq),
+                                            alignof(GetVarifyReq));
 }
-constexpr auto LoginRequest::InternalGenerateClassData_() {
+constexpr auto GetVarifyReq::InternalGenerateClassData_() {
   return ::google::protobuf::internal::ClassDataFull{
       ::google::protobuf::internal::ClassData{
-          &_LoginRequest_default_instance_._instance,
+          &_GetVarifyReq_default_instance_._instance,
           &_table_.header,
           nullptr,  // OnDemandRegisterArenaDtor
           nullptr,  // IsInitialized
-          &LoginRequest::MergeImpl,
-          ::google::protobuf::Message::GetNewImpl<LoginRequest>(),
+          &GetVarifyReq::MergeImpl,
+          ::google::protobuf::Message::GetNewImpl<GetVarifyReq>(),
 #if defined(PROTOBUF_CUSTOM_VTABLE)
-          &LoginRequest::SharedDtor,
-          ::google::protobuf::Message::GetClearImpl<LoginRequest>(), &LoginRequest::ByteSizeLong,
-              &LoginRequest::_InternalSerialize,
+          &GetVarifyReq::SharedDtor,
+          ::google::protobuf::Message::GetClearImpl<GetVarifyReq>(), &GetVarifyReq::ByteSizeLong,
+              &GetVarifyReq::_InternalSerialize,
 #endif  // PROTOBUF_CUSTOM_VTABLE
-          PROTOBUF_FIELD_OFFSET(LoginRequest, _impl_._cached_size_),
+          PROTOBUF_FIELD_OFFSET(GetVarifyReq, _impl_._cached_size_),
           false,
       },
-      &LoginRequest::kDescriptorMethods,
+      &GetVarifyReq::kDescriptorMethods,
       &descriptor_table_message_2eproto,
       nullptr,  // tracker
   };
 }
 
 PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 const
-    ::google::protobuf::internal::ClassDataFull LoginRequest_class_data_ =
-        LoginRequest::InternalGenerateClassData_();
+    ::google::protobuf::internal::ClassDataFull GetVarifyReq_class_data_ =
+        GetVarifyReq::InternalGenerateClassData_();
 
 PROTOBUF_ATTRIBUTE_WEAK const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL
-LoginRequest::GetClassData() const {
-  ::google::protobuf::internal::PrefetchToLocalCache(&LoginRequest_class_data_);
-  ::google::protobuf::internal::PrefetchToLocalCache(LoginRequest_class_data_.tc_table);
-  return LoginRequest_class_data_.base();
+GetVarifyReq::GetClassData() const {
+  ::google::protobuf::internal::PrefetchToLocalCache(&GetVarifyReq_class_data_);
+  ::google::protobuf::internal::PrefetchToLocalCache(GetVarifyReq_class_data_.tc_table);
+  return GetVarifyReq_class_data_.base();
 }
 PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
-const ::_pbi::TcParseTable<1, 2, 0, 39, 2>
-LoginRequest::_table_ = {
+const ::_pbi::TcParseTable<1, 2, 0, 42, 2>
+GetVarifyReq::_table_ = {
   {
-    PROTOBUF_FIELD_OFFSET(LoginRequest, _impl_._has_bits_),
+    PROTOBUF_FIELD_OFFSET(GetVarifyReq, _impl_._has_bits_),
     0, // no _extensions_
     2, 8,  // max_field_number, fast_idx_mask
     offsetof(decltype(_table_), field_lookup_table),
@@ -273,39 +273,39 @@ LoginRequest::_table_ = {
     2,  // num_field_entries
     0,  // num_aux_entries
     offsetof(decltype(_table_), field_names),  // no aux_entries
-    LoginRequest_class_data_.base(),
+    GetVarifyReq_class_data_.base(),
     nullptr,  // post_loop_handler
     ::_pbi::TcParser::GenericFallback,  // fallback
     #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
-    ::_pbi::TcParser::GetTable<::auth::LoginRequest>(),  // to_prefetch
+    ::_pbi::TcParser::GetTable<::message::GetVarifyReq>(),  // to_prefetch
     #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
   }, {{
     // string password = 2;
     {::_pbi::TcParser::FastUS1,
      {18, 1, 0,
-      PROTOBUF_FIELD_OFFSET(LoginRequest, _impl_.password_)}},
+      PROTOBUF_FIELD_OFFSET(GetVarifyReq, _impl_.password_)}},
     // string email = 1;
     {::_pbi::TcParser::FastUS1,
      {10, 0, 0,
-      PROTOBUF_FIELD_OFFSET(LoginRequest, _impl_.email_)}},
+      PROTOBUF_FIELD_OFFSET(GetVarifyReq, _impl_.email_)}},
   }}, {{
     65535, 65535
   }}, {{
     // string email = 1;
-    {PROTOBUF_FIELD_OFFSET(LoginRequest, _impl_.email_), _Internal::kHasBitsOffset + 0, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+    {PROTOBUF_FIELD_OFFSET(GetVarifyReq, _impl_.email_), _Internal::kHasBitsOffset + 0, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
     // string password = 2;
-    {PROTOBUF_FIELD_OFFSET(LoginRequest, _impl_.password_), _Internal::kHasBitsOffset + 1, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+    {PROTOBUF_FIELD_OFFSET(GetVarifyReq, _impl_.password_), _Internal::kHasBitsOffset + 1, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
   }},
   // no aux_entries
   {{
-    "\21\5\10\0\0\0\0\0"
-    "auth.LoginRequest"
+    "\24\5\10\0\0\0\0\0"
+    "message.GetVarifyReq"
     "email"
     "password"
   }},
 };
-PROTOBUF_NOINLINE void LoginRequest::Clear() {
-// @@protoc_insertion_point(message_clear_start:auth.LoginRequest)
+PROTOBUF_NOINLINE void GetVarifyReq::Clear() {
+// @@protoc_insertion_point(message_clear_start:message.GetVarifyReq)
   ::google::protobuf::internal::TSanWrite(&_impl_);
   ::uint32_t cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
@@ -325,20 +325,20 @@ PROTOBUF_NOINLINE void LoginRequest::Clear() {
 }
 
 #if defined(PROTOBUF_CUSTOM_VTABLE)
-::uint8_t* PROTOBUF_NONNULL LoginRequest::_InternalSerialize(
+::uint8_t* PROTOBUF_NONNULL GetVarifyReq::_InternalSerialize(
     const ::google::protobuf::MessageLite& base, ::uint8_t* PROTOBUF_NONNULL target,
     ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) {
-  const LoginRequest& this_ = static_cast<const LoginRequest&>(base);
+  const GetVarifyReq& this_ = static_cast<const GetVarifyReq&>(base);
 #else   // PROTOBUF_CUSTOM_VTABLE
-::uint8_t* PROTOBUF_NONNULL LoginRequest::_InternalSerialize(
+::uint8_t* PROTOBUF_NONNULL GetVarifyReq::_InternalSerialize(
     ::uint8_t* PROTOBUF_NONNULL target,
     ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const {
-  const LoginRequest& this_ = *this;
+  const GetVarifyReq& this_ = *this;
 #endif  // PROTOBUF_CUSTOM_VTABLE
   if constexpr (::_pbi::DebugHardenCheckHasBitConsistency()) {
     this_.CheckHasBitConsistency();
   }
-  // @@protoc_insertion_point(serialize_to_array_start:auth.LoginRequest)
+  // @@protoc_insertion_point(serialize_to_array_start:message.GetVarifyReq)
   ::uint32_t cached_has_bits = 0;
   (void)cached_has_bits;
 
@@ -348,7 +348,7 @@ PROTOBUF_NOINLINE void LoginRequest::Clear() {
     if (!this_._internal_email().empty()) {
       const ::std::string& _s = this_._internal_email();
       ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
-          _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "auth.LoginRequest.email");
+          _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "message.GetVarifyReq.email");
       target = stream->WriteStringMaybeAliased(1, _s, target);
     }
   }
@@ -358,7 +358,7 @@ PROTOBUF_NOINLINE void LoginRequest::Clear() {
     if (!this_._internal_password().empty()) {
       const ::std::string& _s = this_._internal_password();
       ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
-          _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "auth.LoginRequest.password");
+          _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "message.GetVarifyReq.password");
       target = stream->WriteStringMaybeAliased(2, _s, target);
     }
   }
@@ -368,18 +368,18 @@ PROTOBUF_NOINLINE void LoginRequest::Clear() {
         ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
             this_._internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance), target, stream);
   }
-  // @@protoc_insertion_point(serialize_to_array_end:auth.LoginRequest)
+  // @@protoc_insertion_point(serialize_to_array_end:message.GetVarifyReq)
   return target;
 }
 
 #if defined(PROTOBUF_CUSTOM_VTABLE)
-::size_t LoginRequest::ByteSizeLong(const MessageLite& base) {
-  const LoginRequest& this_ = static_cast<const LoginRequest&>(base);
+::size_t GetVarifyReq::ByteSizeLong(const MessageLite& base) {
+  const GetVarifyReq& this_ = static_cast<const GetVarifyReq&>(base);
 #else   // PROTOBUF_CUSTOM_VTABLE
-::size_t LoginRequest::ByteSizeLong() const {
-  const LoginRequest& this_ = *this;
+::size_t GetVarifyReq::ByteSizeLong() const {
+  const GetVarifyReq& this_ = *this;
 #endif  // PROTOBUF_CUSTOM_VTABLE
-  // @@protoc_insertion_point(message_byte_size_start:auth.LoginRequest)
+  // @@protoc_insertion_point(message_byte_size_start:message.GetVarifyReq)
   ::size_t total_size = 0;
 
   ::uint32_t cached_has_bits = 0;
@@ -408,15 +408,15 @@ PROTOBUF_NOINLINE void LoginRequest::Clear() {
                                              &this_._impl_._cached_size_);
 }
 
-void LoginRequest::MergeImpl(::google::protobuf::MessageLite& to_msg,
+void GetVarifyReq::MergeImpl(::google::protobuf::MessageLite& to_msg,
                             const ::google::protobuf::MessageLite& from_msg) {
    auto* const _this =
-      static_cast<LoginRequest*>(&to_msg);
-  auto& from = static_cast<const LoginRequest&>(from_msg);
+      static_cast<GetVarifyReq*>(&to_msg);
+  auto& from = static_cast<const GetVarifyReq&>(from_msg);
   if constexpr (::_pbi::DebugHardenCheckHasBitConsistency()) {
     from.CheckHasBitConsistency();
   }
-  // @@protoc_insertion_point(class_specific_merge_from_start:auth.LoginRequest)
+  // @@protoc_insertion_point(class_specific_merge_from_start:message.GetVarifyReq)
   ABSL_DCHECK_NE(&from, _this);
   ::uint32_t cached_has_bits = 0;
   (void)cached_has_bits;
@@ -447,15 +447,15 @@ void LoginRequest::MergeImpl(::google::protobuf::MessageLite& to_msg,
       from._internal_metadata_);
 }
 
-void LoginRequest::CopyFrom(const LoginRequest& from) {
-  // @@protoc_insertion_point(class_specific_copy_from_start:auth.LoginRequest)
+void GetVarifyReq::CopyFrom(const GetVarifyReq& from) {
+  // @@protoc_insertion_point(class_specific_copy_from_start:message.GetVarifyReq)
   if (&from == this) return;
   Clear();
   MergeFrom(from);
 }
 
 
-void LoginRequest::InternalSwap(LoginRequest* PROTOBUF_RESTRICT PROTOBUF_NONNULL other) {
+void GetVarifyReq::InternalSwap(GetVarifyReq* PROTOBUF_RESTRICT PROTOBUF_NONNULL other) {
   using ::std::swap;
   auto* arena = GetArena();
   ABSL_DCHECK_EQ(arena, other->GetArena());
@@ -465,128 +465,128 @@ void LoginRequest::InternalSwap(LoginRequest* PROTOBUF_RESTRICT PROTOBUF_NONNULL
   ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.password_, &other->_impl_.password_, arena);
 }
 
-::google::protobuf::Metadata LoginRequest::GetMetadata() const {
+::google::protobuf::Metadata GetVarifyReq::GetMetadata() const {
   return ::google::protobuf::Message::GetMetadataImpl(GetClassData()->full());
 }
 // ===================================================================
 
-class LoginResponse::_Internal {
+class GetVarifyRsp::_Internal {
  public:
   using HasBits =
-      decltype(::std::declval<LoginResponse>()._impl_._has_bits_);
+      decltype(::std::declval<GetVarifyRsp>()._impl_._has_bits_);
   static constexpr ::int32_t kHasBitsOffset =
-      8 * PROTOBUF_FIELD_OFFSET(LoginResponse, _impl_._has_bits_);
+      8 * PROTOBUF_FIELD_OFFSET(GetVarifyRsp, _impl_._has_bits_);
 };
 
-LoginResponse::LoginResponse(::google::protobuf::Arena* PROTOBUF_NULLABLE arena)
+GetVarifyRsp::GetVarifyRsp(::google::protobuf::Arena* PROTOBUF_NULLABLE arena)
 #if defined(PROTOBUF_CUSTOM_VTABLE)
-    : ::google::protobuf::Message(arena, LoginResponse_class_data_.base()) {
+    : ::google::protobuf::Message(arena, GetVarifyRsp_class_data_.base()) {
 #else   // PROTOBUF_CUSTOM_VTABLE
     : ::google::protobuf::Message(arena) {
 #endif  // PROTOBUF_CUSTOM_VTABLE
   SharedCtor(arena);
-  // @@protoc_insertion_point(arena_constructor:auth.LoginResponse)
+  // @@protoc_insertion_point(arena_constructor:message.GetVarifyRsp)
 }
-PROTOBUF_NDEBUG_INLINE LoginResponse::Impl_::Impl_(
+PROTOBUF_NDEBUG_INLINE GetVarifyRsp::Impl_::Impl_(
     [[maybe_unused]] ::google::protobuf::internal::InternalVisibility visibility,
     [[maybe_unused]] ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const Impl_& from,
-    [[maybe_unused]] const ::auth::LoginResponse& from_msg)
+    [[maybe_unused]] const ::message::GetVarifyRsp& from_msg)
       : _has_bits_{from._has_bits_},
         _cached_size_{0},
-        error_msg_(arena, from.error_msg_),
-        token_(arena, from.token_) {}
+        email_(arena, from.email_),
+        code_(arena, from.code_) {}
 
-LoginResponse::LoginResponse(
+GetVarifyRsp::GetVarifyRsp(
     ::google::protobuf::Arena* PROTOBUF_NULLABLE arena,
-    const LoginResponse& from)
+    const GetVarifyRsp& from)
 #if defined(PROTOBUF_CUSTOM_VTABLE)
-    : ::google::protobuf::Message(arena, LoginResponse_class_data_.base()) {
+    : ::google::protobuf::Message(arena, GetVarifyRsp_class_data_.base()) {
 #else   // PROTOBUF_CUSTOM_VTABLE
     : ::google::protobuf::Message(arena) {
 #endif  // PROTOBUF_CUSTOM_VTABLE
-  LoginResponse* const _this = this;
+  GetVarifyRsp* const _this = this;
   (void)_this;
   _internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
       from._internal_metadata_);
   new (&_impl_) Impl_(internal_visibility(), arena, from._impl_, from);
-  _impl_.error_code_ = from._impl_.error_code_;
+  _impl_.error_ = from._impl_.error_;
 
-  // @@protoc_insertion_point(copy_constructor:auth.LoginResponse)
+  // @@protoc_insertion_point(copy_constructor:message.GetVarifyRsp)
 }
-PROTOBUF_NDEBUG_INLINE LoginResponse::Impl_::Impl_(
+PROTOBUF_NDEBUG_INLINE GetVarifyRsp::Impl_::Impl_(
     [[maybe_unused]] ::google::protobuf::internal::InternalVisibility visibility,
     [[maybe_unused]] ::google::protobuf::Arena* PROTOBUF_NULLABLE arena)
       : _cached_size_{0},
-        error_msg_(arena),
-        token_(arena) {}
+        email_(arena),
+        code_(arena) {}
 
-inline void LoginResponse::SharedCtor(::_pb::Arena* PROTOBUF_NULLABLE arena) {
+inline void GetVarifyRsp::SharedCtor(::_pb::Arena* PROTOBUF_NULLABLE arena) {
   new (&_impl_) Impl_(internal_visibility(), arena);
-  _impl_.error_code_ = {};
+  _impl_.error_ = {};
 }
-LoginResponse::~LoginResponse() {
-  // @@protoc_insertion_point(destructor:auth.LoginResponse)
+GetVarifyRsp::~GetVarifyRsp() {
+  // @@protoc_insertion_point(destructor:message.GetVarifyRsp)
   SharedDtor(*this);
 }
-inline void LoginResponse::SharedDtor(MessageLite& self) {
-  LoginResponse& this_ = static_cast<LoginResponse&>(self);
+inline void GetVarifyRsp::SharedDtor(MessageLite& self) {
+  GetVarifyRsp& this_ = static_cast<GetVarifyRsp&>(self);
   if constexpr (::_pbi::DebugHardenCheckHasBitConsistency()) {
     this_.CheckHasBitConsistency();
   }
   this_._internal_metadata_.Delete<::google::protobuf::UnknownFieldSet>();
   ABSL_DCHECK(this_.GetArena() == nullptr);
-  this_._impl_.error_msg_.Destroy();
-  this_._impl_.token_.Destroy();
+  this_._impl_.email_.Destroy();
+  this_._impl_.code_.Destroy();
   this_._impl_.~Impl_();
 }
 
-inline void* PROTOBUF_NONNULL LoginResponse::PlacementNew_(
+inline void* PROTOBUF_NONNULL GetVarifyRsp::PlacementNew_(
     const void* PROTOBUF_NONNULL, void* PROTOBUF_NONNULL mem,
     ::google::protobuf::Arena* PROTOBUF_NULLABLE arena) {
-  return ::new (mem) LoginResponse(arena);
+  return ::new (mem) GetVarifyRsp(arena);
 }
-constexpr auto LoginResponse::InternalNewImpl_() {
-  return ::google::protobuf::internal::MessageCreator::CopyInit(sizeof(LoginResponse),
-                                            alignof(LoginResponse));
+constexpr auto GetVarifyRsp::InternalNewImpl_() {
+  return ::google::protobuf::internal::MessageCreator::CopyInit(sizeof(GetVarifyRsp),
+                                            alignof(GetVarifyRsp));
 }
-constexpr auto LoginResponse::InternalGenerateClassData_() {
+constexpr auto GetVarifyRsp::InternalGenerateClassData_() {
   return ::google::protobuf::internal::ClassDataFull{
       ::google::protobuf::internal::ClassData{
-          &_LoginResponse_default_instance_._instance,
+          &_GetVarifyRsp_default_instance_._instance,
           &_table_.header,
           nullptr,  // OnDemandRegisterArenaDtor
           nullptr,  // IsInitialized
-          &LoginResponse::MergeImpl,
-          ::google::protobuf::Message::GetNewImpl<LoginResponse>(),
+          &GetVarifyRsp::MergeImpl,
+          ::google::protobuf::Message::GetNewImpl<GetVarifyRsp>(),
 #if defined(PROTOBUF_CUSTOM_VTABLE)
-          &LoginResponse::SharedDtor,
-          ::google::protobuf::Message::GetClearImpl<LoginResponse>(), &LoginResponse::ByteSizeLong,
-              &LoginResponse::_InternalSerialize,
+          &GetVarifyRsp::SharedDtor,
+          ::google::protobuf::Message::GetClearImpl<GetVarifyRsp>(), &GetVarifyRsp::ByteSizeLong,
+              &GetVarifyRsp::_InternalSerialize,
 #endif  // PROTOBUF_CUSTOM_VTABLE
-          PROTOBUF_FIELD_OFFSET(LoginResponse, _impl_._cached_size_),
+          PROTOBUF_FIELD_OFFSET(GetVarifyRsp, _impl_._cached_size_),
           false,
       },
-      &LoginResponse::kDescriptorMethods,
+      &GetVarifyRsp::kDescriptorMethods,
       &descriptor_table_message_2eproto,
       nullptr,  // tracker
   };
 }
 
 PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 const
-    ::google::protobuf::internal::ClassDataFull LoginResponse_class_data_ =
-        LoginResponse::InternalGenerateClassData_();
+    ::google::protobuf::internal::ClassDataFull GetVarifyRsp_class_data_ =
+        GetVarifyRsp::InternalGenerateClassData_();
 
 PROTOBUF_ATTRIBUTE_WEAK const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL
-LoginResponse::GetClassData() const {
-  ::google::protobuf::internal::PrefetchToLocalCache(&LoginResponse_class_data_);
-  ::google::protobuf::internal::PrefetchToLocalCache(LoginResponse_class_data_.tc_table);
-  return LoginResponse_class_data_.base();
+GetVarifyRsp::GetClassData() const {
+  ::google::protobuf::internal::PrefetchToLocalCache(&GetVarifyRsp_class_data_);
+  ::google::protobuf::internal::PrefetchToLocalCache(GetVarifyRsp_class_data_.tc_table);
+  return GetVarifyRsp_class_data_.base();
 }
 PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
-const ::_pbi::TcParseTable<2, 3, 0, 41, 2>
-LoginResponse::_table_ = {
+const ::_pbi::TcParseTable<2, 3, 0, 38, 2>
+GetVarifyRsp::_table_ = {
   {
-    PROTOBUF_FIELD_OFFSET(LoginResponse, _impl_._has_bits_),
+    PROTOBUF_FIELD_OFFSET(GetVarifyRsp, _impl_._has_bits_),
     0, // no _extensions_
     3, 24,  // max_field_number, fast_idx_mask
     offsetof(decltype(_table_), field_lookup_table),
@@ -595,46 +595,46 @@ LoginResponse::_table_ = {
     3,  // num_field_entries
     0,  // num_aux_entries
     offsetof(decltype(_table_), field_names),  // no aux_entries
-    LoginResponse_class_data_.base(),
+    GetVarifyRsp_class_data_.base(),
     nullptr,  // post_loop_handler
     ::_pbi::TcParser::GenericFallback,  // fallback
     #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
-    ::_pbi::TcParser::GetTable<::auth::LoginResponse>(),  // to_prefetch
+    ::_pbi::TcParser::GetTable<::message::GetVarifyRsp>(),  // to_prefetch
     #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
   }, {{
     {::_pbi::TcParser::MiniParse, {}},
-    // int32 error_code = 1;
-    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(LoginResponse, _impl_.error_code_), 2>(),
+    // int32 error = 1;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(GetVarifyRsp, _impl_.error_), 2>(),
      {8, 2, 0,
-      PROTOBUF_FIELD_OFFSET(LoginResponse, _impl_.error_code_)}},
-    // string error_msg = 2;
+      PROTOBUF_FIELD_OFFSET(GetVarifyRsp, _impl_.error_)}},
+    // string email = 2;
     {::_pbi::TcParser::FastUS1,
      {18, 0, 0,
-      PROTOBUF_FIELD_OFFSET(LoginResponse, _impl_.error_msg_)}},
-    // string token = 3;
+      PROTOBUF_FIELD_OFFSET(GetVarifyRsp, _impl_.email_)}},
+    // string code = 3;
     {::_pbi::TcParser::FastUS1,
      {26, 1, 0,
-      PROTOBUF_FIELD_OFFSET(LoginResponse, _impl_.token_)}},
+      PROTOBUF_FIELD_OFFSET(GetVarifyRsp, _impl_.code_)}},
   }}, {{
     65535, 65535
   }}, {{
-    // int32 error_code = 1;
-    {PROTOBUF_FIELD_OFFSET(LoginResponse, _impl_.error_code_), _Internal::kHasBitsOffset + 2, 0, (0 | ::_fl::kFcOptional | ::_fl::kInt32)},
-    // string error_msg = 2;
-    {PROTOBUF_FIELD_OFFSET(LoginResponse, _impl_.error_msg_), _Internal::kHasBitsOffset + 0, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
-    // string token = 3;
-    {PROTOBUF_FIELD_OFFSET(LoginResponse, _impl_.token_), _Internal::kHasBitsOffset + 1, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+    // int32 error = 1;
+    {PROTOBUF_FIELD_OFFSET(GetVarifyRsp, _impl_.error_), _Internal::kHasBitsOffset + 2, 0, (0 | ::_fl::kFcOptional | ::_fl::kInt32)},
+    // string email = 2;
+    {PROTOBUF_FIELD_OFFSET(GetVarifyRsp, _impl_.email_), _Internal::kHasBitsOffset + 0, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+    // string code = 3;
+    {PROTOBUF_FIELD_OFFSET(GetVarifyRsp, _impl_.code_), _Internal::kHasBitsOffset + 1, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
   }},
   // no aux_entries
   {{
-    "\22\0\11\5\0\0\0\0"
-    "auth.LoginResponse"
-    "error_msg"
-    "token"
+    "\24\0\5\4\0\0\0\0"
+    "message.GetVarifyRsp"
+    "email"
+    "code"
   }},
 };
-PROTOBUF_NOINLINE void LoginResponse::Clear() {
-// @@protoc_insertion_point(message_clear_start:auth.LoginResponse)
+PROTOBUF_NOINLINE void GetVarifyRsp::Clear() {
+// @@protoc_insertion_point(message_clear_start:message.GetVarifyRsp)
   ::google::protobuf::internal::TSanWrite(&_impl_);
   ::uint32_t cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
@@ -643,61 +643,61 @@ PROTOBUF_NOINLINE void LoginResponse::Clear() {
   cached_has_bits = _impl_._has_bits_[0];
   if (BatchCheckHasBit(cached_has_bits, 0x00000003U)) {
     if (CheckHasBit(cached_has_bits, 0x00000001U)) {
-      _impl_.error_msg_.ClearNonDefaultToEmpty();
+      _impl_.email_.ClearNonDefaultToEmpty();
     }
     if (CheckHasBit(cached_has_bits, 0x00000002U)) {
-      _impl_.token_.ClearNonDefaultToEmpty();
+      _impl_.code_.ClearNonDefaultToEmpty();
     }
   }
-  _impl_.error_code_ = 0;
+  _impl_.error_ = 0;
   _impl_._has_bits_.Clear();
   _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
 }
 
 #if defined(PROTOBUF_CUSTOM_VTABLE)
-::uint8_t* PROTOBUF_NONNULL LoginResponse::_InternalSerialize(
+::uint8_t* PROTOBUF_NONNULL GetVarifyRsp::_InternalSerialize(
     const ::google::protobuf::MessageLite& base, ::uint8_t* PROTOBUF_NONNULL target,
     ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) {
-  const LoginResponse& this_ = static_cast<const LoginResponse&>(base);
+  const GetVarifyRsp& this_ = static_cast<const GetVarifyRsp&>(base);
 #else   // PROTOBUF_CUSTOM_VTABLE
-::uint8_t* PROTOBUF_NONNULL LoginResponse::_InternalSerialize(
+::uint8_t* PROTOBUF_NONNULL GetVarifyRsp::_InternalSerialize(
     ::uint8_t* PROTOBUF_NONNULL target,
     ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const {
-  const LoginResponse& this_ = *this;
+  const GetVarifyRsp& this_ = *this;
 #endif  // PROTOBUF_CUSTOM_VTABLE
   if constexpr (::_pbi::DebugHardenCheckHasBitConsistency()) {
     this_.CheckHasBitConsistency();
   }
-  // @@protoc_insertion_point(serialize_to_array_start:auth.LoginResponse)
+  // @@protoc_insertion_point(serialize_to_array_start:message.GetVarifyRsp)
   ::uint32_t cached_has_bits = 0;
   (void)cached_has_bits;
 
   cached_has_bits = this_._impl_._has_bits_[0];
-  // int32 error_code = 1;
+  // int32 error = 1;
   if (CheckHasBit(cached_has_bits, 0x00000004U)) {
-    if (this_._internal_error_code() != 0) {
+    if (this_._internal_error() != 0) {
       target =
           ::google::protobuf::internal::WireFormatLite::WriteInt32ToArrayWithField<1>(
-              stream, this_._internal_error_code(), target);
+              stream, this_._internal_error(), target);
     }
   }
 
-  // string error_msg = 2;
+  // string email = 2;
   if (CheckHasBit(cached_has_bits, 0x00000001U)) {
-    if (!this_._internal_error_msg().empty()) {
-      const ::std::string& _s = this_._internal_error_msg();
+    if (!this_._internal_email().empty()) {
+      const ::std::string& _s = this_._internal_email();
       ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
-          _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "auth.LoginResponse.error_msg");
+          _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "message.GetVarifyRsp.email");
       target = stream->WriteStringMaybeAliased(2, _s, target);
     }
   }
 
-  // string token = 3;
+  // string code = 3;
   if (CheckHasBit(cached_has_bits, 0x00000002U)) {
-    if (!this_._internal_token().empty()) {
-      const ::std::string& _s = this_._internal_token();
+    if (!this_._internal_code().empty()) {
+      const ::std::string& _s = this_._internal_code();
       ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
-          _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "auth.LoginResponse.token");
+          _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "message.GetVarifyRsp.code");
       target = stream->WriteStringMaybeAliased(3, _s, target);
     }
   }
@@ -707,18 +707,18 @@ PROTOBUF_NOINLINE void LoginResponse::Clear() {
         ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
             this_._internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance), target, stream);
   }
-  // @@protoc_insertion_point(serialize_to_array_end:auth.LoginResponse)
+  // @@protoc_insertion_point(serialize_to_array_end:message.GetVarifyRsp)
   return target;
 }
 
 #if defined(PROTOBUF_CUSTOM_VTABLE)
-::size_t LoginResponse::ByteSizeLong(const MessageLite& base) {
-  const LoginResponse& this_ = static_cast<const LoginResponse&>(base);
+::size_t GetVarifyRsp::ByteSizeLong(const MessageLite& base) {
+  const GetVarifyRsp& this_ = static_cast<const GetVarifyRsp&>(base);
 #else   // PROTOBUF_CUSTOM_VTABLE
-::size_t LoginResponse::ByteSizeLong() const {
-  const LoginResponse& this_ = *this;
+::size_t GetVarifyRsp::ByteSizeLong() const {
+  const GetVarifyRsp& this_ = *this;
 #endif  // PROTOBUF_CUSTOM_VTABLE
-  // @@protoc_insertion_point(message_byte_size_start:auth.LoginResponse)
+  // @@protoc_insertion_point(message_byte_size_start:message.GetVarifyRsp)
   ::size_t total_size = 0;
 
   ::uint32_t cached_has_bits = 0;
@@ -728,25 +728,25 @@ PROTOBUF_NOINLINE void LoginResponse::Clear() {
   ::_pbi::Prefetch5LinesFrom7Lines(&this_);
   cached_has_bits = this_._impl_._has_bits_[0];
   if (BatchCheckHasBit(cached_has_bits, 0x00000007U)) {
-    // string error_msg = 2;
+    // string email = 2;
     if (CheckHasBit(cached_has_bits, 0x00000001U)) {
-      if (!this_._internal_error_msg().empty()) {
+      if (!this_._internal_email().empty()) {
         total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
-                                        this_._internal_error_msg());
+                                        this_._internal_email());
       }
     }
-    // string token = 3;
+    // string code = 3;
     if (CheckHasBit(cached_has_bits, 0x00000002U)) {
-      if (!this_._internal_token().empty()) {
+      if (!this_._internal_code().empty()) {
         total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
-                                        this_._internal_token());
+                                        this_._internal_code());
       }
     }
-    // int32 error_code = 1;
+    // int32 error = 1;
     if (CheckHasBit(cached_has_bits, 0x00000004U)) {
-      if (this_._internal_error_code() != 0) {
+      if (this_._internal_error() != 0) {
         total_size += ::_pbi::WireFormatLite::Int32SizePlusOne(
-            this_._internal_error_code());
+            this_._internal_error());
       }
     }
   }
@@ -754,15 +754,15 @@ PROTOBUF_NOINLINE void LoginResponse::Clear() {
                                              &this_._impl_._cached_size_);
 }
 
-void LoginResponse::MergeImpl(::google::protobuf::MessageLite& to_msg,
+void GetVarifyRsp::MergeImpl(::google::protobuf::MessageLite& to_msg,
                             const ::google::protobuf::MessageLite& from_msg) {
    auto* const _this =
-      static_cast<LoginResponse*>(&to_msg);
-  auto& from = static_cast<const LoginResponse&>(from_msg);
+      static_cast<GetVarifyRsp*>(&to_msg);
+  auto& from = static_cast<const GetVarifyRsp&>(from_msg);
   if constexpr (::_pbi::DebugHardenCheckHasBitConsistency()) {
     from.CheckHasBitConsistency();
   }
-  // @@protoc_insertion_point(class_specific_merge_from_start:auth.LoginResponse)
+  // @@protoc_insertion_point(class_specific_merge_from_start:message.GetVarifyRsp)
   ABSL_DCHECK_NE(&from, _this);
   ::uint32_t cached_has_bits = 0;
   (void)cached_has_bits;
@@ -770,26 +770,26 @@ void LoginResponse::MergeImpl(::google::protobuf::MessageLite& to_msg,
   cached_has_bits = from._impl_._has_bits_[0];
   if (BatchCheckHasBit(cached_has_bits, 0x00000007U)) {
     if (CheckHasBit(cached_has_bits, 0x00000001U)) {
-      if (!from._internal_error_msg().empty()) {
-        _this->_internal_set_error_msg(from._internal_error_msg());
+      if (!from._internal_email().empty()) {
+        _this->_internal_set_email(from._internal_email());
       } else {
-        if (_this->_impl_.error_msg_.IsDefault()) {
-          _this->_internal_set_error_msg("");
+        if (_this->_impl_.email_.IsDefault()) {
+          _this->_internal_set_email("");
         }
       }
     }
     if (CheckHasBit(cached_has_bits, 0x00000002U)) {
-      if (!from._internal_token().empty()) {
-        _this->_internal_set_token(from._internal_token());
+      if (!from._internal_code().empty()) {
+        _this->_internal_set_code(from._internal_code());
       } else {
-        if (_this->_impl_.token_.IsDefault()) {
-          _this->_internal_set_token("");
+        if (_this->_impl_.code_.IsDefault()) {
+          _this->_internal_set_code("");
         }
       }
     }
     if (CheckHasBit(cached_has_bits, 0x00000004U)) {
-      if (from._internal_error_code() != 0) {
-        _this->_impl_.error_code_ = from._impl_.error_code_;
+      if (from._internal_error() != 0) {
+        _this->_impl_.error_ = from._impl_.error_;
       }
     }
   }
@@ -798,30 +798,30 @@ void LoginResponse::MergeImpl(::google::protobuf::MessageLite& to_msg,
       from._internal_metadata_);
 }
 
-void LoginResponse::CopyFrom(const LoginResponse& from) {
-  // @@protoc_insertion_point(class_specific_copy_from_start:auth.LoginResponse)
+void GetVarifyRsp::CopyFrom(const GetVarifyRsp& from) {
+  // @@protoc_insertion_point(class_specific_copy_from_start:message.GetVarifyRsp)
   if (&from == this) return;
   Clear();
   MergeFrom(from);
 }
 
 
-void LoginResponse::InternalSwap(LoginResponse* PROTOBUF_RESTRICT PROTOBUF_NONNULL other) {
+void GetVarifyRsp::InternalSwap(GetVarifyRsp* PROTOBUF_RESTRICT PROTOBUF_NONNULL other) {
   using ::std::swap;
   auto* arena = GetArena();
   ABSL_DCHECK_EQ(arena, other->GetArena());
   _internal_metadata_.InternalSwap(&other->_internal_metadata_);
   swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
-  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.error_msg_, &other->_impl_.error_msg_, arena);
-  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.token_, &other->_impl_.token_, arena);
-  swap(_impl_.error_code_, other->_impl_.error_code_);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.email_, &other->_impl_.email_, arena);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.code_, &other->_impl_.code_, arena);
+  swap(_impl_.error_, other->_impl_.error_);
 }
 
-::google::protobuf::Metadata LoginResponse::GetMetadata() const {
+::google::protobuf::Metadata GetVarifyRsp::GetMetadata() const {
   return ::google::protobuf::Message::GetMetadataImpl(GetClassData()->full());
 }
 // @@protoc_insertion_point(namespace_scope)
-}  // namespace auth
+}  // namespace message
 namespace google {
 namespace protobuf {
 }  // namespace protobuf

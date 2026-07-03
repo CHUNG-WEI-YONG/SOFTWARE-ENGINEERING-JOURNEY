@@ -5,13 +5,14 @@ project(qtui LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# 2. 捞取 Qt6 前端核心组件（不掺杂任何 Protobuf）
-find_package(Qt6 6.5 REQUIRED COMPONENTS Core Widgets Network)
-
-# 3. 开启 Qt 自动化核心机甲
-set(CMAKE_AUTOUIC ON)
+# 3. 开启 Qt 自动化核心机甲（⚠️ 调整至 find_package 之前，确保元对象编译万无一失）
 set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTORCC ON)
+
+# 2. 捞取 Qt6 前端核心组件 + vcpkg 的 JsonCpp 组件
+find_package(Qt6 6.5 REQUIRED COMPONENTS Core Widgets Network)
+#find_package(JsonCpp CONFIG REQUIRED) # 👈 【新增】打捞 vcpkg 熔炼好的 Json 核心资产
 
 # 4. 🏭 告诉 CMake：你之前大炼钢铁产出的 Boost 静态库（.a/.lib）住在哪个军火库里
 link_directories("C:/Users/ASUSTUF/Downloads/boost_1_91_0/boost_1_91_0/stage/lib")
@@ -41,6 +42,7 @@ qt_add_executable(qtui
     timerbtn.h timerbtn.cpp
     clickedlabel.h clickedlabel.cpp
     resetdialog.h resetdialog.cpp resetdialog.ui
+    tcpmgr.h tcpmgr.cpp
 )
 
 # 6. 🛰️【规范化现代 CMake】管理头文件包含路径
@@ -48,16 +50,27 @@ target_include_directories(qtui PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}/header_file
     ${CMAKE_CURRENT_SOURCE_DIR}/include
+
+    # 👈 【新增】强制保底 vcpkg 包含路径（防止本地 Json 头文件标红）
+    "C:/vcpkg/installed/x64-windows/include"
+
     # 锁死你手动下载的最干净的 Boost 1.91.0 路径
     "C:/Users/ASUSTUF/Downloads/boost_1_91_0/boost_1_91_0"
 )
 
-# 7. ⚡【终极链接缝合】把 Qt 的核心内脏和 Boost.Asio 静态库直接焊死！
+# 7. ⚡【终极链接缝合】把 Qt 的核心内脏、vcpkg 资产和 Boost 静态库直接焊死！
 target_link_libraries(qtui
     PRIVATE
     Qt::Core
     Qt::Widgets
-    Qt::Network           # 🥇 物理缝合你在 stage/lib 里大炼钢铁产出的 boost_system 静态库
+    Qt::Network
+
+    # 👈 【核心修复 1】：真正将舞台（stage/lib）下编译出的 Boost 静态库灌入程序
+    # Windows 下通常只需要链接 libboost_system 即可，Asio 绝大部分是 Header-only
+    libboost_system
+
+    # 👈 【核心修复 2】：将 Json 编译肌肉无缝对接到前端
+    #JsonCpp::JsonCpp
 )
 
 # 8. 📡 全自动资产拷贝: config.ini -> 输出 bin 目录

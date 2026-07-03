@@ -3,6 +3,7 @@
 #include "VerifyGrpcClient.h"
 #include "RedisMjr.h"
 #include "MysqlMgr.h"
+#include "StatusGrpcClient.h"
 
 void LogicSystem::RegGet(std::string s, HttpHandler handler){
     _get_handles.insert(make_pair(s,handler));
@@ -205,6 +206,68 @@ LogicSystem::LogicSystem(){
 
         }
         catch (const std::exception &e) {
+            root["error"] = ErrorCodes::Error_Json;
+            root["msg"] = "Failed to parse JSON data or missing core keys";
+            boost::beast::ostream(conn->_response.body()) << root.dump();
+
+            conn->WriteResponse();
+            return true;
+        }
+        });
+
+    RegPost("/user_login", [](std::shared_ptr<HttpConnection> conn) {
+        std::cout << "/user_login Correctly run" << std::endl;
+        //beast::ostream(conn->_response.body()) << "Receive register request response";
+        auto body = boost::beast::buffers_to_string(conn->_request.body().data());
+        std::cout << "receive body is " << body << std::endl;
+        conn->_response.set(http::field::content_type, "text/json");
+        json root;
+        json src_root;
+        try {
+            src_root = nlohmann::json::parse(body);
+            std::string email = src_root["email"];
+            //std::string name = src_root["user"];
+            std::string passwd = src_root["passwd"];
+
+            UserInfo userinfo;
+            bool pwd_valid = MysqlMgr::GetInstance()->CheckPwd(email,passwd,userinfo);
+            if (!pwd_valid) {
+                std::cout << " user password not match" << std::endl;
+                root["error"] = ErrorCodes::PasswdInvalid;
+                root["msg"] = "Password not correct";
+                boost::beast::ostream(conn->_response.body()) << root.dump();
+                conn->WriteResponse();
+
+                return true;
+            }
+
+
+            auto reply = StatusGrpcClient::GetInstance()->GetChatServer(userinfo.u_id);
+            if (reply.error()) {
+                std::cout << "Get chat server failed. Error is " << reply.error() << std::endl;
+                root["error"] = ErrorCodes::RPC_Failed;
+                boost::beast::ostream(conn->_response.body()) << root.dump();
+                conn->WriteResponse();
+                
+                return true;
+            }
+
+            std::cout << "Succeed to connect user" << std::endl;
+            root["uid"] = userinfo.u_id;
+            root["error"] = ErrorCodes::Success;
+            root["email"] = src_root["email"].get<std::string>();
+            root["token"] = reply.token();
+            root["host"] = reply.host();
+            root["port"] = reply.port();
+
+            //std::string jsonstr = root.dump();
+            std::cout << "Root is " << root << std::endl;
+            boost::beast::ostream(conn->_response.body()) << root.dump();
+            conn->WriteResponse();
+            return true;
+
+        }
+        catch (const std::exception& e) {
             root["error"] = ErrorCodes::Error_Json;
             root["msg"] = "Failed to parse JSON data or missing core keys";
             boost::beast::ostream(conn->_response.body()) << root.dump();
