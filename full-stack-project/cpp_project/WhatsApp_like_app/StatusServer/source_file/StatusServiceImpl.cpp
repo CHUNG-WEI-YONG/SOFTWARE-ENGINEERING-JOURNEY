@@ -97,3 +97,7 @@ StatusServiceImpl::StatusServiceImpl() :_server_index(0)
     server.host = cfg["ChatServer2"]["Host"];
     _servers.push_back(server);
 }
+
+Status StatusServiceImpl::Login(ServerContext* context, const GetChatServerReq* request, GetChatServerRsp* reply){
+    
+}

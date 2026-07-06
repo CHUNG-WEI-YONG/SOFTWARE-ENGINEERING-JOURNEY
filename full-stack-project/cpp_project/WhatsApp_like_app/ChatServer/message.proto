@@ -1,0 +1,47 @@
+syntax = "proto3"; // 🔑 锁死使用最新、最纯净的 proto3 语法规范
+
+package message;      // 🔑 这一行等会儿全自动编译时，会变成 C++ 的 namespace auth {} 
+
+// 📡 定义一个在网线上跑的“硬核远程调用服务”
+service VarifyService {
+  rpc GetVarifyCode (GetVarifyReq) returns (GetVarifyRsp) {}
+}
+
+// 📦 传参数据舱：登录到底要带上什么参数
+message GetVarifyReq {
+    string email = 1;     // ⚠️ 这里的 1, 2 不是赋值！是二进制在网线里的物理序号（Tag），绝对不能乱改！
+    string password = 2;
+}
+
+// 📦 返回数据舱：后端验完密码后，必须吐回什么结果
+message GetVarifyRsp {
+    int32 error = 1;  // 0 代表成功，1 代表密码物理错误
+    string email = 2;  // 报错文本信息
+    string code = 3;      // 成功后颁发给用户的身份高并发令牌
+}
+
+message GetChatServerReq {
+  int32 uid = 1;
+}
+
+message GetChatServerRsp {
+  int32 error = 1;
+  string host = 2;
+  string port = 3;
+  string token = 4;
+}
+
+message LoginReq{
+    int32 uid=1;
+    string token=2;
+}
+
+message LoginRsp{
+    int32 error=1;
+    int32 uid=2;
+    string token=3;
+}
+service StatusService {
+	rpc GetChatServer (GetChatServerReq) returns (GetChatServerRsp) {}
+    rpc Login(LoginReq) returns (LoginRsp);
+}

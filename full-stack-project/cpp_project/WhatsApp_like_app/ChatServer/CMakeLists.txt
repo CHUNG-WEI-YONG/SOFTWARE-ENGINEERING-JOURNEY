@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.15)
-project(WhatsApp_GateServer LANGUAGES CXX)
+project(WhatsApp_ChatServer LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -11,6 +11,7 @@ find_package(gRPC CONFIG REQUIRED)
 find_package(Protobuf REQUIRED)
 find_package(Threads REQUIRED)
 find_package(unofficial-mysql-connector-cpp CONFIG REQUIRED)
+find_package(jsoncpp REQUIRED)
 
 
 # =================================================================
@@ -42,7 +43,7 @@ add_custom_command(
     COMMENT "📡 [硬核绝对路径流水线] 正在强行爆破生成 message.pb 和 message.grpc.pb 文件..."
 )
 
-# 将生成的源码和头文件打包成变量，准备塞进 GateServer 的身体里
+# 将生成的源码和头文件打包成变量，准备塞进 ChatServer 的身体里
 set(PROTO_SRCS "${GEN_PB_SRC}" "${GEN_GRPC_SRC}")
 set(PROTO_HDRS "${GEN_PB_HDR}" "${GEN_GRPC_HDR}")
 
@@ -54,18 +55,15 @@ file(GLOB ALL_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/source_file/*.cpp")
 # =================================================================
 # 🚀 4. 总装可执行肉身
 # =================================================================
-add_executable(GateServer ${ALL_SOURCES} ${PROTO_SRCS} ${PROTO_HDRS} 
+add_executable(ChatServer ${ALL_SOURCES} ${PROTO_SRCS} ${PROTO_HDRS} 
     "source_file/ConfigMgr.cpp" 
-    "source_file/AsioIOServicePool.cpp"  
-    "source_file/RedisMjr.cpp"  
-    "source_file/MysqlPool.cpp" 
-    "header_file/MysqlMgr.h" 
-    "source_file/MysqlMgr.cpp" "header_file/StatusGrpcClient.h" "source_file/StatusGrpcClient.cpp")
+  "header_file/AsioIOServerPool.h" "source_file/AsioIOServerPool.cpp" "header_file/Cserver.h" "source_file/Cserver.cpp" "header_file/CSession.h" "source_file/CSession.cpp" "header_file/MsgNode.h" "source_file/LogicSystem.cpp")
 
 # =================================================================
 # 🛠️ 5. 链接底层二进制肌肉
 # =================================================================
-target_link_libraries(GateServer PRIVATE 
+target_link_libraries(ChatServer PRIVATE 
+    JsonCpp::JsonCpp
     Threads::Threads
     ws2_32
     mswsock
@@ -73,7 +71,6 @@ target_link_libraries(GateServer PRIVATE
     gRPC::grpc++
     gRPC::grpc++_reflection
     protobuf::libprotobuf
-    redis++::redis++
     unofficial::mysql-connector-cpp::connector
 )
 
@@ -81,7 +78,7 @@ target_link_libraries(GateServer PRIVATE
 # 📁 6. 头文件雷达扫描路径（新增生成的 BINARY_DIR 视觉通道）
 # =================================================================
 target_include_directories(
-    GateServer
+    ChatServer
     PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/header_file
     C:/Users/ASUSTUF/Downloads/boost_1_91_0/boost_1_91_0
@@ -94,7 +91,7 @@ target_include_directories(
 # 🛡️ 7. 编译器特化防御
 # =================================================================
 if(MSVC)    
-    target_compile_options(GateServer PRIVATE "/Zc:__cplusplus")
+    target_compile_options(ChatServer PRIVATE "/Zc:__cplusplus")
 endif()
 
 # =================================================================
@@ -104,17 +101,17 @@ set(TargetConfig "${CMAKE_CURRENT_SOURCE_DIR}/config.ini")
 set(OutputDir "${CMAKE_BINARY_DIR}")
 if(EXISTS "${TargetConfig}")    
     add_custom_command(
-        TARGET GateServer POST_BUILD
+        TARGET ChatServer POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
         "${TargetConfig}"
         "${OutputDir}/config.ini"
     )
 endif()
 
-add_custom_command(TARGET GateServer POST_BUILD
+add_custom_command(TARGET ChatServer POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
     ${CMAKE_CURRENT_SOURCE_DIR}/config.ini
-    $<TARGET_FILE_DIR:GateServer>/config.ini
+    $<TARGET_FILE_DIR:ChatServer>/config.ini
 )
 
 set(TargetConfig "${CMAKE_CURRENT_SOURCE_DIR}/config.ini")
@@ -122,7 +119,7 @@ set(OutputDir "${CMAKE_BINARY_DIR}") # 锁死 Ninja 编译输出沙盒目录
 
 if(EXISTS "${TargetConfig}")
     add_custom_command(
-        TARGET GateServer POST_BUILD
+        TARGET ChatServer POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
         "${TargetConfig}"
         "${OutputDir}/config.ini"
