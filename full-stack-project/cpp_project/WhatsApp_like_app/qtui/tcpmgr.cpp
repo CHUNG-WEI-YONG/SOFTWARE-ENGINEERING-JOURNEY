@@ -1,10 +1,13 @@
 #include "tcpmgr.h"
+#include "usermgr.h"
 #include <QAbstractSocket>
 #include <QJsonDocument>
 
 
 TcpMgr::TcpMgr() {
-    connect(&_socket,&QTcpSocket::connected,this,&TcpMgr::sig_con_success);
+    connect(&_socket,&QTcpSocket::connected,this,[this](){
+        emit this->sig_con_success(true);
+    });
     connect(&_socket,&QTcpSocket::readyRead,[&](){
         _buffer.append(_socket.readAll());
         QDataStream stream(&_buffer,QIODevice::ReadOnly);
@@ -27,7 +30,7 @@ TcpMgr::TcpMgr() {
             QByteArray message=_buffer.mid(0,_message_len);
             qDebug()<<"Receive message body is "<<message;
             _buffer=_buffer.mid(_message_len);
-            handle_Message(ReqId(_message_id),_message_len,message);
+            HandleMessage(ReqId(_message_id),_message_len,message);
         }
     });
 
@@ -71,6 +74,10 @@ void TcpMgr::initHandlers()
             return;
         }
         qDebug()<<"Log in successful";
+        UserMgr::getInstance()->SetUid(jsonObj["uid"].toInt());
+        UserMgr::getInstance()->SetName(jsonObj["name"].toString());
+        UserMgr::getInstance()->SetToken(jsonObj["token"].toString());
+
         emit sig_switch_chat_dlg();
     });
 }
@@ -108,4 +115,8 @@ void TcpMgr::slot_send_data(ReqId Reqid, QString data)
     out<<id<<len;
     block.append(databytes);
     _socket.write(block);
+}
+
+TcpMgr::~TcpMgr(){
+    qDebug()<<"TCPMGR destruct";
 }

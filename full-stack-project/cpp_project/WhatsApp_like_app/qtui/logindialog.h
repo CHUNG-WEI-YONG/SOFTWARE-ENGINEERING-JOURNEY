@@ -41,8 +41,7 @@ private slots:
     void on_login_btn_clicked();
     void slot_login_mod_finish(ReqId id,QString res,ErrorCode err);
     void slot_conn_success(bool success);
-    void slot_conn_failed(int err);
-
+    void slot_conn_failed(ErrorCode err);
 };
 
 #endif // LOGINDIALOG_H

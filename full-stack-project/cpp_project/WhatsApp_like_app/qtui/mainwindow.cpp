@@ -3,6 +3,9 @@
 #include "logindialog.h"
 #include "signindialog.h"
 #include "resetdialog.h"
+#include "chatdialog.h"
+#include "tcpmgr.h"
+
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
@@ -21,6 +24,9 @@ MainWindow::MainWindow(QWidget *parent)
     connect(_login_dlg,&LoginDialog::switchReset,this,&MainWindow::SlotSwitchReset);
     //return 0;
     //connect(_reset_dlg,&ResetDialog::switchLogin,this,&MainWindow::SlotResetSwitchLogin);
+    connect(TcpMgr::getInstance().get(),&TcpMgr::sig_switch_chat_dlg,this,&MainWindow::SlotSwitchChat);
+
+    emit TcpMgr::getInstance()->sig_switch_chat_dlg();
 }
 
 
@@ -97,4 +103,13 @@ void MainWindow::SlotResetSwitchLogin()
 
     connect(_login_dlg,&LoginDialog::switchReset,this,&MainWindow::SlotSwitchReset);
     connect(_login_dlg,&LoginDialog::switchRegister,this,&MainWindow::SlotSwitchRegister);
+}
+
+void MainWindow::SlotSwitchChat()
+{
+    _chat_dlg=new ChatDialog(this);
+    _chat_dlg->setWindowFlags((Qt::CustomizeWindowHint|Qt::FramelessWindowHint));
+    setCentralWidget(_login_dlg);
+    _login_dlg->hide();
+    _chat_dlg->show();
 }

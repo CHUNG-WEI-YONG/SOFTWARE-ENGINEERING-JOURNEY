@@ -2,7 +2,7 @@
 #include "AsioIOServerPool.h"
 #include "CSession.h"
 
-Cserver::Cserver(boost::asio::io_context& ioc, short port):_port(port),_ioc(ioc),_acceptor(ioc,tcp::endpoint(tcp::v4(),port)) {
+Cserver::Cserver(boost::asio::io_context& ioc, uint16_t port):_port(port),_ioc(ioc),_acceptor(ioc,tcp::endpoint(tcp::v4(),port)) {
 	std::cout << "Server start at port: " << port << std::endl;
 	StartAccept();
 

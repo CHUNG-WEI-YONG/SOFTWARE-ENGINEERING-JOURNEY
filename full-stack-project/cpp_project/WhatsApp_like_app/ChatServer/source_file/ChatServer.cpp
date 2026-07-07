@@ -14,6 +14,7 @@ std::condition_variable cv_quit;
 
 int main() {
 	try {
+		std::cout << "This is Chatserver" << std::endl;
 		auto cfg = ConfigMgr::Inst();
 		auto pool = AsioIOServerPool::GetInstance();
 		boost::asio::io_context ioc;
@@ -22,8 +23,9 @@ int main() {
 			ioc.stop();
 			pool->close();
 			});
-		auto port = cfg["Host"]["Port"];
-		Cserver s(ioc, atoi(port.c_str()));
+		auto port_str = cfg["ChatServer1"]["Port"];
+		uint16_t port = static_cast<uint16_t>(std::stoul(port_str));
+		Cserver s(ioc, port);
 		ioc.run();
 
 

@@ -158,6 +158,7 @@ void TestRedisMgr() {
 int main(){
     //TestRedis();
     //TestRedisMgr();
+    std::cout << "This is GateServer" << std::endl;
     RedisMjr::GetInstance()->Connect("127.0.0.1", 6380, "123456", 5);
 	auto& gcfg=ConfigMgr::Inst();
 	std::string port_number_str = gcfg["server"]["port"];

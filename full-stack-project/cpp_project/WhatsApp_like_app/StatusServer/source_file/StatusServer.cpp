@@ -47,6 +47,7 @@ void RunServer() {
 
 int main(int argc, char** argv) {
 	try {
+		std::cout << "This is Status Server" << std::endl;
 		RunServer();
 	}
 	catch (std::exception const& e) {

@@ -10,6 +10,8 @@ using message::GetChatServerReq;
 using message::GetChatServerRsp;
 using message::StatusService;
 
+using message::LoginReq;
+using message::LoginRsp;
 
 //struct ChatServer {
 //	std::string host;
@@ -46,4 +48,10 @@ public:
         GetChatServerRsp* reply) override;
     std::vector<ChatServer> _servers;
     int _server_index;
+    Status Login(ServerContext* context, const LoginReq* request,LoginRsp* reply);
+private:
+        std::unordered_map<int,std::string>_tokens;
+        std::mutex _tokens_mutex;
+        std::mutex _ChatServerLock;
+        void InsertToken(int uid, std::string token);
 };

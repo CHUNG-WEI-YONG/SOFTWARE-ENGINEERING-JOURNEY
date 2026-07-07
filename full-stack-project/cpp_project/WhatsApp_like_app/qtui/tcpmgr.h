@@ -30,7 +30,7 @@ public slots:
     void slot_send_data(ReqId id, QString data);
 
 signals:
-    void sig_con_success(bool bsuccess);
+    void sig_con_success(bool bsuccess=true);
     void sig_send_data(ReqId id ,QString data);
     void sig_switch_chat_dlg();
     void login_failed(int);

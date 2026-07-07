@@ -49,24 +49,39 @@ void StatusConPool::Close() {
 	_cv.notify_all();
 }
 
+//
 GetChatServerRsp StatusGrpcClient::GetChatServer(int uid) {
 	ClientContext con;
 	GetChatServerReq req;
 	GetChatServerRsp rsp;
+
 	req.set_uid(uid);
+
+	// 1. 提取连接
 	auto stub = _pool->getConn();
-	Status status = stub->GetChatServer(&con, req, &rsp);
-	Defer defer([&stub, this]() {
-		_pool->returnConn(std::move(stub));
-		});
-	if (status.ok()) {
-		return rsp;
-	}
-	else {
+	if (!stub) {
 		rsp.set_error(ErrorCodes::RPC_Failed);
 		return rsp;
 	}
 
+	// 2. 🎯 修正：一旦拿到连接，必须立刻、雷打不动地挂上 Defer 回收守卫！
+	Defer defer([&stub, this]() {
+		_pool->returnConn(std::move(stub));
+		});
+
+	// 3. 发起真实的远程 RPC 呼叫
+	Status status = stub->GetChatServer(&con, req, &rsp);
+
+	if (status.ok()) {
+		//std::cout << rsp.AppendToString();
+		// 此时 rsp 依然鲜活，直接返回它，C++17 之后的 RVO (返回值优化) 会保证其安全安全交付
+		return rsp;
+	}
+	else {
+		std::cerr << "gRPC Status Error: " << status.error_message() << std::endl;
+		rsp.set_error(ErrorCodes::RPC_Failed);
+		return rsp;
+	}
 }
 
 StatusGrpcClient::StatusGrpcClient() {

@@ -117,9 +117,9 @@ void LoginDialog::slot_conn_success(bool success)
     }
 }
 
-void LoginDialog::slot_conn_failed(int err)
+void LoginDialog::slot_conn_failed(ErrorCode err)
 {
-    QString result=QString("Login failde , Error as %1").arg(err);
+    QString result=QString("Login failed , Error as %1").arg(static_cast<int>(err));
     showTip(result,false);
     enableBtn(true);
 }
@@ -159,6 +159,13 @@ void LoginDialog::initHttpHandlers()
         si.host=jsonObj["host"].toString();
         si.port=jsonObj["port"].toString();
         si.token=jsonObj["token"].toString();
+
+        if (si.host.isEmpty() || si.port.isEmpty()) {
+            qWarning() << "💥 严重错误：网关分配的聊天服务器 IP 或 端口为空！请检查 ChatServer 是否启动！";
+            showTip(tr("No available chat server found"), false);
+            enableBtn(true);
+            return; // 物理强行拦截，绝对不让 QTcpSocket 去盲连空地址
+        }
 
         _uid=si.uid;
         _token=si.token;

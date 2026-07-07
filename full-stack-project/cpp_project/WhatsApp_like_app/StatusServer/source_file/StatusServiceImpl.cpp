@@ -77,13 +77,15 @@ std::string GenerateStringUUID() {
 
 Status StatusServiceImpl::GetChatServer(ServerContext* context, const GetChatServerReq* request, GetChatServerRsp* reply)
 {
+    //std::lock_guard<std::mutex> lock(_ChatServerLock);
     std::string prefix("status server has received :  ");
-    _server_index = (_server_index++) % (_servers.size());
+    _server_index = (_server_index+1) % (_servers.size());
     auto& server = _servers[_server_index];
     reply->set_host(server.host);
     reply->set_port(server.port);
     reply->set_error(ErrorCodes::Success);
     reply->set_token(GenerateStringUUID());
+    InsertToken(request->uid(), reply->token());
     return Status::OK;
 }
 StatusServiceImpl::StatusServiceImpl() :_server_index(0)
@@ -93,11 +95,35 @@ StatusServiceImpl::StatusServiceImpl() :_server_index(0)
     server.port = cfg["ChatServer1"]["Port"];
     server.host = cfg["ChatServer1"]["Host"];
     _servers.push_back(server);
+    std::cout << "🚀 StatusServer Loaded ChatServer1: " << server.host << ":" << server.port << std::endl;
     server.port = cfg["ChatServer2"]["Port"];
     server.host = cfg["ChatServer2"]["Host"];
     _servers.push_back(server);
+    std::cout << "🚀 StatusServer Loaded ChatServer2: " << server.host << ":" << server.port << std::endl;
 }
 
-Status StatusServiceImpl::Login(ServerContext* context, const GetChatServerReq* request, GetChatServerRsp* reply){
-    
+Status StatusServiceImpl::Login(ServerContext* context, const LoginReq* request, LoginRsp* reply){
+    int uid=request->uid();
+    std::string token=request->token();
+    std::lock_guard<std::mutex> lock(_tokens_mutex);
+    auto iter=_tokens.find(uid);
+    if(iter==_tokens.end()){
+        reply->set_error(ErrorCodes::UidInvalid);
+        return Status::OK;
+    }
+    if(iter->second!=token){
+        reply->set_error(ErrorCodes::TokenInvalid);
+        return Status::OK;
+    }
+    reply->set_error(ErrorCodes::Success);
+    reply->set_uid(uid);
+    reply->set_token(token);
+    return Status::OK;
+
+}
+
+void StatusServiceImpl::InsertToken(int uid, std::string token){
+    std::lock_guard<std::mutex> lock(_tokens_mutex);
+    _tokens[uid]=token;
+
 }

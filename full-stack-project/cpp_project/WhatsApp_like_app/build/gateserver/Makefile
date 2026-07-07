@@ -366,6 +366,102 @@ source_file/LogicSystem.cpp.s:
 	cd /d C:\Users\ASUSTUF\Desktop\SE_JOURNEY\full-stack-project\cpp_project\WhatsApp_like_app\build && $(MAKE) $(MAKESILENT) -f gateserver\CMakeFiles\GateServer.dir\build.make gateserver/CMakeFiles/GateServer.dir/source_file/LogicSystem.cpp.s
 .PHONY : source_file/LogicSystem.cpp.s
 
+source_file/MysqlMgr.obj: source_file/MysqlMgr.cpp.obj
+.PHONY : source_file/MysqlMgr.obj
+
+# target to build an object file
+source_file/MysqlMgr.cpp.obj:
+	cd /d C:\Users\ASUSTUF\Desktop\SE_JOURNEY\full-stack-project\cpp_project\WhatsApp_like_app\build && $(MAKE) $(MAKESILENT) -f gateserver\CMakeFiles\GateServer.dir\build.make gateserver/CMakeFiles/GateServer.dir/source_file/MysqlMgr.cpp.obj
+.PHONY : source_file/MysqlMgr.cpp.obj
+
+source_file/MysqlMgr.i: source_file/MysqlMgr.cpp.i
+.PHONY : source_file/MysqlMgr.i
+
+# target to preprocess a source file
+source_file/MysqlMgr.cpp.i:
+	cd /d C:\Users\ASUSTUF\Desktop\SE_JOURNEY\full-stack-project\cpp_project\WhatsApp_like_app\build && $(MAKE) $(MAKESILENT) -f gateserver\CMakeFiles\GateServer.dir\build.make gateserver/CMakeFiles/GateServer.dir/source_file/MysqlMgr.cpp.i
+.PHONY : source_file/MysqlMgr.cpp.i
+
+source_file/MysqlMgr.s: source_file/MysqlMgr.cpp.s
+.PHONY : source_file/MysqlMgr.s
+
+# target to generate assembly for a file
+source_file/MysqlMgr.cpp.s:
+	cd /d C:\Users\ASUSTUF\Desktop\SE_JOURNEY\full-stack-project\cpp_project\WhatsApp_like_app\build && $(MAKE) $(MAKESILENT) -f gateserver\CMakeFiles\GateServer.dir\build.make gateserver/CMakeFiles/GateServer.dir/source_file/MysqlMgr.cpp.s
+.PHONY : source_file/MysqlMgr.cpp.s
+
+source_file/MysqlPool.obj: source_file/MysqlPool.cpp.obj
+.PHONY : source_file/MysqlPool.obj
+
+# target to build an object file
+source_file/MysqlPool.cpp.obj:
+	cd /d C:\Users\ASUSTUF\Desktop\SE_JOURNEY\full-stack-project\cpp_project\WhatsApp_like_app\build && $(MAKE) $(MAKESILENT) -f gateserver\CMakeFiles\GateServer.dir\build.make gateserver/CMakeFiles/GateServer.dir/source_file/MysqlPool.cpp.obj
+.PHONY : source_file/MysqlPool.cpp.obj
+
+source_file/MysqlPool.i: source_file/MysqlPool.cpp.i
+.PHONY : source_file/MysqlPool.i
+
+# target to preprocess a source file
+source_file/MysqlPool.cpp.i:
+	cd /d C:\Users\ASUSTUF\Desktop\SE_JOURNEY\full-stack-project\cpp_project\WhatsApp_like_app\build && $(MAKE) $(MAKESILENT) -f gateserver\CMakeFiles\GateServer.dir\build.make gateserver/CMakeFiles/GateServer.dir/source_file/MysqlPool.cpp.i
+.PHONY : source_file/MysqlPool.cpp.i
+
+source_file/MysqlPool.s: source_file/MysqlPool.cpp.s
+.PHONY : source_file/MysqlPool.s
+
+# target to generate assembly for a file
+source_file/MysqlPool.cpp.s:
+	cd /d C:\Users\ASUSTUF\Desktop\SE_JOURNEY\full-stack-project\cpp_project\WhatsApp_like_app\build && $(MAKE) $(MAKESILENT) -f gateserver\CMakeFiles\GateServer.dir\build.make gateserver/CMakeFiles/GateServer.dir/source_file/MysqlPool.cpp.s
+.PHONY : source_file/MysqlPool.cpp.s
+
+source_file/RedisMjr.obj: source_file/RedisMjr.cpp.obj
+.PHONY : source_file/RedisMjr.obj
+
+# target to build an object file
+source_file/RedisMjr.cpp.obj:
+	cd /d C:\Users\ASUSTUF\Desktop\SE_JOURNEY\full-stack-project\cpp_project\WhatsApp_like_app\build && $(MAKE) $(MAKESILENT) -f gateserver\CMakeFiles\GateServer.dir\build.make gateserver/CMakeFiles/GateServer.dir/source_file/RedisMjr.cpp.obj
+.PHONY : source_file/RedisMjr.cpp.obj
+
+source_file/RedisMjr.i: source_file/RedisMjr.cpp.i
+.PHONY : source_file/RedisMjr.i
+
+# target to preprocess a source file
+source_file/RedisMjr.cpp.i:
+	cd /d C:\Users\ASUSTUF\Desktop\SE_JOURNEY\full-stack-project\cpp_project\WhatsApp_like_app\build && $(MAKE) $(MAKESILENT) -f gateserver\CMakeFiles\GateServer.dir\build.make gateserver/CMakeFiles/GateServer.dir/source_file/RedisMjr.cpp.i
+.PHONY : source_file/RedisMjr.cpp.i
+
+source_file/RedisMjr.s: source_file/RedisMjr.cpp.s
+.PHONY : source_file/RedisMjr.s
+
+# target to generate assembly for a file
+source_file/RedisMjr.cpp.s:
+	cd /d C:\Users\ASUSTUF\Desktop\SE_JOURNEY\full-stack-project\cpp_project\WhatsApp_like_app\build && $(MAKE) $(MAKESILENT) -f gateserver\CMakeFiles\GateServer.dir\build.make gateserver/CMakeFiles/GateServer.dir/source_file/RedisMjr.cpp.s
+.PHONY : source_file/RedisMjr.cpp.s
+
+source_file/StatusGrpcClient.obj: source_file/StatusGrpcClient.cpp.obj
+.PHONY : source_file/StatusGrpcClient.obj
+
+# target to build an object file
+source_file/StatusGrpcClient.cpp.obj:
+	cd /d C:\Users\ASUSTUF\Desktop\SE_JOURNEY\full-stack-project\cpp_project\WhatsApp_like_app\build && $(MAKE) $(MAKESILENT) -f gateserver\CMakeFiles\GateServer.dir\build.make gateserver/CMakeFiles/GateServer.dir/source_file/StatusGrpcClient.cpp.obj
+.PHONY : source_file/StatusGrpcClient.cpp.obj
+
+source_file/StatusGrpcClient.i: source_file/StatusGrpcClient.cpp.i
+.PHONY : source_file/StatusGrpcClient.i
+
+# target to preprocess a source file
+source_file/StatusGrpcClient.cpp.i:
+	cd /d C:\Users\ASUSTUF\Desktop\SE_JOURNEY\full-stack-project\cpp_project\WhatsApp_like_app\build && $(MAKE) $(MAKESILENT) -f gateserver\CMakeFiles\GateServer.dir\build.make gateserver/CMakeFiles/GateServer.dir/source_file/StatusGrpcClient.cpp.i
+.PHONY : source_file/StatusGrpcClient.cpp.i
+
+source_file/StatusGrpcClient.s: source_file/StatusGrpcClient.cpp.s
+.PHONY : source_file/StatusGrpcClient.s
+
+# target to generate assembly for a file
+source_file/StatusGrpcClient.cpp.s:
+	cd /d C:\Users\ASUSTUF\Desktop\SE_JOURNEY\full-stack-project\cpp_project\WhatsApp_like_app\build && $(MAKE) $(MAKESILENT) -f gateserver\CMakeFiles\GateServer.dir\build.make gateserver/CMakeFiles/GateServer.dir/source_file/StatusGrpcClient.cpp.s
+.PHONY : source_file/StatusGrpcClient.cpp.s
+
 source_file/VerifyGrpcClient.obj: source_file/VerifyGrpcClient.cpp.obj
 .PHONY : source_file/VerifyGrpcClient.obj
 
@@ -427,6 +523,18 @@ help:
 	@echo ... source_file/LogicSystem.obj
 	@echo ... source_file/LogicSystem.i
 	@echo ... source_file/LogicSystem.s
+	@echo ... source_file/MysqlMgr.obj
+	@echo ... source_file/MysqlMgr.i
+	@echo ... source_file/MysqlMgr.s
+	@echo ... source_file/MysqlPool.obj
+	@echo ... source_file/MysqlPool.i
+	@echo ... source_file/MysqlPool.s
+	@echo ... source_file/RedisMjr.obj
+	@echo ... source_file/RedisMjr.i
+	@echo ... source_file/RedisMjr.s
+	@echo ... source_file/StatusGrpcClient.obj
+	@echo ... source_file/StatusGrpcClient.i
+	@echo ... source_file/StatusGrpcClient.s
 	@echo ... source_file/VerifyGrpcClient.obj
 	@echo ... source_file/VerifyGrpcClient.i
 	@echo ... source_file/VerifyGrpcClient.s

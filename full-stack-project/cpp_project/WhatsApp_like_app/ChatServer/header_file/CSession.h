@@ -46,6 +46,7 @@ private:
 
 	int _uuid;
 	std::string _session_id;
+
 	std::queue<std::shared_ptr<SendNode> > _send_que;
 	std::mutex _send_lock;
 	std::mutex _session_mtx;

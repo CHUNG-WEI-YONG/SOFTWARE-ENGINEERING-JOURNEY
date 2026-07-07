@@ -171,11 +171,71 @@ gateserver/CMakeFiles/GateServer.dir/source_file/LogicSystem.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/GateServer.dir/source_file/LogicSystem.cpp.s"
 	cd /d C:\Users\ASUSTUF\Desktop\SE_JOURNEY\full-stack-project\cpp_project\WhatsApp_like_app\build\gateserver && C:\msys64\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Users\ASUSTUF\Desktop\SE_JOURNEY\full-stack-project\cpp_project\WhatsApp_like_app\gateserver\source_file\LogicSystem.cpp -o CMakeFiles\GateServer.dir\source_file\LogicSystem.cpp.s
 
+gateserver/CMakeFiles/GateServer.dir/source_file/MysqlMgr.cpp.obj: gateserver/CMakeFiles/GateServer.dir/flags.make
+gateserver/CMakeFiles/GateServer.dir/source_file/MysqlMgr.cpp.obj: gateserver/CMakeFiles/GateServer.dir/includes_CXX.rsp
+gateserver/CMakeFiles/GateServer.dir/source_file/MysqlMgr.cpp.obj: C:/Users/ASUSTUF/Desktop/SE_JOURNEY/full-stack-project/cpp_project/WhatsApp_like_app/gateserver/source_file/MysqlMgr.cpp
+gateserver/CMakeFiles/GateServer.dir/source_file/MysqlMgr.cpp.obj: gateserver/CMakeFiles/GateServer.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Users\ASUSTUF\Desktop\SE_JOURNEY\full-stack-project\cpp_project\WhatsApp_like_app\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object gateserver/CMakeFiles/GateServer.dir/source_file/MysqlMgr.cpp.obj"
+	cd /d C:\Users\ASUSTUF\Desktop\SE_JOURNEY\full-stack-project\cpp_project\WhatsApp_like_app\build\gateserver && C:\msys64\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT gateserver/CMakeFiles/GateServer.dir/source_file/MysqlMgr.cpp.obj -MF CMakeFiles\GateServer.dir\source_file\MysqlMgr.cpp.obj.d -o CMakeFiles\GateServer.dir\source_file\MysqlMgr.cpp.obj -c C:\Users\ASUSTUF\Desktop\SE_JOURNEY\full-stack-project\cpp_project\WhatsApp_like_app\gateserver\source_file\MysqlMgr.cpp
+
+gateserver/CMakeFiles/GateServer.dir/source_file/MysqlMgr.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/GateServer.dir/source_file/MysqlMgr.cpp.i"
+	cd /d C:\Users\ASUSTUF\Desktop\SE_JOURNEY\full-stack-project\cpp_project\WhatsApp_like_app\build\gateserver && C:\msys64\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\Users\ASUSTUF\Desktop\SE_JOURNEY\full-stack-project\cpp_project\WhatsApp_like_app\gateserver\source_file\MysqlMgr.cpp > CMakeFiles\GateServer.dir\source_file\MysqlMgr.cpp.i
+
+gateserver/CMakeFiles/GateServer.dir/source_file/MysqlMgr.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/GateServer.dir/source_file/MysqlMgr.cpp.s"
+	cd /d C:\Users\ASUSTUF\Desktop\SE_JOURNEY\full-stack-project\cpp_project\WhatsApp_like_app\build\gateserver && C:\msys64\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Users\ASUSTUF\Desktop\SE_JOURNEY\full-stack-project\cpp_project\WhatsApp_like_app\gateserver\source_file\MysqlMgr.cpp -o CMakeFiles\GateServer.dir\source_file\MysqlMgr.cpp.s
+
+gateserver/CMakeFiles/GateServer.dir/source_file/MysqlPool.cpp.obj: gateserver/CMakeFiles/GateServer.dir/flags.make
+gateserver/CMakeFiles/GateServer.dir/source_file/MysqlPool.cpp.obj: gateserver/CMakeFiles/GateServer.dir/includes_CXX.rsp
+gateserver/CMakeFiles/GateServer.dir/source_file/MysqlPool.cpp.obj: C:/Users/ASUSTUF/Desktop/SE_JOURNEY/full-stack-project/cpp_project/WhatsApp_like_app/gateserver/source_file/MysqlPool.cpp
+gateserver/CMakeFiles/GateServer.dir/source_file/MysqlPool.cpp.obj: gateserver/CMakeFiles/GateServer.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Users\ASUSTUF\Desktop\SE_JOURNEY\full-stack-project\cpp_project\WhatsApp_like_app\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building CXX object gateserver/CMakeFiles/GateServer.dir/source_file/MysqlPool.cpp.obj"
+	cd /d C:\Users\ASUSTUF\Desktop\SE_JOURNEY\full-stack-project\cpp_project\WhatsApp_like_app\build\gateserver && C:\msys64\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT gateserver/CMakeFiles/GateServer.dir/source_file/MysqlPool.cpp.obj -MF CMakeFiles\GateServer.dir\source_file\MysqlPool.cpp.obj.d -o CMakeFiles\GateServer.dir\source_file\MysqlPool.cpp.obj -c C:\Users\ASUSTUF\Desktop\SE_JOURNEY\full-stack-project\cpp_project\WhatsApp_like_app\gateserver\source_file\MysqlPool.cpp
+
+gateserver/CMakeFiles/GateServer.dir/source_file/MysqlPool.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/GateServer.dir/source_file/MysqlPool.cpp.i"
+	cd /d C:\Users\ASUSTUF\Desktop\SE_JOURNEY\full-stack-project\cpp_project\WhatsApp_like_app\build\gateserver && C:\msys64\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\Users\ASUSTUF\Desktop\SE_JOURNEY\full-stack-project\cpp_project\WhatsApp_like_app\gateserver\source_file\MysqlPool.cpp > CMakeFiles\GateServer.dir\source_file\MysqlPool.cpp.i
+
+gateserver/CMakeFiles/GateServer.dir/source_file/MysqlPool.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/GateServer.dir/source_file/MysqlPool.cpp.s"
+	cd /d C:\Users\ASUSTUF\Desktop\SE_JOURNEY\full-stack-project\cpp_project\WhatsApp_like_app\build\gateserver && C:\msys64\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Users\ASUSTUF\Desktop\SE_JOURNEY\full-stack-project\cpp_project\WhatsApp_like_app\gateserver\source_file\MysqlPool.cpp -o CMakeFiles\GateServer.dir\source_file\MysqlPool.cpp.s
+
+gateserver/CMakeFiles/GateServer.dir/source_file/RedisMjr.cpp.obj: gateserver/CMakeFiles/GateServer.dir/flags.make
+gateserver/CMakeFiles/GateServer.dir/source_file/RedisMjr.cpp.obj: gateserver/CMakeFiles/GateServer.dir/includes_CXX.rsp
+gateserver/CMakeFiles/GateServer.dir/source_file/RedisMjr.cpp.obj: C:/Users/ASUSTUF/Desktop/SE_JOURNEY/full-stack-project/cpp_project/WhatsApp_like_app/gateserver/source_file/RedisMjr.cpp
+gateserver/CMakeFiles/GateServer.dir/source_file/RedisMjr.cpp.obj: gateserver/CMakeFiles/GateServer.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Users\ASUSTUF\Desktop\SE_JOURNEY\full-stack-project\cpp_project\WhatsApp_like_app\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Building CXX object gateserver/CMakeFiles/GateServer.dir/source_file/RedisMjr.cpp.obj"
+	cd /d C:\Users\ASUSTUF\Desktop\SE_JOURNEY\full-stack-project\cpp_project\WhatsApp_like_app\build\gateserver && C:\msys64\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT gateserver/CMakeFiles/GateServer.dir/source_file/RedisMjr.cpp.obj -MF CMakeFiles\GateServer.dir\source_file\RedisMjr.cpp.obj.d -o CMakeFiles\GateServer.dir\source_file\RedisMjr.cpp.obj -c C:\Users\ASUSTUF\Desktop\SE_JOURNEY\full-stack-project\cpp_project\WhatsApp_like_app\gateserver\source_file\RedisMjr.cpp
+
+gateserver/CMakeFiles/GateServer.dir/source_file/RedisMjr.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/GateServer.dir/source_file/RedisMjr.cpp.i"
+	cd /d C:\Users\ASUSTUF\Desktop\SE_JOURNEY\full-stack-project\cpp_project\WhatsApp_like_app\build\gateserver && C:\msys64\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\Users\ASUSTUF\Desktop\SE_JOURNEY\full-stack-project\cpp_project\WhatsApp_like_app\gateserver\source_file\RedisMjr.cpp > CMakeFiles\GateServer.dir\source_file\RedisMjr.cpp.i
+
+gateserver/CMakeFiles/GateServer.dir/source_file/RedisMjr.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/GateServer.dir/source_file/RedisMjr.cpp.s"
+	cd /d C:\Users\ASUSTUF\Desktop\SE_JOURNEY\full-stack-project\cpp_project\WhatsApp_like_app\build\gateserver && C:\msys64\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Users\ASUSTUF\Desktop\SE_JOURNEY\full-stack-project\cpp_project\WhatsApp_like_app\gateserver\source_file\RedisMjr.cpp -o CMakeFiles\GateServer.dir\source_file\RedisMjr.cpp.s
+
+gateserver/CMakeFiles/GateServer.dir/source_file/StatusGrpcClient.cpp.obj: gateserver/CMakeFiles/GateServer.dir/flags.make
+gateserver/CMakeFiles/GateServer.dir/source_file/StatusGrpcClient.cpp.obj: gateserver/CMakeFiles/GateServer.dir/includes_CXX.rsp
+gateserver/CMakeFiles/GateServer.dir/source_file/StatusGrpcClient.cpp.obj: C:/Users/ASUSTUF/Desktop/SE_JOURNEY/full-stack-project/cpp_project/WhatsApp_like_app/gateserver/source_file/StatusGrpcClient.cpp
+gateserver/CMakeFiles/GateServer.dir/source_file/StatusGrpcClient.cpp.obj: gateserver/CMakeFiles/GateServer.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Users\ASUSTUF\Desktop\SE_JOURNEY\full-stack-project\cpp_project\WhatsApp_like_app\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Building CXX object gateserver/CMakeFiles/GateServer.dir/source_file/StatusGrpcClient.cpp.obj"
+	cd /d C:\Users\ASUSTUF\Desktop\SE_JOURNEY\full-stack-project\cpp_project\WhatsApp_like_app\build\gateserver && C:\msys64\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT gateserver/CMakeFiles/GateServer.dir/source_file/StatusGrpcClient.cpp.obj -MF CMakeFiles\GateServer.dir\source_file\StatusGrpcClient.cpp.obj.d -o CMakeFiles\GateServer.dir\source_file\StatusGrpcClient.cpp.obj -c C:\Users\ASUSTUF\Desktop\SE_JOURNEY\full-stack-project\cpp_project\WhatsApp_like_app\gateserver\source_file\StatusGrpcClient.cpp
+
+gateserver/CMakeFiles/GateServer.dir/source_file/StatusGrpcClient.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/GateServer.dir/source_file/StatusGrpcClient.cpp.i"
+	cd /d C:\Users\ASUSTUF\Desktop\SE_JOURNEY\full-stack-project\cpp_project\WhatsApp_like_app\build\gateserver && C:\msys64\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\Users\ASUSTUF\Desktop\SE_JOURNEY\full-stack-project\cpp_project\WhatsApp_like_app\gateserver\source_file\StatusGrpcClient.cpp > CMakeFiles\GateServer.dir\source_file\StatusGrpcClient.cpp.i
+
+gateserver/CMakeFiles/GateServer.dir/source_file/StatusGrpcClient.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/GateServer.dir/source_file/StatusGrpcClient.cpp.s"
+	cd /d C:\Users\ASUSTUF\Desktop\SE_JOURNEY\full-stack-project\cpp_project\WhatsApp_like_app\build\gateserver && C:\msys64\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Users\ASUSTUF\Desktop\SE_JOURNEY\full-stack-project\cpp_project\WhatsApp_like_app\gateserver\source_file\StatusGrpcClient.cpp -o CMakeFiles\GateServer.dir\source_file\StatusGrpcClient.cpp.s
+
 gateserver/CMakeFiles/GateServer.dir/source_file/VerifyGrpcClient.cpp.obj: gateserver/CMakeFiles/GateServer.dir/flags.make
 gateserver/CMakeFiles/GateServer.dir/source_file/VerifyGrpcClient.cpp.obj: gateserver/CMakeFiles/GateServer.dir/includes_CXX.rsp
 gateserver/CMakeFiles/GateServer.dir/source_file/VerifyGrpcClient.cpp.obj: C:/Users/ASUSTUF/Desktop/SE_JOURNEY/full-stack-project/cpp_project/WhatsApp_like_app/gateserver/source_file/VerifyGrpcClient.cpp
 gateserver/CMakeFiles/GateServer.dir/source_file/VerifyGrpcClient.cpp.obj: gateserver/CMakeFiles/GateServer.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Users\ASUSTUF\Desktop\SE_JOURNEY\full-stack-project\cpp_project\WhatsApp_like_app\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object gateserver/CMakeFiles/GateServer.dir/source_file/VerifyGrpcClient.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Users\ASUSTUF\Desktop\SE_JOURNEY\full-stack-project\cpp_project\WhatsApp_like_app\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Building CXX object gateserver/CMakeFiles/GateServer.dir/source_file/VerifyGrpcClient.cpp.obj"
 	cd /d C:\Users\ASUSTUF\Desktop\SE_JOURNEY\full-stack-project\cpp_project\WhatsApp_like_app\build\gateserver && C:\msys64\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT gateserver/CMakeFiles/GateServer.dir/source_file/VerifyGrpcClient.cpp.obj -MF CMakeFiles\GateServer.dir\source_file\VerifyGrpcClient.cpp.obj.d -o CMakeFiles\GateServer.dir\source_file\VerifyGrpcClient.cpp.obj -c C:\Users\ASUSTUF\Desktop\SE_JOURNEY\full-stack-project\cpp_project\WhatsApp_like_app\gateserver\source_file\VerifyGrpcClient.cpp
 
 gateserver/CMakeFiles/GateServer.dir/source_file/VerifyGrpcClient.cpp.i: cmake_force
@@ -190,7 +250,7 @@ gateserver/CMakeFiles/GateServer.dir/message.pb.cc.obj: gateserver/CMakeFiles/Ga
 gateserver/CMakeFiles/GateServer.dir/message.pb.cc.obj: gateserver/CMakeFiles/GateServer.dir/includes_CXX.rsp
 gateserver/CMakeFiles/GateServer.dir/message.pb.cc.obj: gateserver/message.pb.cc
 gateserver/CMakeFiles/GateServer.dir/message.pb.cc.obj: gateserver/CMakeFiles/GateServer.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Users\ASUSTUF\Desktop\SE_JOURNEY\full-stack-project\cpp_project\WhatsApp_like_app\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building CXX object gateserver/CMakeFiles/GateServer.dir/message.pb.cc.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Users\ASUSTUF\Desktop\SE_JOURNEY\full-stack-project\cpp_project\WhatsApp_like_app\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_13) "Building CXX object gateserver/CMakeFiles/GateServer.dir/message.pb.cc.obj"
 	cd /d C:\Users\ASUSTUF\Desktop\SE_JOURNEY\full-stack-project\cpp_project\WhatsApp_like_app\build\gateserver && C:\msys64\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT gateserver/CMakeFiles/GateServer.dir/message.pb.cc.obj -MF CMakeFiles\GateServer.dir\message.pb.cc.obj.d -o CMakeFiles\GateServer.dir\message.pb.cc.obj -c C:\Users\ASUSTUF\Desktop\SE_JOURNEY\full-stack-project\cpp_project\WhatsApp_like_app\build\gateserver\message.pb.cc
 
 gateserver/CMakeFiles/GateServer.dir/message.pb.cc.i: cmake_force
@@ -205,7 +265,7 @@ gateserver/CMakeFiles/GateServer.dir/message.grpc.pb.cc.obj: gateserver/CMakeFil
 gateserver/CMakeFiles/GateServer.dir/message.grpc.pb.cc.obj: gateserver/CMakeFiles/GateServer.dir/includes_CXX.rsp
 gateserver/CMakeFiles/GateServer.dir/message.grpc.pb.cc.obj: gateserver/message.grpc.pb.cc
 gateserver/CMakeFiles/GateServer.dir/message.grpc.pb.cc.obj: gateserver/CMakeFiles/GateServer.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Users\ASUSTUF\Desktop\SE_JOURNEY\full-stack-project\cpp_project\WhatsApp_like_app\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Building CXX object gateserver/CMakeFiles/GateServer.dir/message.grpc.pb.cc.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Users\ASUSTUF\Desktop\SE_JOURNEY\full-stack-project\cpp_project\WhatsApp_like_app\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_14) "Building CXX object gateserver/CMakeFiles/GateServer.dir/message.grpc.pb.cc.obj"
 	cd /d C:\Users\ASUSTUF\Desktop\SE_JOURNEY\full-stack-project\cpp_project\WhatsApp_like_app\build\gateserver && C:\msys64\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT gateserver/CMakeFiles/GateServer.dir/message.grpc.pb.cc.obj -MF CMakeFiles\GateServer.dir\message.grpc.pb.cc.obj.d -o CMakeFiles\GateServer.dir\message.grpc.pb.cc.obj -c C:\Users\ASUSTUF\Desktop\SE_JOURNEY\full-stack-project\cpp_project\WhatsApp_like_app\build\gateserver\message.grpc.pb.cc
 
 gateserver/CMakeFiles/GateServer.dir/message.grpc.pb.cc.i: cmake_force
@@ -224,6 +284,10 @@ GateServer_OBJECTS = \
 "CMakeFiles/GateServer.dir/source_file/GateServer.cpp.obj" \
 "CMakeFiles/GateServer.dir/source_file/HttpConnection.cpp.obj" \
 "CMakeFiles/GateServer.dir/source_file/LogicSystem.cpp.obj" \
+"CMakeFiles/GateServer.dir/source_file/MysqlMgr.cpp.obj" \
+"CMakeFiles/GateServer.dir/source_file/MysqlPool.cpp.obj" \
+"CMakeFiles/GateServer.dir/source_file/RedisMjr.cpp.obj" \
+"CMakeFiles/GateServer.dir/source_file/StatusGrpcClient.cpp.obj" \
 "CMakeFiles/GateServer.dir/source_file/VerifyGrpcClient.cpp.obj" \
 "CMakeFiles/GateServer.dir/message.pb.cc.obj" \
 "CMakeFiles/GateServer.dir/message.grpc.pb.cc.obj"
@@ -237,12 +301,18 @@ gateserver/GateServer.exe: gateserver/CMakeFiles/GateServer.dir/source_file/Cser
 gateserver/GateServer.exe: gateserver/CMakeFiles/GateServer.dir/source_file/GateServer.cpp.obj
 gateserver/GateServer.exe: gateserver/CMakeFiles/GateServer.dir/source_file/HttpConnection.cpp.obj
 gateserver/GateServer.exe: gateserver/CMakeFiles/GateServer.dir/source_file/LogicSystem.cpp.obj
+gateserver/GateServer.exe: gateserver/CMakeFiles/GateServer.dir/source_file/MysqlMgr.cpp.obj
+gateserver/GateServer.exe: gateserver/CMakeFiles/GateServer.dir/source_file/MysqlPool.cpp.obj
+gateserver/GateServer.exe: gateserver/CMakeFiles/GateServer.dir/source_file/RedisMjr.cpp.obj
+gateserver/GateServer.exe: gateserver/CMakeFiles/GateServer.dir/source_file/StatusGrpcClient.cpp.obj
 gateserver/GateServer.exe: gateserver/CMakeFiles/GateServer.dir/source_file/VerifyGrpcClient.cpp.obj
 gateserver/GateServer.exe: gateserver/CMakeFiles/GateServer.dir/message.pb.cc.obj
 gateserver/GateServer.exe: gateserver/CMakeFiles/GateServer.dir/message.grpc.pb.cc.obj
 gateserver/GateServer.exe: gateserver/CMakeFiles/GateServer.dir/build.make
 gateserver/GateServer.exe: C:/vcpkg/installed/x64-windows/lib/grpc++.lib
 gateserver/GateServer.exe: C:/vcpkg/installed/x64-windows/lib/grpc++_reflection.lib
+gateserver/GateServer.exe: C:/vcpkg/installed/x64-windows/lib/redis++.lib
+gateserver/GateServer.exe: C:/vcpkg/installed/x64-windows/lib/mysqlcppconnx.lib
 gateserver/GateServer.exe: C:/vcpkg/installed/x64-windows/lib/grpc++.lib
 gateserver/GateServer.exe: C:/vcpkg/installed/x64-windows/lib/libprotobuf.lib
 gateserver/GateServer.exe: C:/vcpkg/installed/x64-windows/lib/utf8_validity.lib
@@ -275,10 +345,11 @@ gateserver/GateServer.exe: C:/vcpkg/installed/x64-windows/lib/abseil_dll.lib
 gateserver/GateServer.exe: C:/vcpkg/installed/x64-windows/lib/libssl.lib
 gateserver/GateServer.exe: C:/vcpkg/installed/x64-windows/lib/libcrypto.lib
 gateserver/GateServer.exe: C:/vcpkg/installed/x64-windows/lib/address_sorting.lib
+gateserver/GateServer.exe: C:/vcpkg/installed/x64-windows/lib/hiredis.lib
 gateserver/GateServer.exe: gateserver/CMakeFiles/GateServer.dir/linkLibs.rsp
 gateserver/GateServer.exe: gateserver/CMakeFiles/GateServer.dir/objects1.rsp
 gateserver/GateServer.exe: gateserver/CMakeFiles/GateServer.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=C:\Users\ASUSTUF\Desktop\SE_JOURNEY\full-stack-project\cpp_project\WhatsApp_like_app\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Linking CXX executable GateServer.exe"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=C:\Users\ASUSTUF\Desktop\SE_JOURNEY\full-stack-project\cpp_project\WhatsApp_like_app\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_15) "Linking CXX executable GateServer.exe"
 	cd /d C:\Users\ASUSTUF\Desktop\SE_JOURNEY\full-stack-project\cpp_project\WhatsApp_like_app\build\gateserver && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles\GateServer.dir\link.txt --verbose=$(VERBOSE)
 	cd /d C:\Users\ASUSTUF\Desktop\SE_JOURNEY\full-stack-project\cpp_project\WhatsApp_like_app\build\gateserver && C:\vcpkg\vcpkg.exe z-applocal --target-binary=C:/Users/ASUSTUF/Desktop/SE_JOURNEY/full-stack-project/cpp_project/WhatsApp_like_app/build/gateserver/GateServer.exe --installed-bin-dir=C:/vcpkg/installed/x64-windows/bin
 	cd /d C:\Users\ASUSTUF\Desktop\SE_JOURNEY\full-stack-project\cpp_project\WhatsApp_like_app\build\gateserver && C:\Qt\Tools\CMake_64\bin\cmake.exe -E copy_if_different C:/Users/ASUSTUF/Desktop/SE_JOURNEY/full-stack-project/cpp_project/WhatsApp_like_app/gateserver/config.ini C:/Users/ASUSTUF/Desktop/SE_JOURNEY/full-stack-project/cpp_project/WhatsApp_like_app/build/config.ini

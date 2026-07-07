@@ -11,6 +11,8 @@ find_package(gRPC CONFIG REQUIRED)
 find_package(Protobuf REQUIRED)
 find_package(Threads REQUIRED)
 find_package(unofficial-mysql-connector-cpp CONFIG REQUIRED)
+find_package(hiredis REQUIRED)
+find_package(redis++ CONFIG REQUIRED)
 
 
 # =================================================================

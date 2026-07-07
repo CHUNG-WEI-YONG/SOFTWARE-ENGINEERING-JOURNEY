@@ -8,7 +8,7 @@ class CSession;
 using boost::asio::ip::tcp;
 class Cserver {
 public:
-	Cserver(boost::asio::io_context& ioc,short port);
+	Cserver(boost::asio::io_context& ioc, uint16_t port);
 	~Cserver();
 	void ClearSession(std::string);
 private:
@@ -16,7 +16,7 @@ private:
 	void StartAccept();
 	std::mutex _mutex;
 	std::map<std::string, std::shared_ptr<CSession>> _sessions;
-	short _port;
+	uint16_t _port;
 	boost::asio::io_context& _ioc;
 	tcp::acceptor _acceptor;
 

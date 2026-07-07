@@ -44,3 +44,16 @@ Adding ui page for reset password function and adding a new route at LogicSystem
 ## DAY 12
 Adding logic in log in ui of qtui to allow user login function that send a Httphandlepost to gateserver , the function of handle user_login in logicsystem done , mgr and dao of sql is
 added with a checkpassword function and return the query of userinfo with name,token and id.
+
+## DAY 13 
+Adding the StatusServer that handle the connection pool with struct server that record port and ip and the connection count , it return the least connection count to the gateServer while recording the id and token
+
+## DAY 14
+Writing the tcp connection handle at ChatServer that use four functions , readhead,readlen,readbody,and readall, readlen is the function which read all the required length of byte then use the lambda function pass in to processs the data.
+Readhead call readall for the first four byte and get the id and length then call readbody,readbody read the next body and if not until the length it will continue reading. After reading all , it will save in a class Csession ,  a Csession is a class that manage by server for each user , it save , send and receive user data
+
+## DAY 15
+Adding login logic in the gateserver that allow it to return the userinfo to the frontend qtui , then also add on tcpmanager at qtui to manage the tcp connection with the chatserver.
+
+## WHOLE PROCESS UNTIL NOW
+The qtui send a login to the gateserver , then gateserver use sql to find the record of the user , if has , then gateserver use grpc to call getChatServer at the statusServer , statusServer get and save the id and generate a token then save the id and token in an unordered map , then the statusServer return it to gateserver through grpc , then gateserver use http to send to qtui. Qtui used the info return to connect to the server and return success when connected , but without changing page.
