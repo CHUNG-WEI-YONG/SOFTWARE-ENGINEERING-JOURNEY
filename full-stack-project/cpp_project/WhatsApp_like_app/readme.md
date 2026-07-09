@@ -57,3 +57,7 @@ Adding login logic in the gateserver that allow it to return the userinfo to the
 
 ## WHOLE PROCESS UNTIL NOW
 The qtui send a login to the gateserver , then gateserver use sql to find the record of the user , if has , then gateserver use grpc to call getChatServer at the statusServer , statusServer get and save the id and generate a token then save the id and token in an unordered map , then the statusServer return it to gateserver through grpc , then gateserver use http to send to qtui. Qtui used the info return to connect to the server and return success when connected , but without changing page.
+
+## DAY 16
+Write for the qt ui frontend for the chatserver , the ui has three parts .with tool widget , chat user widget with a small component widget for each user info , then use a qml file to do for the desgin of user chatpage.
+

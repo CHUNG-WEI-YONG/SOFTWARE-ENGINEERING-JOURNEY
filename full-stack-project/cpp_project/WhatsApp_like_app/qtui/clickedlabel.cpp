@@ -41,27 +41,72 @@ void ClickedLabel::leaveEvent(QEvent *event)
     QLabel::leaveEvent(event);
 }
 
+// void ClickedLabel::mousePressEvent(QMouseEvent *e)
+// {
+//     if(e->button()==Qt::LeftButton){
+//         if(_curstate==ClickLbState::Normal){
+//             _curstate=ClickLbState::Selected;
+//             qDebug()<<"Normal seen change to selected seen";
+//             setProperty("state",_selected_hover);
+//             repolish(this);
+//             update();
+//         }
+//         else{
+//             _curstate=ClickLbState::Normal;
+//             qDebug()<<"clicked change to normal hover";
+//             setProperty("state",_normal_hover);
+//             repolish(this);
+//             update();
+//         }
+//         emit clicked();
+
+//     }
+//     QLabel::mousePressEvent(e);
+// }
+
 void ClickedLabel::mousePressEvent(QMouseEvent *e)
 {
-    if(e->button()==Qt::LeftButton){
-        if(_curstate==ClickLbState::Normal){
-            _curstate=ClickLbState::Selected;
-            qDebug()<<"Normal seen change to selected seen";
-            setProperty("state",_selected_hover);
-            repolish(this);
-            update();
+    if(e->button() == Qt::LeftButton){
+        if(_curstate == ClickLbState::Normal){
+            // ──► 🎯 核心修正：锁定普通按下态 ◄──
+            setProperty("state", _normal_press);
         }
         else{
-            _curstate=ClickLbState::Normal;
-            qDebug()<<"clicked change to normal hover";
-            setProperty("state",_normal_hover);
-            repolish(this);
-            update();
+            // ──► 🎯 核心修正：锁定选中状态下的按下态 ◄──
+            setProperty("state", _selected_press);
         }
-        emit clicked();
-
+        repolish(this);
+        update();
     }
     QLabel::mousePressEvent(e);
+}
+
+// 🚀 2. 鼠标抬起瞬间：真正开始结算状态翻转，展示【悬停态】并触发点击信号
+void ClickedLabel::mouseReleaseEvent(QMouseEvent *e)
+{
+    if(e->button() == Qt::LeftButton){
+        // 判定用户是在当前控件内部释放鼠标的（防止用户点着点着划走了，提升交互严密性）
+        if(this->rect().contains(e->pos())){
+            if(_curstate == ClickLbState::Normal){
+                // 彻底蜕变为选中态
+                _curstate = ClickLbState::Selected;
+                qDebug() << "🎯 [状态机] 鼠标释放：从 Normal 正式蜕变为 Selected_Hover";
+                setProperty("state", _selected_hover);
+            }
+            else{
+                // 回归普通态
+                _curstate = ClickLbState::Normal;
+                qDebug() << "🎯 [状态机] 鼠标释放：从 Selected 正式翻转回 Normal_Hover";
+                setProperty("state", _normal_hover);
+            }
+            repolish(this);
+            update();
+
+            // 判定成功，正式引爆点击业务总线信号
+            emit clicked();
+        }
+    }
+    QLabel::mouseReleaseEvent(e);
 }
 
 void ClickedLabel::setState(QString normal, QString hover, QString press, QString select, QString select_hover, QString select_press)

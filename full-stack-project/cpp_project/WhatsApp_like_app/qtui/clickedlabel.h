@@ -11,6 +11,7 @@ public:
     virtual void enterEvent(QEnterEvent *e) override;
     virtual void leaveEvent(QEvent *event) override;
     virtual void mousePressEvent(QMouseEvent *e)override;
+    virtual void mouseReleaseEvent(QMouseEvent *e) override;
     void setState(QString normal="", QString hover="",QString press="",QString select="",
                 QString select_hover="",QString select_press="");
     ClickLbState GetCurState();

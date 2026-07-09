@@ -50,12 +50,28 @@ enum ClickLbState{
     Selected=1,
 };
 
+enum ChatUIMode{
+    SearchMode,
+    ContactMode,
+    ChatMode,
+};
+
+enum ListItemType{
+    ChatUserItem,
+    ContactUserItem,
+    SearchUserItem,
+    Add_User_Tip_Item,
+    InvalidItem,
+    GroupTipItem
+};
+
 struct Serverinfo{
     int uid;
     QString host;
     QString port;
     QString token;
 };
+
 
 extern std::function <void(QWidget*)>repolish;
 extern QString gate_url_prefix;

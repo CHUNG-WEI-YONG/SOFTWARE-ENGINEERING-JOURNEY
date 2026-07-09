@@ -109,7 +109,12 @@ void MainWindow::SlotSwitchChat()
 {
     _chat_dlg=new ChatDialog(this);
     _chat_dlg->setWindowFlags((Qt::CustomizeWindowHint|Qt::FramelessWindowHint));
-    setCentralWidget(_login_dlg);
+    setCentralWidget(_chat_dlg);
     _login_dlg->hide();
     _chat_dlg->show();
+    this->setMaximumSize(16777215, 16777215); // 允许无限放大
+
+    // 方案 A：让软件启动时直接【撑满全屏】（工业级 IM 软件首选）
+    //this->showMaximized();
+    this->resize(1000, 750);
 }

@@ -11,7 +11,7 @@ set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTORCC ON)
 
 # 2. 捞取 Qt6 前端核心组件 + vcpkg 的 JsonCpp 组件
-find_package(Qt6 6.5 REQUIRED COMPONENTS Core Widgets Network)
+find_package(Qt6 6.5 REQUIRED COMPONENTS Core Widgets Network QuickWidgets)
 #find_package(JsonCpp CONFIG REQUIRED) # 👈 【新增】打捞 vcpkg 熔炼好的 Json 核心资产
 
 # 4. 🏭 告诉 CMake：你之前大炼钢铁产出的 Boost 静态库（.a/.lib）住在哪个军火库里
@@ -45,6 +45,15 @@ qt_add_executable(qtui
     tcpmgr.h tcpmgr.cpp
     usermgr.h usermgr.cpp
     chatdialog.h chatdialog.cpp chatdialog.ui
+    clickedbutton.h clickedbutton.cpp
+    customizeedit.h customizeedit.cpp
+    chatuserlist.h chatuserlist.cpp
+
+    chatuserwid.h chatuserwid.cpp chatuserwid.ui
+    listitembase.h listitembase.cpp
+    loadingdialog.h loadingdialog.cpp loadingdialog.ui
+    chatpage.h chatpage.cpp chatpage.ui
+    qmlchatpage.h qmlchatpage.cpp qmlchatpage.ui
 )
 
 # 6. 🛰️【规范化现代 CMake】管理头文件包含路径
@@ -66,6 +75,7 @@ target_link_libraries(qtui
     Qt::Core
     Qt::Widgets
     Qt::Network
+    Qt::QuickWidgets
 
     # 👈 【核心修复 1】：真正将舞台（stage/lib）下编译出的 Boost 静态库灌入程序
     # Windows 下通常只需要链接 libboost_system 即可，Asio 绝大部分是 Header-only

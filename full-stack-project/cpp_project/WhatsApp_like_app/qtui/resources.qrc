@@ -5,5 +5,61 @@
         <file>rc/show.png</file>
         <file>rc/visual.png</file>
         <file>rc/hidden.png</file>
+        <file>rc/chat_picture/add_friend.png</file>
+        <file>rc/chat_picture/add_friend_hover.png</file>
+        <file>rc/chat_picture/add_friend_normal.png</file>
+        <file>rc/chat_picture/addtip.png</file>
+        <file>rc/chat_picture/arowdown.png</file>
+        <file>rc/chat_picture/chat_icon.png</file>
+        <file>rc/chat_picture/chat_icon_hover.png</file>
+        <file>rc/chat_picture/chat_icon_press.png</file>
+        <file>rc/chat_picture/chat_icon_select_hover.png</file>
+        <file>rc/chat_picture/chat_icon_select_press.png</file>
+        <file>rc/chat_picture/close_search.png</file>
+        <file>rc/chat_picture/close_transparent.png</file>
+        <file>rc/chat_picture/contact_list.png</file>
+        <file>rc/chat_picture/contact_list_hover.png</file>
+        <file>rc/chat_picture/contact_list_press.png</file>
+        <file>rc/chat_picture/female.png</file>
+        <file>rc/chat_picture/filedir.png</file>
+        <file>rc/chat_picture/filedir_hover.png</file>
+        <file>rc/chat_picture/filedir_press.png</file>
+        <file>rc/chat_picture/head_1.jpg</file>
+        <file>rc/chat_picture/head_2.jpg</file>
+        <file>rc/chat_picture/head_3.jpg</file>
+        <file>rc/chat_picture/head_4.jpg</file>
+        <file>rc/chat_picture/head_5.jpg</file>
+        <file>rc/chat_picture/loading.gif</file>
+        <file>rc/chat_picture/loading2.gif</file>
+        <file>rc/chat_picture/male.png</file>
+        <file>rc/chat_picture/msg_chat_hover.png</file>
+        <file>rc/chat_picture/msg_chat_normal.png</file>
+        <file>rc/chat_picture/msg_chat_press.png</file>
+        <file>rc/chat_picture/readed.png</file>
+        <file>rc/chat_picture/red_point.png</file>
+        <file>rc/chat_picture/right_tip.png</file>
+        <file>rc/chat_picture/search.png</file>
+        <file>rc/chat_picture/send_fail.png</file>
+        <file>rc/chat_picture/settings.png</file>
+        <file>rc/chat_picture/settings_hover.png</file>
+        <file>rc/chat_picture/settings_press.png</file>
+        <file>rc/chat_picture/settings_select_hover.png</file>
+        <file>rc/chat_picture/settings_select_press.png</file>
+        <file>rc/chat_picture/smile.png</file>
+        <file>rc/chat_picture/smile_hover.png</file>
+        <file>rc/chat_picture/smile_press.png</file>
+        <file>rc/chat_picture/tipclose.png</file>
+        <file>rc/chat_picture/unread.png</file>
+        <file>rc/chat_picture/unvisible.png</file>
+        <file>rc/chat_picture/unvisible_hover.png</file>
+        <file>rc/chat_picture/video_chat_hover.png</file>
+        <file>rc/chat_picture/video_chat_normal.png</file>
+        <file>rc/chat_picture/video_chat_press.png</file>
+        <file>rc/chat_picture/visible.png</file>
+        <file>rc/chat_picture/visible_hover.png</file>
+        <file>rc/chat_picture/voice_chat_hover.png</file>
+        <file>rc/chat_picture/voice_chat_normal.png</file>
+        <file>rc/chat_picture/voice_chat_press.png</file>
+        <file>style/ChatPage.qml</file>
     </qresource>
 </RCC>

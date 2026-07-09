@@ -1,59 +1,295 @@
-QDialog#LoginDialog,#SigninDialog{
-background-color:rgb(255,255,255);
+/* ================================================================= */
+/* 1. 登录与注册弹窗基础底色 */
+/* ================================================================= */
+QDialog#LoginDialog, QDialog#SigninDialog {
+    background-color: #FFFFFF;
+}
+
+#user_label, #pass_label {
+    color: #333333; /* 纯黑稍微改深灰，视觉上更高端、耐看 */
+    font-size: 14px;
+}
+
+/* ================================================================= */
+/* 2. 动态提示/报错文本（动态属性状态切换） */
+/* ================================================================= */
+#error_label[state="normal"] {
+    color: #2ECC71; /* 现代感清晰绿 */
+}
+
+#error_label[state="err"] {
+    color: #E74C3C; /* 警示红 */
+}
+
+/* ================================================================= */
+/* 3. 密码可见性小眼睛按钮（修复 Hover 视觉逻辑割裂） */
+/* 优化逻辑：Hover 时采用带半透明或轻微发光的图标，或者保持原形态的过渡 */
+/* ================================================================= */
+#pass_visible[state='unvisible'] {
+    border-image: url(:/rc/hidden.png);
+}
+#pass_visible[state='unvisible_hover'] {
+    border-image: url(:/rc/hidden_hover.png); /* 建议：Hover 时显示略微高亮或带圈的隐藏图标 */
+}
+#pass_visible[state='visible'] {
+    border-image: url(:/rc/show.png);
+}
+#pass_visible[state='visible_hover'] {
+    border-image: url(:/rc/show_hover.png); /* 建议：Hover 时显示略微高亮或带圈的显示图标 */
+}
+
+#repass_visible[state='unvisible'] {
+    border-image: url(:/rc/hidden.png);
+}
+#repass_visible[state='unvisible_hover'] {
+    border-image: url(:/rc/hidden_hover.png);
+}
+#repass_visible[state='visible'] {
+    border-image: url(:/rc/show.png);
+}
+#repass_visible[state='visible_hover'] {
+    border-image: url(:/rc/show_hover.png);
+}
+
+/* ================================================================= */
+/* 4. 忘记密码超链接 */
+/* ================================================================= */
+#forgot_label[state='normal'], #forgot_label[state='selected'] {
+    color: #666666;
+}
+#forgot_label[state='normal_hover'], #forgot_label[state='selected_hover'] {
+    color: #2A70F1; /* 极客科技蓝 */
+    text-decoration: underline; /* 增加 Hover 时的下划线暗示，交互感更强 */
+}
+
+/* ================================================================= */
+/* 5. IM 聊天主界面：左侧侧边栏与添加好友按钮 */
+/* ================================================================= */
+#side_bar {
+    background-color: #2E2E2E; /* 暗夜高质感灰黑 */
+}
+
+/* 优化：除了自定义属性，同时完美对齐 Qt 原生 `:pressed` 伪类，确保无延迟硬反馈 */
+#add_btn[state='normal'] {
+    border-image: url(:/rc/chat_picture/add_friend_normal.png);
+}
+#add_btn[state='hover'], #add_btn:hover {
+    border-image: url(:/rc/chat_picture/add_friend_hover.png);
+}
+#add_btn[state='press'], #add_btn:pressed {
+    border-image: url(:/rc/chat_picture/add_friend_hover.png); /* 提示：如果有按下态图标，可以换成 _pressed.png */
+}
+
+/* ================================================================= */
+/* 6. IM 聊天主界面：中间搜索栏与输入框 */
+/* ================================================================= */
+#search_wid {
+     background-color: #F7F7F7;
+}
+
+#search_edit {
+    border: 1px solid #E0E0E0; /* 2px 太粗容易生硬，改成 1px 浅灰精致边框 */
+    border-radius: 4px;        /* 现代 UI 的灵魂：轻微圆角 */
+    padding-left: 5px;         /* 让输入的文字不贴死左边框 */
+    background-color: #FFFFFF;
+    color: #333333;
+}
+#search_edit:focus {
+    border: 1px solid #2A70F1; /* 聚焦时搜索框高亮变蓝，高级感立现 */
+}
+
+/* ================================================================= */
+/* 7. IM 聊天主界面：好友/群聊列表容器（完美洗净死黑与虚线） */
+/* ================================================================= */
+#chat_user_wid {
+    background-color: #F0F0F0; /* 告别死黑 rgb(0,0,0)，改用质感浅灰底色 */
+}
+
+#chat_user_list {
+    background-color: #EAEDED; /* 稍微与外层容器做一点层级深浅区分 */
+    border: none;
+}
+
+/* 彻底堵死 QListView 容器原生聚焦时出现的恶心丑陋的虚线框 */
+#chat_user_list::focus {
+    border: none;
+    outline: none;
+}
+
+/* 每一个聊天 Item 的精细化交互 */
+#chat_user_list::item {
+    padding: 10px;             /* 增大垂直间距，给头像和名字留出呼吸感 */
+    border-bottom: 1px solid #E5E8E8; /* 每个好友项加一条淡淡的分割线 */
+}
+
+#chat_user_list::item:hover {
+    background-color: #E5E8E8; /* 悬停时稍微变深一点 */
+    border: none;
+    outline: none;
+}
+
+#chat_user_list::item:selected {
+    background-color: #D3D7D4; /* 选中时呈现优雅的锁定浅灰 */
+    color: #000000;            /* 确保选中后文字清晰可见 */
+    border: none;
+    outline: none;
+}
+
+ChatUserWid {
+    background-color:rgb(247,247,247);
+    border: none;
+}
+
+#user_chat_lb{
+    color:rgb(153,153,153);
+    font-size: 12px;
+    font-family: "Microsoft YaHei";
+}
+
+#user_name_lb{
+    color:rgb(0,0,0);
+    font-size: 14px;
+    font-weight: normal;
+    font-family: "Microsoft YaHei";
+}
+
+#time_wid #time_lb{
+   color:rgb(140,140,140);
+   font-size: 12px;
+   font-family: "Microsoft YaHei";
+}
+
+QScrollBar:vertical {
+    background: transparent; /* 将轨道背景设置为透明 */
+    width: 8px; /* 滚动条宽度，根据需要调整 */
+    margin: 0px; /* 移除滚动条与滑块之间的间距 */
+}
+
+QScrollBar::handle:vertical {
+    background: rgb(173,170,169); /* 滑块颜色 */
+    min-height: 10px; /* 滑块最小高度，根据需要调整 */
+    border-radius: 4px; /* 滑块边缘圆角，调整以形成椭圆形状 */
+}
+
+QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
+    height: 0px; /* 移除上下按钮 */
+    border: none; /* 移除边框 */
+    background: transparent; /* 背景透明 */
+}
+
+QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
+    background: none; /* 页面滚动部分背景透明 */
+}
+
+LoadingDlg{
+    background: #f2eada;
+}
+
+#title_lb{
+    font-family: "Microsoft YaHei";
+    font-size: 18px;
+    font-weight: normal;
+}
+
+#chatEdit{
+    background: #ffffff;
+    border: none; /* 隐藏边框 */
+    font-family: "Microsoft YaHei"; /* 设置字体 */
+    font-size: 18px; /* 设置字体大小 */
+    padding: 5px; /* 设置内边距 */
+}
+
+#send_wid{
+    background: #ffffff;
+    border: none; /* 隐藏边框 */
+}
+
+#add_btn[state='normal']{
+    border-image: url(:/rc/chat_picture/add_friend_normal.png);
+}
+
+#add_btn[state='hover']{
+    border-image: url(:/rc/chat_picture/add_friend_hover.png);
 
 }
 
-#user_label,#pass_label{
-    color:black;
+#add_btn[state='press']{
+    border-image: url(:/rc/chat_picture/add_friend_hover.png);
 }
 
-#error_label[state="normal"]{
-    color:green;
+#receive_btn[state='normal']{
+   background: #f0f0f0;
+   color: #2cb46e;
+   font-size: 16px; /* 设置字体大小 */
+   font-family: "Microsoft YaHei"; /* 设置字体 */
+   border-radius: 20px; /* 设置圆角 */
 }
 
-#error_label[state="err"]{
-    color:red;
+#receive_btn[state='hover']{
+   background: #d2d2d2;
+   color: #2cb46e;
+   font-size: 16px; /* 设置字体大小 */
+   font-family: "Microsoft YaHei"; /* 设置字体 */
+   border-radius: 20px; /* 设置圆角 */
 }
 
-#pass_visible[state='unvisible']{
-    border-image:url(:/rc/hidden.png);
+#receive_btn[state='press']{
+   background: #c6c6c6;
+   color: #2cb46e;
+   font-size: 16px; /* 设置字体大小 */
+   font-family: "Microsoft YaHei"; /* 设置字体 */
+   border-radius: 20px; /* 设置圆角 */
 }
 
-#pass_visible[state='unvisible_hover']{
-    border-image:url(:/rc/visual.png);
+#send_btn[state='normal']{
+    background: #f0f0f0;
+    color: #2cb46e;
+    font-size: 16px; /* 设置字体大小 */
+    font-family: "Microsoft YaHei"; /* 设置字体 */
+    border-radius: 20px; /* 设置圆角 */
 }
 
-#pass_visible[state='visible']{
-    border-image:url(:/rc/show.png);
+#send_btn[state='hover']{
+   background: #d2d2d2;
+   color: #2cb46e;
+   font-size: 16px; /* 设置字体大小 */
+   font-family: "Microsoft YaHei"; /* 设置字体 */
+   border-radius: 20px; /* 设置圆角 */
 }
 
-#pass_visible[state='visible_hover']{
-    border-image:url(:/rc/visual.png);
+#send_btn[state='press']{
+   background: #c6c6c6;
+   color: #2cb46e;
+   font-size: 16px; /* 设置字体大小 */
+   font-family: "Microsoft YaHei"; /* 设置字体 */
+   border-radius: 20px; /* 设置圆角 */
 }
 
-
-
-#repass_visible[state='visible_hover']{
-    border-image:url(:/rc/visual.png);
+#tool_wid{
+    background: #ffffff;
+    border-bottom: 0.5px solid #ececec; /* 设置下边框颜色和宽度 */
 }
 
-#repass_visible[state='unvisible']{
-    border-image:url(:/rc/hidden.png);
+#emo_lb[state='normal']{
+    border-image: url(:/rc/chat_picture/smile.png);
 }
 
-#repass_visible[state='unvisible_hover']{
-    border-image:url(:/rc/visual.png);
+#emo_lb[state='hover']{
+    border-image: url(:/rc/chat_picture/smile_hover.png);
 }
 
-#repass_visible[state='visible']{
-    border-image:url(:/rc/show.png);
+#emo_lb[state='press']{
+    border-image: url(:/rc/chat_picture/smile_press.png);
 }
 
-
-#forgot_label[state='normal'],#forgot_label[state='selected']{
-    color:black;
+#file_lb[state='normal']{
+    border-image: url(:/rc/chat_picture/filedir.png);
 }
 
-#forgot_label[state='normal_hover'],#forgot_label[state='selected_hover']{
-    color:rgb(42,112,241);
+#file_lb[state='hover']{
+    border-image: url(:/rc/chat_picture/filedir_hover.png);
+}
+
+#file_lb[state='press']{
+    border-image: url(:/rc/chat_picture/filedir_press.png);
 }
