@@ -6,6 +6,7 @@
 #include "loadingdialog.h"
 #include <QWidget>
 #include <QQmlContext>
+#include "chatbridge.h"
 ChatDialog::ChatDialog(QWidget *parent)
     : QDialog(parent)
     , ui(new Ui::ChatDialog),_mode(ChatUIMode::ChatMode),_state(ChatUIMode::ChatMode)
@@ -40,6 +41,10 @@ ChatDialog::ChatDialog(QWidget *parent)
         ui->search_edit->clearFocus();
         ShowSearch(false);
     });
+
+    ChatBridge* bridge = new ChatBridge(this);
+    ui->chat_quickwid->rootContext()->setContextProperty("cppBridge", bridge);
+    ui->chat_quickwid->rootContext()->setContextProperty("currentChatUserName", "Select a friend...");
     //ChatPage* chat_page = new ChatPage(this);
 
     // // ui->widget_3 对应你在设计器里留出的右侧空白自适应底座
@@ -67,10 +72,42 @@ ChatDialog::ChatDialog(QWidget *parent)
     // // 🛡️ 极其重要：让内部的 QML 画布自动跟随外层的 QStackedWidget 容器拉伸放大，锁死自适应
     // ui->chat_quickwid->setResizeMode(QQuickWidget::SizeRootObjectToView);
     ui->stackedWidget->setCurrentIndex(0);
+
+    connect(ui->chat_user_list, &QListWidget::itemClicked, this, [this, bridge](QListWidgetItem *item){
+        if (!item) return;
+
+        // 直接抓取左侧被点击行的纯文本名字
+        QString clickedName = item->text();
+        if(clickedName.isEmpty()) {
+            clickedName = item->data(Qt::DisplayRole).toString();
+        }
+
+        // 伪造在线状态（偶数行在线绿点，奇数行离线灰点）
+        bool fakeOnline = (ui->chat_user_list->currentRow() % 2 == 0);
+
+        // ──► 🎯 核心补全：在 C++ 临时捏造一个专属的历史记录数据盲包 ◄──
+        QVariantList fakeHistory;
+
+        QVariantMap msg1, msg2;
+        msg1["sender"] = "other";
+        msg1["message"] = QString("Hello! I am %1. Welcome to QML world!").arg(clickedName);
+        fakeHistory.append(msg1);
+
+        msg2["sender"] = "me";
+        msg2["message"] = "Hi, glad to see you too.";
+        fakeHistory.append(msg2);
+
+        qDebug() << "🎛️ [C++ 联动器] 4个参数完美对齐，发射 sig_user_switched 信号给 QML！";
+
+        // 🚀 跨越时空阻碍，轰鸣发射！参数数量、类型 100% 严丝合缝对齐！
+        emit bridge->sig_user_switched(clickedName, fakeOnline, "10 mins ago", fakeHistory);
+    });
+
     ShowSearch(false);
 
     connect(ui->chat_user_list,&ChatUserList::sig_loading_user,this,&ChatDialog::slot_loading_user);
     AddUserlist();
+
 }
 
 ChatDialog::~ChatDialog()
@@ -118,6 +155,7 @@ void ChatDialog::AddUserlist()
         item->setSizeHint(chat_user_wid->sizeHint());
         ui->chat_user_list->addItem(item);
         ui->chat_user_list->setItemWidget(item, chat_user_wid);
+
     }
 }
 

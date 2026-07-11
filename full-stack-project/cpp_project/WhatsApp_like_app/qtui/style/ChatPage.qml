@@ -7,7 +7,63 @@ Rectangle {
     height: 847
     color: "#F8F9FA"
 
-    // ──► 🎯 👻 1. 抽取封装【ClickedLabel】三态复刻组件（稳固无错版） ◄──
+    // ──► 🎯 🧠 核心黑科技：QML 本地纯 JS 内存临时数据库 ◄──
+    property var chatStorage: ({})
+    property string currentFriendName: ""
+
+    // ──► 🎯 🛰️ 核心拦截网：全权偷听 C++ 扔过来的所有信号 ◄──
+    Connections {
+        target: cppBridge
+
+        // 🟢 A. 完美拦截 4 参数切盘信号
+        onSig_user_switched: (name, isOnline, lastTime, history) => {
+            console.log("🎨 [QML 执行器] 抓取到 C++ 切盘指令 ──► 好友名字:", name)
+
+            // 1. 【备份快照】如果前一任好友名字不为空，把当前留在屏幕上的气泡全打包存入 JS 数据库
+            if (chatPage.currentFriendName !== "") {
+                var currentHistory = []
+                for (var i = 0; i < chatHistoryModel.count; i++) {
+                    currentHistory.push(chatHistoryModel.get(i))
+                }
+                chatPage.chatStorage[chatPage.currentFriendName] = currentHistory
+            }
+
+            // 2. 移动当前好友激活指针
+            chatPage.currentFriendName = name
+
+            // 3. 动态刷新顶部栏 UI 外观皮肤
+            title_lb.text = name
+            title_wid.isOnline = isOnline
+            online_time_lb.text = isOnline ? "online" : "last online: " + lastTime
+
+            // 4. 洗刷清除上一任残留在屏幕上的气泡
+            chatHistoryModel.clear()
+
+            // 5. 【恢复与打捞】优先去 JS 内存库里看看有没有聊过天，如果有就加载出来
+            if (chatPage.chatStorage[name] !== undefined) {
+                var savedHistory = chatPage.chatStorage[name]
+                for (var j = 0; j < savedHistory.length; j++) {
+                    chatHistoryModel.append(savedHistory[j])
+                }
+            } else {
+                // 🚀 如果 JS 仓库里没聊过，说明是首次点开，直接把 C++ 刚刚在 Lambda 里塞进来的历史数组给灌进去！
+                for (var k = 0; k < history.length; k++) {
+                    chatHistoryModel.append(history[k])
+                }
+            }
+
+            // 6. 滚动条强制置底
+            chatListView.positionViewAtEnd()
+        }
+
+        // 🟢 B. 接收套接字实时收到的对方新消息
+        onSig_new_message_received: (sender, message) => {
+            chatHistoryModel.append({ "sender": sender, "message": message })
+            chatListView.positionViewAtEnd()
+        }
+    }
+
+    // 三态 ClickedLabel 组件封装
     component ClickedLabel : Item {
         id: customLabel
         property string normalSrc: ""
@@ -53,15 +109,12 @@ Rectangle {
         anchors.fill: parent
         spacing: 0
 
-        // ──► 🎯 💖 2. 顶部用户状态栏：title_wid（完美支持在线/离线双态驱动） ◄──
+        // 顶部状态栏
         Rectangle {
             id: title_wid
             width: parent.width
             height: 65
             color: "#FFFFFF"
-
-            // ──► 🌟 【这就是你要的状态变量声明方法】 ◄──
-            // 真(true)代表在线(绿点+online)，假(false)代表离线(灰点+last online)。未来可由 C++ 动态控制
             property bool isOnline: true
 
             Rectangle {
@@ -79,29 +132,25 @@ Rectangle {
 
                 Label {
                     id: title_lb
-                    // 绑定 C++ 上下文属性，如若未加载则安全兜底显示 "User"
-                    text: typeof currentChatUserName !== "undefined" ? currentChatUserName : "User"
+                    text: typeof currentChatUserName !== "undefined" ? currentChatUserName : "Select a friend..."
                     font.family: "Microsoft YaHei"
                     font.pixelSize: 18
                     font.bold: true
                     color: "#2C3E50"
                 }
 
-                // 🟢 动态呼吸圆点（三元表达式：根据 isOnline 自动翻转颜色）
                 Rectangle {
                     width: 8
                     height: 8
                     radius: 4
-                    color: title_wid.isOnline ? "#2ECC71" : "#95A5A6" // 真则清新绿，假则烟灰
+                    color: title_wid.isOnline ? "#2ECC71" : "#95A5A6"
                     anchors.verticalCenter: parent.verticalCenter
-
-                    Behavior on color { ColorAnimation { duration: 200 } } // 顺滑过渡
+                    Behavior on color { ColorAnimation { duration: 200 } }
                 }
 
-                // 🟢 动态时间标签（三元表达式：根据 isOnline 自动翻转状态文字）
                 Label {
                     id: online_time_lb
-                    text: title_wid.isOnline ? "online" : "last online: 5 mins ago"
+                    text: title_wid.isOnline ? "online" : "offline"
                     font.family: "Microsoft YaHei"
                     font.pixelSize: 12
                     color: "#95A5A6"
@@ -110,55 +159,38 @@ Rectangle {
             }
         }
 
-        // ──► 🎯 💬 3. 中间聊天历史核心气泡对话框 ◄──
+        // 中间聊天视窗 ListView
         Item {
             id: conversation_box
             width: parent.width
-            // 完美自适应高度计算：榨干头部和尾部，剩下的全分给聊天视窗
             height: parent.height - title_wid.height - tool_wid.height
-            clip: true // 🛡️ 极其重要：超出边界的内容自动裁剪，防止聊天记录飞出视窗
+            clip: true
 
-            // 1. 数据仓库（存储当前会话的历史消息）
             ListModel {
                 id: chatHistoryModel
-                ListElement { sender: "other"; message: "Hello! Nice to meet you." }
-                ListElement { sender: "me"; message: "Hi! How's your project going?" }
             }
 
-            // 2. 渲染视图引擎
             ListView {
                 id: chatListView
                 anchors.fill: parent
                 anchors.margins: 16
                 model: chatHistoryModel
                 spacing: 12
-
-                // 初始化完成或大小变动时，让列表数据自动滚到最底部
                 Component.onCompleted: chatListView.positionViewAtEnd()
 
-                // 3. 气泡皮肤刻画器（Delegate）
                 delegate: Item {
                     width: chatListView.width
-                    height: bubbleCard.height + 4 // 动态计算单行项的自适应高度
-
-                    // 区分左右：我发送的消息靠右，别人发送的消息靠左
+                    height: bubbleCard.height + 4
                     readonly property bool isMe: model.sender === "me"
 
                     Rectangle {
                         id: bubbleCard
-                        // 宽度弹性限制：文字少卡片就短，文字长卡片就宽，但最宽不能超过聊天视窗的 65%
                         width: Math.min(msgText.implicitWidth + 24, parent.width * 0.65)
                         height: msgText.implicitHeight + 16
                         radius: 12
-
-                        // 🎨 交互换肤：我方的气泡是清新绿，对方的气泡是纯洁白
                         color: isMe ? "#2CB46E" : "#FFFFFF"
-
-                        // 靠左还是靠右锚定
                         anchors.right: isMe ? parent.right : undefined
                         anchors.left: isMe ? undefined : parent.left
-
-                        // 为对方的白色气泡边缘挂上淡淡的描边增加层级
                         border.width: isMe ? 0 : 1
                         border.color: "#E5E7E9"
 
@@ -167,19 +199,18 @@ Rectangle {
                             text: model.message
                             font.family: "Microsoft YaHei"
                             font.pixelSize: 14
-                            color: isMe ? "#FFFFFF" : "#2C3E50" // 我方气泡配白字，对方配黑字
-
+                            color: isMe ? "#FFFFFF" : "#2C3E50"
                             anchors.fill: parent
                             anchors.margins: 8
                             verticalAlignment: Text.AlignVCenter
-                            wrapMode: Text.Wrap // 开启核心自动换行防线
+                            wrapMode: Text.Wrap
                         }
                     }
                 }
             }
         }
 
-        // ──► 🎯 💎 4. 底部整个输入与工具总控制台 ◄──
+        // 底部工具输入条
         Rectangle {
             id: tool_wid
             width: parent.width
@@ -193,7 +224,6 @@ Rectangle {
                 color: "#EAEAEA"
             }
 
-            // ──► 🎯 🛠️ 5. 工具栏：send_wid ◄──
             Rectangle {
                 id: send_wid
                 width: parent.width
@@ -230,7 +260,6 @@ Rectangle {
                     }
                 }
 
-                // ──► 🎯 🚀 6. 发送按钮：完美消灭直角聚焦框 ◄──
                 Button {
                     id: send_btn
                     text: "SEND"
@@ -245,13 +274,10 @@ Rectangle {
                         implicitWidth: 80
                         implicitHeight: 34
                         radius: 17
-
                         color: send_btn.pressed ? "#1E8449" : (send_btn.hovered ? "#2ECC71" : "#2CB46E")
                         opacity: send_btn.enabled ? 1.0 : 0.5
-
                         border.color: "transparent"
                         border.width: 0
-
                         Behavior on color { ColorAnimation { duration: 150 } }
                     }
 
@@ -265,31 +291,24 @@ Rectangle {
                         verticalAlignment: Text.AlignVCenter
                     }
 
-                    // ──► 🎯 💫 按下 SEND 时真正的消息入库闭环事件 ◄──
                     onClicked: {
-                        // 1. 防御拦截：如果输入框全为空格或者没打字，直接摆摆手拦截
-                        if (chatedit.text.trim() === "") {
-                            return;
-                        }
+                        if (chatedit.text.trim() === "") return;
 
-                        console.log("🚀 [QML 渲染总线] 发射新消息到面板:", chatedit.text);
-
-                        // 2. 向 ListModel 数据仓库尾部追加一条我方发送的属性记录
+                        // 本地长出我的绿色消息气泡
                         chatHistoryModel.append({
                             "sender": "me",
                             "message": chatedit.text
                         });
 
-                        // 3. 顺滑清空 TextArea 打字机内容
-                        chatedit.clear();
+                        // 🚀 跨语种调用 C++ 的 Q_INVOKABLE 函数，将打字结果送回底层
+                        cppBridge.sendMessageFromQml(chatPage.currentFriendName, chatedit.text);
 
-                        // 4. 物理强制列表滚动置底，露出最新追加的那个绿色气泡
+                        chatedit.clear();
                         chatListView.positionViewAtEnd();
                     }
                 }
             }
 
-            // ──► 🎯 ✍️ 7. 输入框外壳盒 ◄──
             Rectangle {
                 id: chatBoxContainer
                 anchors.top: send_wid.bottom
@@ -302,7 +321,6 @@ Rectangle {
                 radius: 12
                 border.width: 1
                 border.color: chatedit.activeFocus ? "#3498DB" : "#E5E7E9"
-
                 Behavior on border.color { ColorAnimation { duration: 150 } }
 
                 ScrollView {

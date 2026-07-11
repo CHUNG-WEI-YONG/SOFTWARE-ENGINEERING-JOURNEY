@@ -54,6 +54,7 @@ qt_add_executable(qtui
     loadingdialog.h loadingdialog.cpp loadingdialog.ui
     chatpage.h chatpage.cpp chatpage.ui
     qmlchatpage.h qmlchatpage.cpp qmlchatpage.ui
+    chatbridge.h chatbridge.cpp
 )
 
 # 6. 🛰️【规范化现代 CMake】管理头文件包含路径

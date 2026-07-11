@@ -61,3 +61,5 @@ The qtui send a login to the gateserver , then gateserver use sql to find the re
 ## DAY 16
 Write for the qt ui frontend for the chatserver , the ui has three parts .with tool widget , chat user widget with a small component widget for each user info , then use a qml file to do for the desgin of user chatpage.
 
+## DAY 17 
+Complete the ui part for the exist of the chat history in the bubble structure with green for user and white for the sender

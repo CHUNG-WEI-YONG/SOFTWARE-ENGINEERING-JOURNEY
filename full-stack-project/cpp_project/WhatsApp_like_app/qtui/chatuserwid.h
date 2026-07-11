@@ -26,6 +26,18 @@ private:
     QString _name;
     QString _head;
     QString _msg;
+    QVariantList m_chatHistory;
+
+    // 初始化时或者构造时加两条假数据方便你直接测试：
+    void initFakeData(const QString& name) {
+        QVariantMap msg1, msg2;
+        msg1["sender"] = "other";
+        msg1["message"] = QString("Hello, I am %1! Nice to meet you.").arg(name);
+        msg2["sender"] = "me";
+        msg2["message"] = "Hi there!";
+        m_chatHistory.append(msg1);
+        m_chatHistory.append(msg2);
+    }
 };
 
 #endif // CHATUSERWID_H
