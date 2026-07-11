@@ -12,14 +12,21 @@ public:
     void SetName(QString name);
     void SetUid(int uid);
     void SetToken(QString token);
+    QString returnName();
+    void Setlogo(QString path);
+    QString returnLogo();
+
 private:
     int _uid;
     QString email;
     QString _name;
     QString _token;
+    QString _logoPath;
 
 
 
 };
+
+
 
 #endif // USERMGR_H

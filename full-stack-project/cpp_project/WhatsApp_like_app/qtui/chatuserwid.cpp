@@ -29,3 +29,16 @@ void ChatUserWid::SetInfo(QString name, QString head, QString msg)
     ui->user_name_lb->setText(_name);
     ui->user_chat_lb->setText(_msg);
 }
+
+QString ChatUserWid::GetUserName() {
+    if (ui && ui->user_name_lb) { // 替换为你内部真实的 QLabel 变量名
+        return ui->user_name_lb->text();
+    }
+    return QString();
+}
+
+QString ChatUserWid::GetUserIcon()  {
+    // 假设你内部有一个存储当前头像路径的成员变量（例如 m_iconPath）
+    // 或者直接从 QLabel 绑定的资产路径里拿。这里返回你 SetInfo 时存的那个路径字符串即可。
+    return _head;
+}

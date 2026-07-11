@@ -1,5 +1,5 @@
 import QtQuick 2.15
-import QtQuick.Controls
+import QtQuick.Controls 2.15
 
 Rectangle {
     id: chatPage
@@ -7,63 +7,51 @@ Rectangle {
     height: 847
     color: "#F8F9FA"
 
-    // ──► 🎯 🧠 核心黑科技：QML 本地纯 JS 内存临时数据库 ◄──
+    // 内存自治缓存，用于未拉取 SQL 时的快速切换
     property var chatStorage: ({})
     property string currentFriendName: ""
+    property string currentFriendIcon: "" // 补充缺少的外壳资产变量
 
-    // ──► 🎯 🛰️ 核心拦截网：全权偷听 C++ 扔过来的所有信号 ◄──
+    // ──► 🛰️ 核心信号连接网（承接 C++ 实体序列化大盲包） ◄──
     Connections {
         target: cppBridge
 
-        // 🟢 A. 完美拦截 4 参数切盘信号
-        onSig_user_switched: (name, isOnline, lastTime, history) => {
-            console.log("🎨 [QML 执行器] 抓取到 C++ 切盘指令 ──► 好友名字:", name)
-
-            // 1. 【备份快照】如果前一任好友名字不为空，把当前留在屏幕上的气泡全打包存入 JS 数据库
-            if (chatPage.currentFriendName !== "") {
-                var currentHistory = []
-                for (var i = 0; i < chatHistoryModel.count; i++) {
-                    currentHistory.push(chatHistoryModel.get(i))
-                }
-                chatPage.chatStorage[chatPage.currentFriendName] = currentHistory
-            }
-
-            // 2. 移动当前好友激活指针
+        // 当 C++ 触发好友切换时，直接抛过来装满历史记录的 history 数组
+        onSig_user_switched: (name, isOnline, lastTime, iconPath, history) => {
             chatPage.currentFriendName = name
-
-            // 3. 动态刷新顶部栏 UI 外观皮肤
+            chatPage.currentFriendIcon = iconPath
             title_lb.text = name
             title_wid.isOnline = isOnline
             online_time_lb.text = isOnline ? "online" : "last online: " + lastTime
 
-            // 4. 洗刷清除上一任残留在屏幕上的气泡
             chatHistoryModel.clear()
 
-            // 5. 【恢复与打捞】优先去 JS 内存库里看看有没有聊过天，如果有就加载出来
-            if (chatPage.chatStorage[name] !== undefined) {
-                var savedHistory = chatPage.chatStorage[name]
-                for (var j = 0; j < savedHistory.length; j++) {
-                    chatHistoryModel.append(savedHistory[j])
+            if (history !== undefined && history.length > 0) {
+                // 🚀 【防爆破核心安全修护】：遍历并清洗数据包
+                for (var i = 0; i < history.length; i++) {
+                    var itemData = history[i];
+
+                    // 防御性安全隔离：强行将盲包拆解并本地重新拼装为标准的 JS 字典对象
+                    var secureObj = {
+                        "sender":  itemData.sender  !== undefined ? itemData.sender  : "other",
+                        "type":    itemData.type    !== undefined ? itemData.type    : "text",
+                        "content": itemData.content !== undefined ? itemData.content : "",
+                        "timeStr": itemData.timeStr !== undefined ? itemData.timeStr : ""
+                    };
+
+                    // 满足 Object 格式追加进数据仓库
+                    chatHistoryModel.append(secureObj);
                 }
             } else {
-                // 🚀 如果 JS 仓库里没聊过，说明是首次点开，直接把 C++ 刚刚在 Lambda 里塞进来的历史数组给灌进去！
-                for (var k = 0; k < history.length; k++) {
-                    chatHistoryModel.append(history[k])
-                }
+                // 兜底 Demo 数据（注意格式完全对齐）
+                chatHistoryModel.append({ "sender": "other", "type": "text", "content": "Hello! Welcome to QML!", "timeStr": "10:00 AM" })
+                chatHistoryModel.append({ "sender": "me",    "type": "text", "content": "Hi there! Let's test bubbles.", "timeStr": "10:01 AM" })
             }
-
-            // 6. 滚动条强制置底
             chatListView.positionViewAtEnd()
         }
+    } // 👈 核心修正 1：完美闭合 Connections 拦截网
 
-        // 🟢 B. 接收套接字实时收到的对方新消息
-        onSig_new_message_received: (sender, message) => {
-            chatHistoryModel.append({ "sender": sender, "message": message })
-            chatListView.positionViewAtEnd()
-        }
-    }
-
-    // 三态 ClickedLabel 组件封装
+    // 三态 ClickedLabel 图标组件封装
     component ClickedLabel : Item {
         id: customLabel
         property string normalSrc: ""
@@ -71,36 +59,16 @@ Rectangle {
         property string pressSrc: ""
         implicitWidth: 26
         implicitHeight: 26
-
         Image {
-            id: img
-            anchors.fill: parent
-            source: customLabel.normalSrc
-            smooth: true
+            id: img; anchors.fill: parent; source: customLabel.normalSrc; smooth: true
             scale: mouseArea.pressed ? 0.9 : (mouseArea.containsMouse ? 1.05 : 1.0)
             Behavior on scale { NumberAnimation { duration: 100 } }
         }
-
-        MouseArea {
-            id: mouseArea
-            anchors.fill: parent
-            hoverEnabled: true
-            cursorShape: Qt.PointingHandCursor
-        }
-
+        MouseArea { id: mouseArea; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor }
         states: [
-            State {
-                name: "hover"; when: mouseArea.containsMouse && !mouseArea.pressed
-                PropertyChanges { target: img; source: customLabel.hoverSrc }
-            },
-            State {
-                name: "press"; when: mouseArea.pressed
-                PropertyChanges { target: img; source: customLabel.pressSrc }
-            },
-            State {
-                name: "normal"; when: !mouseArea.containsMouse && !mouseArea.pressed
-                PropertyChanges { target: img; source: customLabel.normalSrc }
-            }
+            State { name: "hover"; when: mouseArea.containsMouse && !mouseArea.pressed; PropertyChanges { target: img; source: customLabel.hoverSrc } },
+            State { name: "press"; when: mouseArea.pressed; PropertyChanges { target: img; source: customLabel.pressSrc } },
+            State { name: "normal"; when: !mouseArea.containsMouse && !mouseArea.pressed; PropertyChanges { target: img; source: customLabel.normalSrc } }
         ]
     }
 
@@ -112,232 +80,239 @@ Rectangle {
         // 顶部状态栏
         Rectangle {
             id: title_wid
-            width: parent.width
-            height: 65
-            color: "#FFFFFF"
+            width: parent.width; height: 65; color: "#FFFFFF"
             property bool isOnline: true
-
-            Rectangle {
-                anchors.bottom: parent.bottom
-                width: parent.width
-                height: 1
-                color: "#EAEAEA"
-            }
-
+            Rectangle { anchors.bottom: parent.bottom; width: parent.width; height: 1; color: "#EAEAEA" }
             Row {
-                anchors.left: parent.left
-                anchors.leftMargin: 24
-                anchors.verticalCenter: parent.verticalCenter
-                spacing: 12
-
-                Label {
-                    id: title_lb
-                    text: typeof currentChatUserName !== "undefined" ? currentChatUserName : "Select a friend..."
-                    font.family: "Microsoft YaHei"
-                    font.pixelSize: 18
-                    font.bold: true
-                    color: "#2C3E50"
-                }
-
-                Rectangle {
-                    width: 8
-                    height: 8
-                    radius: 4
-                    color: title_wid.isOnline ? "#2ECC71" : "#95A5A6"
-                    anchors.verticalCenter: parent.verticalCenter
-                    Behavior on color { ColorAnimation { duration: 200 } }
-                }
-
-                Label {
-                    id: online_time_lb
-                    text: title_wid.isOnline ? "online" : "offline"
-                    font.family: "Microsoft YaHei"
-                    font.pixelSize: 12
-                    color: "#95A5A6"
-                    anchors.verticalCenter: parent.verticalCenter
-                }
+                anchors.left: parent.left; anchors.leftMargin: 24; anchors.verticalCenter: parent.verticalCenter; spacing: 12
+                Label { id: title_lb; text: "Select a friend..."; font.family: "Microsoft YaHei"; font.pixelSize: 18; font.bold: true; color: "#2C3E50" }
+                Rectangle { width: 8; height: 8; radius: 4; color: title_wid.isOnline ? "#2ECC71" : "#95A5A6"; anchors.verticalCenter: parent.verticalCenter }
+                Label { id: online_time_lb; text: "offline"; font.family: "Microsoft YaHei"; font.pixelSize: 12; color: "#95A5A6"; anchors.verticalCenter: parent.verticalCenter }
             }
         }
 
-        // 中间聊天视窗 ListView
+        // 中间聊天核心气泡列表框架
         Item {
             id: conversation_box
             width: parent.width
             height: parent.height - title_wid.height - tool_wid.height
             clip: true
 
-            ListModel {
-                id: chatHistoryModel
-            }
+            ListModel { id: chatHistoryModel }
 
             ListView {
                 id: chatListView
                 anchors.fill: parent
                 anchors.margins: 16
                 model: chatHistoryModel
-                spacing: 12
+                spacing: 24
                 Component.onCompleted: chatListView.positionViewAtEnd()
 
                 delegate: Item {
+                    id: chatItemRow
                     width: chatListView.width
-                    height: bubbleCard.height + 4
+                    height: nameLabel.height + 4 + bubbleContainer.height + timeLabel.height + 5
+
                     readonly property bool isMe: model.sender === "me"
+                    readonly property bool isText: model.type === "text"
 
-                    Rectangle {
-                        id: bubbleCard
-                        width: Math.min(msgText.implicitWidth + 24, parent.width * 0.65)
-                        height: msgText.implicitHeight + 16
-                        radius: 12
-                        color: isMe ? "#2CB46E" : "#FFFFFF"
-                        anchors.right: isMe ? parent.right : undefined
-                        anchors.left: isMe ? undefined : parent.left
-                        border.width: isMe ? 0 : 1
-                        border.color: "#E5E7E9"
+                    // 👤 A. 头像组件（左右动态镜像对齐）
+                    Image {
+                        id: avatar
+                        width: 42; height: 42
+                        anchors.right: chatItemRow.isMe ? parent.right : undefined
+                        anchors.left: chatItemRow.isMe ? undefined : parent.left
+                        anchors.top: parent.top
+                        anchors.topMargin: 20
 
-                        Text {
-                            id: msgText
-                            text: model.message
-                            font.family: "Microsoft YaHei"
-                            font.pixelSize: 14
-                            color: isMe ? "#FFFFFF" : "#2C3E50"
-                            anchors.fill: parent
-                            anchors.margins: 8
-                            verticalAlignment: Text.AlignVCenter
-                            wrapMode: Text.Wrap
+                        // ──► 🎯 核心修正 2：动态咬合双方的真实头像路径资产 ◄──
+                        source: chatItemRow.isMe ? (typeof myOwnAvatar !== 'undefined' ? myOwnAvatar : "qrc:/rc/chat_picture/search.png")
+                                                 : (chatPage.currentFriendIcon ? chatPage.currentFriendIcon : "qrc:/rc/chat_picture/search.png")
+                        smooth: true
+                    }
+
+                    // 📛 B. 用户名组件
+                    Label {
+                        id: nameLabel
+                        // 这里的“恋恋风辰”可以替换为从 C++ 获取的 currentChatUserName
+                        text: chatItemRow.isMe ? (typeof currentChatUserName !== 'undefined' ? currentChatUserName : "Me")
+                                               : (chatPage.currentFriendName || "User")
+                        font.family: "Microsoft YaHei"; font.pixelSize: 11; color: "#7F8C8D"; height: 20
+                        anchors.top: parent.top
+                        anchors.right: chatItemRow.isMe ? avatar.left : undefined
+                        anchors.left: chatItemRow.isMe ? undefined : avatar.right
+                        anchors.rightMargin: chatItemRow.isMe ? 12 : 0
+                        anchors.leftMargin: chatItemRow.isMe ? 0 : 12
+                    }
+
+                    // C. 核心气泡复合框
+                    Item {
+                        id: bubbleContainer
+                        height: chatItemRow.isText ? textContent.implicitHeight + 20 : 160
+                        width: chatItemRow.isText ? Math.min(textContent.implicitWidth + 30, parent.width * 0.6) : 200
+
+                        anchors.top: nameLabel.bottom
+                        anchors.topMargin: 4
+                        anchors.right: chatItemRow.isMe ? avatar.left : undefined
+                        anchors.left: chatItemRow.isMe ? undefined : avatar.right
+                        anchors.rightMargin: chatItemRow.isMe ? 8 : 0
+                        anchors.leftMargin: chatItemRow.isMe ? 0 : 8
+
+                        Rectangle {
+                            id: bubbleFrameBg
+                            anchors.fill: parent; radius: 8
+                            color: chatItemRow.isMe ? "#9EEA6A" : "#FFFFFF"
+                            border.width: chatItemRow.isMe ? 0 : 1
+                            border.color: "#E5E7E9"
+
+                            Canvas {
+                                id: triangleCanvas
+                                width: 8; height: 10
+                                anchors.top: parent.top; anchors.topMargin: 10
+                                anchors.left: chatItemRow.isMe ? parent.right : undefined
+                                anchors.right: chatItemRow.isMe ? undefined : parent.left
+
+                                onPaint: {
+                                    var ctx = getContext("2d");
+                                    ctx.reset();
+                                    ctx.fillStyle = chatItemRow.isMe ? "#9EEA6A" : "#FFFFFF";
+                                    ctx.beginPath();
+                                    if (chatItemRow.isMe) {
+                                        ctx.moveTo(0, 0); ctx.lineTo(8, 4); ctx.lineTo(0, 8);
+                                    } else {
+                                        ctx.moveTo(8, 0); ctx.lineTo(0, 4); ctx.lineTo(8, 8);
+                                    }
+                                    ctx.closePath(); ctx.fill();
+
+                                    if (!chatItemRow.isMe) {
+                                        ctx.strokeStyle = "#E5E7E9"; ctx.lineWidth = 1;
+                                        ctx.beginPath(); ctx.moveTo(8, 0); ctx.lineTo(0, 4); ctx.lineTo(8, 8); ctx.stroke();
+                                    }
+                                }
+                            }
                         }
+
+                        // 多行文本渲染
+                        Text {
+                            id: textContent
+                            visible: chatItemRow.isText
+                            text: model.content || ""
+                            font.family: "Microsoft YaHei"; font.pixelSize: 14; color: "#2C3E50"
+                            anchors.fill: parent; anchors.margins: 10
+                            wrapMode: Text.Wrap; verticalAlignment: Text.AlignVCenter
+                        }
+
+                        // 图片硬件级圆角裁剪
+                        Item {
+                            id: imageWrapper
+                            visible: !chatItemRow.isText
+                            anchors.fill: parent
+                            anchors.margins: 4
+
+                            layer.enabled: true
+                            layer.effect: Rectangle {
+                                width: imageWrapper.width; height: imageWrapper.height; radius: 6
+                            }
+
+                            Image {
+                                id: imageContent
+                                source: !chatItemRow.isText ? (model.content || "") : ""
+                                fillMode: Image.PreserveAspectCrop
+                                anchors.fill: parent
+                                smooth: true
+                            }
+                        }
+                    }
+
+                    // D. 时间轴标签
+                    Label {
+                        id: timeLabel
+                        text: model.timeStr || ""
+                        font.family: "Microsoft YaHei"; font.pixelSize: 10; color: "#BDC3C7"; height: 15
+                        anchors.top: bubbleContainer.bottom
+                        anchors.topMargin: 2
+                        anchors.right: chatItemRow.isMe ? bubbleContainer.right : undefined
+                        anchors.left: chatItemRow.isMe ? undefined : bubbleContainer.left
                     }
                 }
             }
         }
 
-        // 底部工具输入条
+        // 底部输入与发送控制台
         Rectangle {
             id: tool_wid
-            width: parent.width
-            height: 240
-            color: "#FFFFFF"
+            width: parent.width; height: 240; color: "#FFFFFF"
+            Rectangle { anchors.top: parent.top; width: parent.width; height: 1; color: "#EAEAEA" }
 
+            // ──► 🎯 核心修正 3：优化了输入框与下方按钮行的上下物理相对关系 ◄──
+            // 输入文本编辑区域
             Rectangle {
-                anchors.top: parent.top
-                width: parent.width
-                height: 1
-                color: "#EAEAEA"
+                id: chatBoxContainer
+                anchors.top: parent.top; anchors.bottom: send_wid.top; anchors.left: parent.left; anchors.right: parent.right; anchors.margins: 16; anchors.bottomMargin: 8
+                color: "#F5F6F8"; radius: 12; border.width: 1; border.color: chatedit.activeFocus ? "#3498DB" : "#E5E7E9"
+
+                ScrollView {
+                    anchors.fill: parent; anchors.margins: 12; clip: true
+                    TextArea {
+                        id: chatedit
+                        placeholderText: "Type a message..."
+                        placeholderTextColor: "#A0AAB5"
+                        font.family: "Microsoft YaHei"; font.pixelSize: 15; color: "#2C3E50"
+                        wrapMode: TextArea.Wrap; selectByMouse: true; background: null
+                    }
+                }
             }
 
+            // 功能操作与发送按钮栏（置于控制台底端）
             Rectangle {
                 id: send_wid
-                width: parent.width
-                height: 45
-                color: "transparent"
-                anchors.top: parent.top
-                anchors.topMargin: 4
+                width: parent.width; height: 50; color: "transparent"
+                anchors.bottom: parent.bottom; anchors.bottomMargin: 8
 
                 Row {
-                    anchors.left: parent.left
-                    anchors.leftMargin: 24
-                    anchors.verticalCenter: parent.verticalCenter
-                    spacing: 18
-
-                    ClickedLabel {
-                        id: emo_lb
-                        normalSrc: "qrc:/rc/chat_picture/smile.png"
-                        hoverSrc: "qrc:/rc/chat_picture/smile_hover.png"
-                        pressSrc: "qrc:/rc/chat_picture/smile_press.png"
-                    }
-
-                    ClickedLabel {
-                        id: file_lb
-                        normalSrc: "qrc:/rc/chat_picture/filedir.png"
-                        hoverSrc: "qrc:/rc/chat_picture/filedir_hover.png"
-                        pressSrc: "qrc:/rc/chat_picture/filedir_press.png"
-                    }
-
-                    ClickedLabel {
-                        id: voice_lb
-                        normalSrc: "qrc:/rc/chat_picture/voice.png"
-                        hoverSrc: "qrc:/rc/chat_picture/voice_hover.png"
-                        pressSrc: "qrc:/rc/chat_picture/voice_press.png"
-                    }
+                    anchors.left: parent.left; anchors.leftMargin: 24; anchors.verticalCenter: parent.verticalCenter; spacing: 18
+                    ClickedLabel { id: emo_lb; normalSrc: "qrc:/rc/chat_picture/smile.png"; hoverSrc: "qrc:/rc/chat_picture/smile_hover.png"; pressSrc: "qrc:/rc/chat_picture/smile_press.png" }
+                    ClickedLabel { id: file_lb; normalSrc: "qrc:/rc/chat_picture/filedir.png"; hoverSrc: "qrc:/rc/chat_picture/filedir_hover.png"; pressSrc: "qrc:/rc/chat_picture/filedir_press.png" }
+                    ClickedLabel { id: voice_lb; normalSrc: "qrc:/rc/chat_picture/voice.png"; hoverSrc: "qrc:/rc/chat_picture/voice_hover.png"; pressSrc: "qrc:/rc/chat_picture/voice_press.png" }
                 }
 
                 Button {
                     id: send_btn
                     text: "SEND"
-                    anchors.right: parent.right
-                    anchors.rightMargin: 24
-                    anchors.verticalCenter: parent.verticalCenter
-
-                    focusPolicy: Qt.NoFocus
-                    hoverEnabled: true
+                    anchors.right: parent.right; anchors.rightMargin: 24; anchors.verticalCenter: parent.verticalCenter
+                    focusPolicy: Qt.NoFocus; hoverEnabled: true
 
                     background: Rectangle {
-                        implicitWidth: 80
-                        implicitHeight: 34
-                        radius: 17
+                        implicitWidth: 80; implicitHeight: 34; radius: 17
                         color: send_btn.pressed ? "#1E8449" : (send_btn.hovered ? "#2ECC71" : "#2CB46E")
-                        opacity: send_btn.enabled ? 1.0 : 0.5
-                        border.color: "transparent"
-                        border.width: 0
-                        Behavior on color { ColorAnimation { duration: 150 } }
                     }
 
                     contentItem: Text {
-                        text: send_btn.text
-                        font.family: "Microsoft YaHei"
-                        font.pixelSize: 13
-                        font.bold: true
-                        color: "#FFFFFF"
-                        horizontalAlignment: Text.AlignHCenter
-                        verticalAlignment: Text.AlignVCenter
+                        text: send_btn.text; font.family: "Microsoft YaHei"; font.pixelSize: 13; font.bold: true; color: "#FFFFFF"
+                        horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter
                     }
 
                     onClicked: {
                         if (chatedit.text.trim() === "") return;
 
-                        // 本地长出我的绿色消息气泡
+                        // 获取实时物理时间戳
+                        var currentTime = new Date().toLocaleTimeString(Qt.locale("en_US"), "hh:mm AP");
+
+                        // 1. 本地仓库快速追加
                         chatHistoryModel.append({
                             "sender": "me",
-                            "message": chatedit.text
+                            "type": "text",
+                            "content": chatedit.text,
+                            "timeStr": currentTime
                         });
 
-                        // 🚀 跨语种调用 C++ 的 Q_INVOKABLE 函数，将打字结果送回底层
-                        cppBridge.sendMessageFromQml(chatPage.currentFriendName, chatedit.text);
+                        // 2. 扔向 C++ 腰部总线进行网络外发
+                        if (typeof cppBridge !== 'undefined') {
+                            cppBridge.sendMessageFromQml(chatPage.currentFriendName, chatedit.text);
+                        }
 
                         chatedit.clear();
                         chatListView.positionViewAtEnd();
-                    }
-                }
-            }
-
-            Rectangle {
-                id: chatBoxContainer
-                anchors.top: send_wid.bottom
-                anchors.bottom: parent.bottom
-                anchors.left: parent.left
-                anchors.right: parent.right
-                anchors.margins: 16
-                anchors.bottomMargin: 20
-                color: "#F5F6F8"
-                radius: 12
-                border.width: 1
-                border.color: chatedit.activeFocus ? "#3498DB" : "#E5E7E9"
-                Behavior on border.color { ColorAnimation { duration: 150 } }
-
-                ScrollView {
-                    anchors.fill: parent
-                    anchors.margins: 12
-                    clip: true
-
-                    TextArea {
-                        id: chatedit
-                        placeholderText: "Type a message..."
-                        placeholderTextColor: "#A0AAB5"
-                        font.family: "Microsoft YaHei"
-                        font.pixelSize: 15
-                        color: "#2C3E50"
-                        wrapMode: TextArea.Wrap
-                        selectByMouse: true
-                        background: null
                     }
                 }
             }

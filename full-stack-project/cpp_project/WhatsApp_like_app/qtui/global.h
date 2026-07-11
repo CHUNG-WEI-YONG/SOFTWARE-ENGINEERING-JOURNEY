@@ -12,6 +12,9 @@
 #include <QJsonObject>
 #include <QDir>
 #include <QSettings>
+#include <QString>
+#include <QVariantMap>
+#include <QDateTime>
 
 enum class ReqId{
     ID_GET_VERIFY_CODE=1001,//code
@@ -70,6 +73,27 @@ struct Serverinfo{
     QString host;
     QString port;
     QString token;
+};
+
+struct MessageEntity {
+    QString msgId;      // 消息唯一UUID（防止重发或去重）
+    QString fromUid;    // 发送者ID
+    QString toUid;      // 接收者ID
+    QString sender;     // 对齐QML标签："me" 或 "other"
+    QString type;       // "text" 或 "image" 或 "file"
+    QString content;    // 文字内容或物理路径
+    QString timeStr;    // 格式化后的时间："10:45 AM"
+
+    // ──► 🎯 核心黑科技：一键把 C++ 结构体熔炼成 QML 认识的盲包 ◄──
+    QVariantMap toQmlItem() const {
+        QVariantMap map;
+        map["msgId"] = msgId;
+        map["sender"] = sender;
+        map["type"] = type;
+        map["content"] = content;
+        map["timeStr"] = timeStr;
+        return map;
+    }
 };
 
 

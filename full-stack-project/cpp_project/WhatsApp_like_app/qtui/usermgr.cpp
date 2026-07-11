@@ -20,3 +20,18 @@ void UserMgr::SetToken(QString token)
 {
     _token = token;
 }
+
+QString UserMgr::returnName()
+{
+    return _name;
+}
+
+void UserMgr::Setlogo(QString path)
+{
+    _logoPath=path;
+}
+
+QString UserMgr::returnLogo()
+{
+    return _logoPath;
+}
