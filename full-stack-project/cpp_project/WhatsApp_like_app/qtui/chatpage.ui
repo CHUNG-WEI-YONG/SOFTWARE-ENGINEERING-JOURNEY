@@ -347,7 +347,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
   <customwidget>
    <class>ClickedButton</class>
    <extends>QPushButton</extends>
-   <header location="global">clickedbutton.h</header>
+   <header>clickedbutton.h</header>
   </customwidget>
   <customwidget>
    <class>ClickedLabel</class>

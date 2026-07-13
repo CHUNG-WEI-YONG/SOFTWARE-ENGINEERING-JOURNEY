@@ -63,3 +63,7 @@ Write for the qt ui frontend for the chatserver , the ui has three parts .with t
 
 ## DAY 17 
 Complete the ui part for the exist of the chat history in the bubble structure with green for user and white for the sender
+
+## DAY 18
+Adding function for search bar in the qtui by using a ListWidget and a class SearchItem based from a ListItem class , the ListItem is suitable for all the item in various list and for searching it has been declared as SearchItem with a itemID.
+Making the ui more attractive and testing the search ui correctly run.

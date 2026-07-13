@@ -10,7 +10,10 @@ Rectangle {
     // 内存自治缓存，用于未拉取 SQL 时的快速切换
     property var chatStorage: ({})
     property string currentFriendName: ""
-    property string currentFriendIcon: "" // 补充缺少的外壳资产变量
+    property string currentFriendIcon: ""
+
+    // ──► 🎯 核心修正 1：引入触顶打捞状态锁，防止滚轮狂滚导致重复请求爆破 ◄──
+    property bool b_loading_history: false
 
     // ──► 🛰️ 核心信号连接网（承接 C++ 实体序列化大盲包） ◄──
     Connections {
@@ -43,13 +46,16 @@ Rectangle {
                     chatHistoryModel.append(secureObj);
                 }
             } else {
-                // 兜底 Demo 数据（注意格式完全对齐）
+                // 兜底 Demo 数据
                 chatHistoryModel.append({ "sender": "other", "type": "text", "content": "Hello! Welcome to QML!", "timeStr": "10:00 AM" })
                 chatHistoryModel.append({ "sender": "me",    "type": "text", "content": "Hi there! Let's test bubbles.", "timeStr": "10:01 AM" })
             }
+
+            // 每次切换好友资产重置打捞锁
+            chatPage.b_loading_history = false
             chatListView.positionViewAtEnd()
         }
-    } // 👈 核心修正 1：完美闭合 Connections 拦截网
+    }
 
     // 三态 ClickedLabel 图标组件封装
     component ClickedLabel : Item {
@@ -107,6 +113,36 @@ Rectangle {
                 model: chatHistoryModel
                 spacing: 24
                 Component.onCompleted: chatListView.positionViewAtEnd()
+                clip: true
+
+                // 原生现代化滚动条
+                ScrollBar.vertical: ScrollBar {
+                    id: vScrollBar
+                    width: 8
+                    policy: ScrollBar.AsNeeded
+
+                    contentItem: Rectangle {
+                        implicitWidth: 8; radius: 4
+                        color: vScrollBar.pressed ? "#7F8C8D" : (vScrollBar.hovered ? "#95A5A6" : "#BDC3C7")
+                    }
+                }
+
+                // ──► 🎯 核心修正 2：触顶事件探测雷达总线（取代传统 C++ eventFilter） ◄──
+                // 当 contentY 滚动偏移量为负数，代表列表触顶并发生阻尼下拉反弹
+                onContentYChanged: {
+                    if (chatListView.contentY < -30 && !chatPage.b_loading_history) {
+                        // 立刻锁死防线，防止滚轮连续滚动引起瀑布式崩溃请求
+                        chatPage.b_loading_history = true;
+
+                        console.log("📥 [QML 触顶雷达] 检测到视窗被拉到最上方，触发 C++ 历史记录捞取！目标好友: " + chatPage.currentFriendName);
+
+                        // 🚀 核心跨界联动：调用 C++ Bridge 里的接口打捞更早的本地 JSON 或数据库历史
+                        if (typeof cppBridge !== 'undefined') {
+                            // 💡 未来在 C++ 的 ChatBridge 里定义这个槽函数即可接收
+                            cppBridge.loadMoreHistoryFromQml(chatPage.currentFriendName);
+                        }
+                    }
+                }
 
                 delegate: Item {
                     id: chatItemRow
@@ -116,7 +152,7 @@ Rectangle {
                     readonly property bool isMe: model.sender === "me"
                     readonly property bool isText: model.type === "text"
 
-                    // 👤 A. 头像组件（左右动态镜像对齐）
+                    // 👤 A. 头像组件
                     Image {
                         id: avatar
                         width: 42; height: 42
@@ -125,7 +161,6 @@ Rectangle {
                         anchors.top: parent.top
                         anchors.topMargin: 20
 
-                        // ──► 🎯 核心修正 2：动态咬合双方的真实头像路径资产 ◄──
                         source: chatItemRow.isMe ? (typeof myOwnAvatar !== 'undefined' ? myOwnAvatar : "qrc:/rc/chat_picture/search.png")
                                                  : (chatPage.currentFriendIcon ? chatPage.currentFriendIcon : "qrc:/rc/chat_picture/search.png")
                         smooth: true
@@ -134,7 +169,6 @@ Rectangle {
                     // 📛 B. 用户名组件
                     Label {
                         id: nameLabel
-                        // 这里的“恋恋风辰”可以替换为从 C++ 获取的 currentChatUserName
                         text: chatItemRow.isMe ? (typeof currentChatUserName !== 'undefined' ? currentChatUserName : "Me")
                                                : (chatPage.currentFriendName || "User")
                         font.family: "Microsoft YaHei"; font.pixelSize: 11; color: "#7F8C8D"; height: 20
@@ -186,13 +220,13 @@ Rectangle {
 
                                     if (!chatItemRow.isMe) {
                                         ctx.strokeStyle = "#E5E7E9"; ctx.lineWidth = 1;
-                                        ctx.beginPath(); ctx.moveTo(8, 0); ctx.lineTo(0, 4); ctx.lineTo(8, 8); ctx.stroke();
+                                        ctx.beginPath(); ctx.moveTo(8, 0); ctx.lineTo(0, 4); ctx.lineTo(8, 8); stroke();
                                     }
                                 }
                             }
                         }
 
-                        // 多行文本渲染
+                        // 多行文本
                         Text {
                             id: textContent
                             visible: chatItemRow.isText
@@ -202,7 +236,7 @@ Rectangle {
                             wrapMode: Text.Wrap; verticalAlignment: Text.AlignVCenter
                         }
 
-                        // 图片硬件级圆角裁剪
+                        // 图片裁剪
                         Item {
                             id: imageWrapper
                             visible: !chatItemRow.isText
@@ -244,7 +278,6 @@ Rectangle {
             width: parent.width; height: 240; color: "#FFFFFF"
             Rectangle { anchors.top: parent.top; width: parent.width; height: 1; color: "#EAEAEA" }
 
-            // ──► 🎯 核心修正 3：优化了输入框与下方按钮行的上下物理相对关系 ◄──
             // 输入文本编辑区域
             Rectangle {
                 id: chatBoxContainer
@@ -263,7 +296,7 @@ Rectangle {
                 }
             }
 
-            // 功能操作与发送按钮栏（置于控制台底端）
+            // 功能操作与发送按钮栏
             Rectangle {
                 id: send_wid
                 width: parent.width; height: 50; color: "transparent"
@@ -295,10 +328,9 @@ Rectangle {
                     onClicked: {
                         if (chatedit.text.trim() === "") return;
 
-                        // 获取实时物理时间戳
                         var currentTime = new Date().toLocaleTimeString(Qt.locale("en_US"), "hh:mm AP");
 
-                        // 1. 本地仓库快速追加
+                        // 本地仓库快速追加
                         chatHistoryModel.append({
                             "sender": "me",
                             "type": "text",
@@ -306,7 +338,6 @@ Rectangle {
                             "timeStr": currentTime
                         });
 
-                        // 2. 扔向 C++ 腰部总线进行网络外发
                         if (typeof cppBridge !== 'undefined') {
                             cppBridge.sendMessageFromQml(chatPage.currentFriendName, chatedit.text);
                         }

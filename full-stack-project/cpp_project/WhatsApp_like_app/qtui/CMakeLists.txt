@@ -55,6 +55,12 @@ qt_add_executable(qtui
     chatpage.h chatpage.cpp chatpage.ui
     qmlchatpage.h qmlchatpage.cpp qmlchatpage.ui
     chatbridge.h chatbridge.cpp
+    statewidget.h statewidget.cpp
+    searchlist.h searchlist.cpp
+    userdata.h userdata.cpp
+    adduseritem.h adduseritem.cpp adduseritem.ui
+
+
 )
 
 # 6. 🛰️【规范化现代 CMake】管理头文件包含路径
