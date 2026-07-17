@@ -96,6 +96,59 @@ struct MessageEntity {
     }
 };
 
+const int MIN_APPLY_LABEL_ED_LEN = 40;
+
+const QString add_prefix = "Add Tags ";
+
+const int  tip_offset = 5;
+
+
+const std::vector<QString>  strs ={"hello world !",
+                                   "nice to meet u",
+                                   "New year，new life",
+                                   "You have to love yourself",
+                                   "My love is written in the wind ever since the whole world is you"};
+
+const std::vector<QString> heads = {
+    ":/rc/head_1.jpg",
+    ":/rc/head_2.jpg",
+    ":/rc/head_3.jpg",
+    ":/rc/head_4.jpg",
+    ":/rc/head_5.jpg"
+};
+
+const std::vector<QString> names = {
+    "HanMeiMei",
+    "Lily",
+    "Ben",
+    "Androw",
+    "Max",
+    "Summer",
+    "Candy",
+    "Hunter"
+};
+
+const int CHAT_COUNT_PER_PAGE = 13;
+
+enum MsgStatus{
+    UN_READ = 0,  //对方未读
+    SEND_FAILED = 1,  //发送失败
+    READED = 2  //对方已读
+};
+
+//聊天形式，私聊和群聊
+enum class ChatFormType {
+    PRIVATE = 0,
+    GROUP = 1
+};
+
+//聊天消息类型，文本，图片，文件等
+enum class ChatMsgType {
+    TEXT = 0,
+    PIC = 1,
+    FILE = 2
+};
+
 
 extern std::function <void(QWidget*)>repolish;
 extern QString gate_url_prefix;

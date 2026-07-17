@@ -7,12 +7,13 @@
 
 int main(int argc, char *argv[])
 {
+    qputenv("QT_QUICK_CONTROLS_STYLE", "Basic");
     QApplication a(argc, argv);
     QFile qss(":/style/stylesheet.qss");
     if(qss.open(QFile::ReadOnly)){
         qDebug("open success");
         QString style=QLatin1String(qss.readAll());
-        qDebug()<<style;
+        //qDebug()<<style;
         a.setStyleSheet(style);
         qss.close();
     }

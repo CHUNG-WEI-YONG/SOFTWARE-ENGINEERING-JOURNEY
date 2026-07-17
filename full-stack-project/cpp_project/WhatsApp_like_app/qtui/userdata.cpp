@@ -8,3 +8,11 @@ SearchInfo::SearchInfo(int _uid, QString name, QString nick, QString desc, int s
     _desc=desc;
     _sex=sex;
 }
+
+SearchInfo::SearchInfo(){
+    uid=-1;
+    _name="";
+    _nick="";
+    _desc="";
+    _sex=-1;
+}

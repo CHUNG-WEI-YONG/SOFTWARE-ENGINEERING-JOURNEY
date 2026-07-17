@@ -67,3 +67,6 @@ Complete the ui part for the exist of the chat history in the bubble structure w
 ## DAY 18
 Adding function for search bar in the qtui by using a ListWidget and a class SearchItem based from a ListItem class , the ListItem is suitable for all the item in various list and for searching it has been declared as SearchItem with a itemID.
 Making the ui more attractive and testing the search ui correctly run.
+
+## DAY 19
+Adding the ui page for friend apply request page that record name ,nickname ,and tag, the tag class divides into the tag child and tag added place when the given tags being chosen it will change into state clicked then it generate a new label at the tag place to show that the label being chosen.

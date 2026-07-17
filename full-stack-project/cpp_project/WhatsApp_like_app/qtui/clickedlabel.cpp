@@ -103,7 +103,7 @@ void ClickedLabel::mouseReleaseEvent(QMouseEvent *e)
             update();
 
             // 判定成功，正式引爆点击业务总线信号
-            emit clicked();
+            emit clicked(this->text(),_curstate);
         }
     }
     QLabel::mouseReleaseEvent(e);
@@ -130,6 +130,27 @@ void ClickedLabel::setState(QString normal, QString hover, QString press, QStrin
 ClickLbState ClickedLabel::GetCurState()
 {
     return _curstate;
+}
+
+bool ClickedLabel::SetCurState(ClickLbState lb)
+{
+    _curstate=lb;
+    if(_curstate==ClickLbState::Normal){
+        setProperty("state",_normal);
+        repolish(this);
+    }
+    else if(_curstate==ClickLbState::Selected){
+        setProperty("state",_selected);
+        repolish(this);
+    }
+    return true;
+}
+
+void ClickedLabel::ResetNormalState()
+{
+    _curstate=ClickLbState::Normal;
+    setProperty("state",_normal);
+    repolish(this);
 };
 
 

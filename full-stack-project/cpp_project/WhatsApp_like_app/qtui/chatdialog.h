@@ -30,6 +30,10 @@ private:
     QList<StateWidget*> _lb_list;
     QAction* _clear_action = nullptr;
 
+protected:
+    bool eventFilter(QObject *watched,QEvent *event)override;
+    void handleGlobalMousePress(QMouseEvent *event);
+
 public slots:
     void slot_loading_user();
     void slot_side_contact();

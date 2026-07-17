@@ -59,6 +59,11 @@ qt_add_executable(qtui
     searchlist.h searchlist.cpp
     userdata.h userdata.cpp
     adduseritem.h adduseritem.cpp adduseritem.ui
+    findsuccessdialog.h findsuccessdialog.cpp findsuccessdialog.ui
+    applyfriend.h applyfriend.cpp applyfriend.ui
+    clickedoncelabel.h clickedoncelabel.cpp
+    friendlabel.h friendlabel.cpp friendlabel.ui
+    contactuserlist.h contactuserlist.cpp
 
 
 )
@@ -120,3 +125,7 @@ qt_generate_deploy_app_script(
     NO_UNSUPPORTED_PLATFORM_ERROR
 )
 install(SCRIPT ${deploy_script})
+
+file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/static"
+     DESTINATION "${CMAKE_CURRENT_BINARY_DIR}"
+)

@@ -9,6 +9,7 @@
 #include <memory>
 #include "loadingdialog.h"
 #include "userdata.h"
+#include "findsuccessdialog.h"
 class SearchList:public QListWidget
 {
 public:
@@ -46,11 +47,12 @@ protected:
 
 private:
     void waitPending(bool pending=true);
+    void CloseFindDialog();
     bool _search_pending;
     void AddTipItem();
-    std::shared_ptr<QDialog> _find_dlg;
+   FindSuccessDialog* _find_dlg = nullptr;
     QWidget* _search_edit;
-    LoadingDialog * _loadingDialog;
+    LoadingDialog* _loadingDialog;
 private slots:
     void slot_item_clicked(QListWidgetItem *item);
     void slot_user_search(std::shared_ptr<SearchInfo> si);
