@@ -1,0 +1,3 @@
+C:\Qt\Tools\CMake_64\bin\cmake.exe -E rm -f CMakeFiles\qtui.dir/objects.a
+C:\msys64\mingw64\bin\ar.exe qc CMakeFiles\qtui.dir/objects.a @CMakeFiles\qtui.dir\objects1.rsp
+C:\msys64\mingw64\bin\c++.exe -g -mwindows -Wl,--whole-archive CMakeFiles\qtui.dir/objects.a -Wl,--no-whole-archive -o qtui.exe -Wl,--out-implib,libqtui.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles\qtui.dir\linkLibs.rsp

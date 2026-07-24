@@ -1,0 +1,12 @@
+# Ignore environment secrets
+.env
+*.env
+agents/.env
+
+# Ignore Python cache
+__pycache__/
+*.pyc
+
+# Ignore C++ clangd cache
+.cache/
+*.idx

@@ -1,0 +1,10 @@
+C:/Users/ASUSTUF/Desktop/SE_JOURNEY/build/CMakeFiles/qtui.dir
+C:/Users/ASUSTUF/Desktop/SE_JOURNEY/build/CMakeFiles/qtui_qmlimportscan.dir
+C:/Users/ASUSTUF/Desktop/SE_JOURNEY/build/CMakeFiles/edit_cache.dir
+C:/Users/ASUSTUF/Desktop/SE_JOURNEY/build/CMakeFiles/rebuild_cache.dir
+C:/Users/ASUSTUF/Desktop/SE_JOURNEY/build/CMakeFiles/list_install_components.dir
+C:/Users/ASUSTUF/Desktop/SE_JOURNEY/build/CMakeFiles/install.dir
+C:/Users/ASUSTUF/Desktop/SE_JOURNEY/build/CMakeFiles/install/local.dir
+C:/Users/ASUSTUF/Desktop/SE_JOURNEY/build/CMakeFiles/install/strip.dir
+C:/Users/ASUSTUF/Desktop/SE_JOURNEY/build/CMakeFiles/qtui_autogen_timestamp_deps.dir
+C:/Users/ASUSTUF/Desktop/SE_JOURNEY/build/CMakeFiles/qtui_autogen.dir

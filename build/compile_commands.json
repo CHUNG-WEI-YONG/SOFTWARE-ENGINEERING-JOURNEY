@@ -1,0 +1,224 @@
+[
+{
+  "directory": "C:/Users/ASUSTUF/Desktop/SE_JOURNEY/build",
+  "command": "C:\\msys64\\mingw64\\bin\\c++.exe -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NEEDS_QMAIN -DQT_NETWORK_LIB -DQT_OPENGL_LIB -DQT_QMLINTEGRATION_LIB -DQT_QML_LIB -DQT_QUICKWIDGETS_LIB -DQT_QUICK_LIB -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64 @CMakeFiles/qtui.dir/includes_CXX.rsp -g -std=gnu++20 -o CMakeFiles\\qtui.dir\\qtui_autogen\\mocs_compilation.cpp.obj -c C:\\Users\\ASUSTUF\\Desktop\\SE_JOURNEY\\build\\qtui_autogen\\mocs_compilation.cpp",
+  "file": "C:/Users/ASUSTUF/Desktop/SE_JOURNEY/build/qtui_autogen/mocs_compilation.cpp",
+  "output": "CMakeFiles/qtui.dir/qtui_autogen/mocs_compilation.cpp.obj"
+},
+{
+  "directory": "C:/Users/ASUSTUF/Desktop/SE_JOURNEY/build",
+  "command": "C:\\msys64\\mingw64\\bin\\c++.exe -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NEEDS_QMAIN -DQT_NETWORK_LIB -DQT_OPENGL_LIB -DQT_QMLINTEGRATION_LIB -DQT_QML_LIB -DQT_QUICKWIDGETS_LIB -DQT_QUICK_LIB -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64 @CMakeFiles/qtui.dir/includes_CXX.rsp -g -std=gnu++20 -o CMakeFiles\\qtui.dir\\main.cpp.obj -c C:\\Users\\ASUSTUF\\Desktop\\SE_JOURNEY\\full-stack-project\\cpp_project\\WhatsApp_like_app\\qtui\\main.cpp",
+  "file": "C:/Users/ASUSTUF/Desktop/SE_JOURNEY/full-stack-project/cpp_project/WhatsApp_like_app/qtui/main.cpp",
+  "output": "CMakeFiles/qtui.dir/main.cpp.obj"
+},
+{
+  "directory": "C:/Users/ASUSTUF/Desktop/SE_JOURNEY/build",
+  "command": "C:\\msys64\\mingw64\\bin\\c++.exe -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NEEDS_QMAIN -DQT_NETWORK_LIB -DQT_OPENGL_LIB -DQT_QMLINTEGRATION_LIB -DQT_QML_LIB -DQT_QUICKWIDGETS_LIB -DQT_QUICK_LIB -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64 @CMakeFiles/qtui.dir/includes_CXX.rsp -g -std=gnu++20 -o CMakeFiles\\qtui.dir\\mainwindow.cpp.obj -c C:\\Users\\ASUSTUF\\Desktop\\SE_JOURNEY\\full-stack-project\\cpp_project\\WhatsApp_like_app\\qtui\\mainwindow.cpp",
+  "file": "C:/Users/ASUSTUF/Desktop/SE_JOURNEY/full-stack-project/cpp_project/WhatsApp_like_app/qtui/mainwindow.cpp",
+  "output": "CMakeFiles/qtui.dir/mainwindow.cpp.obj"
+},
+{
+  "directory": "C:/Users/ASUSTUF/Desktop/SE_JOURNEY/build",
+  "command": "C:\\msys64\\mingw64\\bin\\c++.exe -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NEEDS_QMAIN -DQT_NETWORK_LIB -DQT_OPENGL_LIB -DQT_QMLINTEGRATION_LIB -DQT_QML_LIB -DQT_QUICKWIDGETS_LIB -DQT_QUICK_LIB -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64 @CMakeFiles/qtui.dir/includes_CXX.rsp -g -std=gnu++20 -o CMakeFiles\\qtui.dir\\logindialog.cpp.obj -c C:\\Users\\ASUSTUF\\Desktop\\SE_JOURNEY\\full-stack-project\\cpp_project\\WhatsApp_like_app\\qtui\\logindialog.cpp",
+  "file": "C:/Users/ASUSTUF/Desktop/SE_JOURNEY/full-stack-project/cpp_project/WhatsApp_like_app/qtui/logindialog.cpp",
+  "output": "CMakeFiles/qtui.dir/logindialog.cpp.obj"
+},
+{
+  "directory": "C:/Users/ASUSTUF/Desktop/SE_JOURNEY/build",
+  "command": "C:\\msys64\\mingw64\\bin\\c++.exe -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NEEDS_QMAIN -DQT_NETWORK_LIB -DQT_OPENGL_LIB -DQT_QMLINTEGRATION_LIB -DQT_QML_LIB -DQT_QUICKWIDGETS_LIB -DQT_QUICK_LIB -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64 @CMakeFiles/qtui.dir/includes_CXX.rsp -g -std=gnu++20 -o CMakeFiles\\qtui.dir\\signindialog.cpp.obj -c C:\\Users\\ASUSTUF\\Desktop\\SE_JOURNEY\\full-stack-project\\cpp_project\\WhatsApp_like_app\\qtui\\signindialog.cpp",
+  "file": "C:/Users/ASUSTUF/Desktop/SE_JOURNEY/full-stack-project/cpp_project/WhatsApp_like_app/qtui/signindialog.cpp",
+  "output": "CMakeFiles/qtui.dir/signindialog.cpp.obj"
+},
+{
+  "directory": "C:/Users/ASUSTUF/Desktop/SE_JOURNEY/build",
+  "command": "C:\\msys64\\mingw64\\bin\\c++.exe -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NEEDS_QMAIN -DQT_NETWORK_LIB -DQT_OPENGL_LIB -DQT_QMLINTEGRATION_LIB -DQT_QML_LIB -DQT_QUICKWIDGETS_LIB -DQT_QUICK_LIB -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64 @CMakeFiles/qtui.dir/includes_CXX.rsp -g -std=gnu++20 -o CMakeFiles\\qtui.dir\\global.cpp.obj -c C:\\Users\\ASUSTUF\\Desktop\\SE_JOURNEY\\full-stack-project\\cpp_project\\WhatsApp_like_app\\qtui\\global.cpp",
+  "file": "C:/Users/ASUSTUF/Desktop/SE_JOURNEY/full-stack-project/cpp_project/WhatsApp_like_app/qtui/global.cpp",
+  "output": "CMakeFiles/qtui.dir/global.cpp.obj"
+},
+{
+  "directory": "C:/Users/ASUSTUF/Desktop/SE_JOURNEY/build",
+  "command": "C:\\msys64\\mingw64\\bin\\c++.exe -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NEEDS_QMAIN -DQT_NETWORK_LIB -DQT_OPENGL_LIB -DQT_QMLINTEGRATION_LIB -DQT_QML_LIB -DQT_QUICKWIDGETS_LIB -DQT_QUICK_LIB -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64 @CMakeFiles/qtui.dir/includes_CXX.rsp -g -std=gnu++20 -o CMakeFiles\\qtui.dir\\httpmgr.cpp.obj -c C:\\Users\\ASUSTUF\\Desktop\\SE_JOURNEY\\full-stack-project\\cpp_project\\WhatsApp_like_app\\qtui\\httpmgr.cpp",
+  "file": "C:/Users/ASUSTUF/Desktop/SE_JOURNEY/full-stack-project/cpp_project/WhatsApp_like_app/qtui/httpmgr.cpp",
+  "output": "CMakeFiles/qtui.dir/httpmgr.cpp.obj"
+},
+{
+  "directory": "C:/Users/ASUSTUF/Desktop/SE_JOURNEY/build",
+  "command": "C:\\msys64\\mingw64\\bin\\c++.exe -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NEEDS_QMAIN -DQT_NETWORK_LIB -DQT_OPENGL_LIB -DQT_QMLINTEGRATION_LIB -DQT_QML_LIB -DQT_QUICKWIDGETS_LIB -DQT_QUICK_LIB -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64 @CMakeFiles/qtui.dir/includes_CXX.rsp -g -std=gnu++20 -o CMakeFiles\\qtui.dir\\timerbtn.cpp.obj -c C:\\Users\\ASUSTUF\\Desktop\\SE_JOURNEY\\full-stack-project\\cpp_project\\WhatsApp_like_app\\qtui\\timerbtn.cpp",
+  "file": "C:/Users/ASUSTUF/Desktop/SE_JOURNEY/full-stack-project/cpp_project/WhatsApp_like_app/qtui/timerbtn.cpp",
+  "output": "CMakeFiles/qtui.dir/timerbtn.cpp.obj"
+},
+{
+  "directory": "C:/Users/ASUSTUF/Desktop/SE_JOURNEY/build",
+  "command": "C:\\msys64\\mingw64\\bin\\c++.exe -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NEEDS_QMAIN -DQT_NETWORK_LIB -DQT_OPENGL_LIB -DQT_QMLINTEGRATION_LIB -DQT_QML_LIB -DQT_QUICKWIDGETS_LIB -DQT_QUICK_LIB -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64 @CMakeFiles/qtui.dir/includes_CXX.rsp -g -std=gnu++20 -o CMakeFiles\\qtui.dir\\clickedlabel.cpp.obj -c C:\\Users\\ASUSTUF\\Desktop\\SE_JOURNEY\\full-stack-project\\cpp_project\\WhatsApp_like_app\\qtui\\clickedlabel.cpp",
+  "file": "C:/Users/ASUSTUF/Desktop/SE_JOURNEY/full-stack-project/cpp_project/WhatsApp_like_app/qtui/clickedlabel.cpp",
+  "output": "CMakeFiles/qtui.dir/clickedlabel.cpp.obj"
+},
+{
+  "directory": "C:/Users/ASUSTUF/Desktop/SE_JOURNEY/build",
+  "command": "C:\\msys64\\mingw64\\bin\\c++.exe -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NEEDS_QMAIN -DQT_NETWORK_LIB -DQT_OPENGL_LIB -DQT_QMLINTEGRATION_LIB -DQT_QML_LIB -DQT_QUICKWIDGETS_LIB -DQT_QUICK_LIB -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64 @CMakeFiles/qtui.dir/includes_CXX.rsp -g -std=gnu++20 -o CMakeFiles\\qtui.dir\\resetdialog.cpp.obj -c C:\\Users\\ASUSTUF\\Desktop\\SE_JOURNEY\\full-stack-project\\cpp_project\\WhatsApp_like_app\\qtui\\resetdialog.cpp",
+  "file": "C:/Users/ASUSTUF/Desktop/SE_JOURNEY/full-stack-project/cpp_project/WhatsApp_like_app/qtui/resetdialog.cpp",
+  "output": "CMakeFiles/qtui.dir/resetdialog.cpp.obj"
+},
+{
+  "directory": "C:/Users/ASUSTUF/Desktop/SE_JOURNEY/build",
+  "command": "C:\\msys64\\mingw64\\bin\\c++.exe -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NEEDS_QMAIN -DQT_NETWORK_LIB -DQT_OPENGL_LIB -DQT_QMLINTEGRATION_LIB -DQT_QML_LIB -DQT_QUICKWIDGETS_LIB -DQT_QUICK_LIB -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64 @CMakeFiles/qtui.dir/includes_CXX.rsp -g -std=gnu++20 -o CMakeFiles\\qtui.dir\\tcpmgr.cpp.obj -c C:\\Users\\ASUSTUF\\Desktop\\SE_JOURNEY\\full-stack-project\\cpp_project\\WhatsApp_like_app\\qtui\\tcpmgr.cpp",
+  "file": "C:/Users/ASUSTUF/Desktop/SE_JOURNEY/full-stack-project/cpp_project/WhatsApp_like_app/qtui/tcpmgr.cpp",
+  "output": "CMakeFiles/qtui.dir/tcpmgr.cpp.obj"
+},
+{
+  "directory": "C:/Users/ASUSTUF/Desktop/SE_JOURNEY/build",
+  "command": "C:\\msys64\\mingw64\\bin\\c++.exe -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NEEDS_QMAIN -DQT_NETWORK_LIB -DQT_OPENGL_LIB -DQT_QMLINTEGRATION_LIB -DQT_QML_LIB -DQT_QUICKWIDGETS_LIB -DQT_QUICK_LIB -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64 @CMakeFiles/qtui.dir/includes_CXX.rsp -g -std=gnu++20 -o CMakeFiles\\qtui.dir\\usermgr.cpp.obj -c C:\\Users\\ASUSTUF\\Desktop\\SE_JOURNEY\\full-stack-project\\cpp_project\\WhatsApp_like_app\\qtui\\usermgr.cpp",
+  "file": "C:/Users/ASUSTUF/Desktop/SE_JOURNEY/full-stack-project/cpp_project/WhatsApp_like_app/qtui/usermgr.cpp",
+  "output": "CMakeFiles/qtui.dir/usermgr.cpp.obj"
+},
+{
+  "directory": "C:/Users/ASUSTUF/Desktop/SE_JOURNEY/build",
+  "command": "C:\\msys64\\mingw64\\bin\\c++.exe -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NEEDS_QMAIN -DQT_NETWORK_LIB -DQT_OPENGL_LIB -DQT_QMLINTEGRATION_LIB -DQT_QML_LIB -DQT_QUICKWIDGETS_LIB -DQT_QUICK_LIB -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64 @CMakeFiles/qtui.dir/includes_CXX.rsp -g -std=gnu++20 -o CMakeFiles\\qtui.dir\\chatdialog.cpp.obj -c C:\\Users\\ASUSTUF\\Desktop\\SE_JOURNEY\\full-stack-project\\cpp_project\\WhatsApp_like_app\\qtui\\chatdialog.cpp",
+  "file": "C:/Users/ASUSTUF/Desktop/SE_JOURNEY/full-stack-project/cpp_project/WhatsApp_like_app/qtui/chatdialog.cpp",
+  "output": "CMakeFiles/qtui.dir/chatdialog.cpp.obj"
+},
+{
+  "directory": "C:/Users/ASUSTUF/Desktop/SE_JOURNEY/build",
+  "command": "C:\\msys64\\mingw64\\bin\\c++.exe -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NEEDS_QMAIN -DQT_NETWORK_LIB -DQT_OPENGL_LIB -DQT_QMLINTEGRATION_LIB -DQT_QML_LIB -DQT_QUICKWIDGETS_LIB -DQT_QUICK_LIB -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64 @CMakeFiles/qtui.dir/includes_CXX.rsp -g -std=gnu++20 -o CMakeFiles\\qtui.dir\\clickedbutton.cpp.obj -c C:\\Users\\ASUSTUF\\Desktop\\SE_JOURNEY\\full-stack-project\\cpp_project\\WhatsApp_like_app\\qtui\\clickedbutton.cpp",
+  "file": "C:/Users/ASUSTUF/Desktop/SE_JOURNEY/full-stack-project/cpp_project/WhatsApp_like_app/qtui/clickedbutton.cpp",
+  "output": "CMakeFiles/qtui.dir/clickedbutton.cpp.obj"
+},
+{
+  "directory": "C:/Users/ASUSTUF/Desktop/SE_JOURNEY/build",
+  "command": "C:\\msys64\\mingw64\\bin\\c++.exe -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NEEDS_QMAIN -DQT_NETWORK_LIB -DQT_OPENGL_LIB -DQT_QMLINTEGRATION_LIB -DQT_QML_LIB -DQT_QUICKWIDGETS_LIB -DQT_QUICK_LIB -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64 @CMakeFiles/qtui.dir/includes_CXX.rsp -g -std=gnu++20 -o CMakeFiles\\qtui.dir\\customizeedit.cpp.obj -c C:\\Users\\ASUSTUF\\Desktop\\SE_JOURNEY\\full-stack-project\\cpp_project\\WhatsApp_like_app\\qtui\\customizeedit.cpp",
+  "file": "C:/Users/ASUSTUF/Desktop/SE_JOURNEY/full-stack-project/cpp_project/WhatsApp_like_app/qtui/customizeedit.cpp",
+  "output": "CMakeFiles/qtui.dir/customizeedit.cpp.obj"
+},
+{
+  "directory": "C:/Users/ASUSTUF/Desktop/SE_JOURNEY/build",
+  "command": "C:\\msys64\\mingw64\\bin\\c++.exe -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NEEDS_QMAIN -DQT_NETWORK_LIB -DQT_OPENGL_LIB -DQT_QMLINTEGRATION_LIB -DQT_QML_LIB -DQT_QUICKWIDGETS_LIB -DQT_QUICK_LIB -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64 @CMakeFiles/qtui.dir/includes_CXX.rsp -g -std=gnu++20 -o CMakeFiles\\qtui.dir\\chatuserlist.cpp.obj -c C:\\Users\\ASUSTUF\\Desktop\\SE_JOURNEY\\full-stack-project\\cpp_project\\WhatsApp_like_app\\qtui\\chatuserlist.cpp",
+  "file": "C:/Users/ASUSTUF/Desktop/SE_JOURNEY/full-stack-project/cpp_project/WhatsApp_like_app/qtui/chatuserlist.cpp",
+  "output": "CMakeFiles/qtui.dir/chatuserlist.cpp.obj"
+},
+{
+  "directory": "C:/Users/ASUSTUF/Desktop/SE_JOURNEY/build",
+  "command": "C:\\msys64\\mingw64\\bin\\c++.exe -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NEEDS_QMAIN -DQT_NETWORK_LIB -DQT_OPENGL_LIB -DQT_QMLINTEGRATION_LIB -DQT_QML_LIB -DQT_QUICKWIDGETS_LIB -DQT_QUICK_LIB -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64 @CMakeFiles/qtui.dir/includes_CXX.rsp -g -std=gnu++20 -o CMakeFiles\\qtui.dir\\chatuserwid.cpp.obj -c C:\\Users\\ASUSTUF\\Desktop\\SE_JOURNEY\\full-stack-project\\cpp_project\\WhatsApp_like_app\\qtui\\chatuserwid.cpp",
+  "file": "C:/Users/ASUSTUF/Desktop/SE_JOURNEY/full-stack-project/cpp_project/WhatsApp_like_app/qtui/chatuserwid.cpp",
+  "output": "CMakeFiles/qtui.dir/chatuserwid.cpp.obj"
+},
+{
+  "directory": "C:/Users/ASUSTUF/Desktop/SE_JOURNEY/build",
+  "command": "C:\\msys64\\mingw64\\bin\\c++.exe -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NEEDS_QMAIN -DQT_NETWORK_LIB -DQT_OPENGL_LIB -DQT_QMLINTEGRATION_LIB -DQT_QML_LIB -DQT_QUICKWIDGETS_LIB -DQT_QUICK_LIB -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64 @CMakeFiles/qtui.dir/includes_CXX.rsp -g -std=gnu++20 -o CMakeFiles\\qtui.dir\\listitembase.cpp.obj -c C:\\Users\\ASUSTUF\\Desktop\\SE_JOURNEY\\full-stack-project\\cpp_project\\WhatsApp_like_app\\qtui\\listitembase.cpp",
+  "file": "C:/Users/ASUSTUF/Desktop/SE_JOURNEY/full-stack-project/cpp_project/WhatsApp_like_app/qtui/listitembase.cpp",
+  "output": "CMakeFiles/qtui.dir/listitembase.cpp.obj"
+},
+{
+  "directory": "C:/Users/ASUSTUF/Desktop/SE_JOURNEY/build",
+  "command": "C:\\msys64\\mingw64\\bin\\c++.exe -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NEEDS_QMAIN -DQT_NETWORK_LIB -DQT_OPENGL_LIB -DQT_QMLINTEGRATION_LIB -DQT_QML_LIB -DQT_QUICKWIDGETS_LIB -DQT_QUICK_LIB -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64 @CMakeFiles/qtui.dir/includes_CXX.rsp -g -std=gnu++20 -o CMakeFiles\\qtui.dir\\loadingdialog.cpp.obj -c C:\\Users\\ASUSTUF\\Desktop\\SE_JOURNEY\\full-stack-project\\cpp_project\\WhatsApp_like_app\\qtui\\loadingdialog.cpp",
+  "file": "C:/Users/ASUSTUF/Desktop/SE_JOURNEY/full-stack-project/cpp_project/WhatsApp_like_app/qtui/loadingdialog.cpp",
+  "output": "CMakeFiles/qtui.dir/loadingdialog.cpp.obj"
+},
+{
+  "directory": "C:/Users/ASUSTUF/Desktop/SE_JOURNEY/build",
+  "command": "C:\\msys64\\mingw64\\bin\\c++.exe -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NEEDS_QMAIN -DQT_NETWORK_LIB -DQT_OPENGL_LIB -DQT_QMLINTEGRATION_LIB -DQT_QML_LIB -DQT_QUICKWIDGETS_LIB -DQT_QUICK_LIB -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64 @CMakeFiles/qtui.dir/includes_CXX.rsp -g -std=gnu++20 -o CMakeFiles\\qtui.dir\\chatpage.cpp.obj -c C:\\Users\\ASUSTUF\\Desktop\\SE_JOURNEY\\full-stack-project\\cpp_project\\WhatsApp_like_app\\qtui\\chatpage.cpp",
+  "file": "C:/Users/ASUSTUF/Desktop/SE_JOURNEY/full-stack-project/cpp_project/WhatsApp_like_app/qtui/chatpage.cpp",
+  "output": "CMakeFiles/qtui.dir/chatpage.cpp.obj"
+},
+{
+  "directory": "C:/Users/ASUSTUF/Desktop/SE_JOURNEY/build",
+  "command": "C:\\msys64\\mingw64\\bin\\c++.exe -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NEEDS_QMAIN -DQT_NETWORK_LIB -DQT_OPENGL_LIB -DQT_QMLINTEGRATION_LIB -DQT_QML_LIB -DQT_QUICKWIDGETS_LIB -DQT_QUICK_LIB -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64 @CMakeFiles/qtui.dir/includes_CXX.rsp -g -std=gnu++20 -o CMakeFiles\\qtui.dir\\qmlchatpage.cpp.obj -c C:\\Users\\ASUSTUF\\Desktop\\SE_JOURNEY\\full-stack-project\\cpp_project\\WhatsApp_like_app\\qtui\\qmlchatpage.cpp",
+  "file": "C:/Users/ASUSTUF/Desktop/SE_JOURNEY/full-stack-project/cpp_project/WhatsApp_like_app/qtui/qmlchatpage.cpp",
+  "output": "CMakeFiles/qtui.dir/qmlchatpage.cpp.obj"
+},
+{
+  "directory": "C:/Users/ASUSTUF/Desktop/SE_JOURNEY/build",
+  "command": "C:\\msys64\\mingw64\\bin\\c++.exe -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NEEDS_QMAIN -DQT_NETWORK_LIB -DQT_OPENGL_LIB -DQT_QMLINTEGRATION_LIB -DQT_QML_LIB -DQT_QUICKWIDGETS_LIB -DQT_QUICK_LIB -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64 @CMakeFiles/qtui.dir/includes_CXX.rsp -g -std=gnu++20 -o CMakeFiles\\qtui.dir\\chatbridge.cpp.obj -c C:\\Users\\ASUSTUF\\Desktop\\SE_JOURNEY\\full-stack-project\\cpp_project\\WhatsApp_like_app\\qtui\\chatbridge.cpp",
+  "file": "C:/Users/ASUSTUF/Desktop/SE_JOURNEY/full-stack-project/cpp_project/WhatsApp_like_app/qtui/chatbridge.cpp",
+  "output": "CMakeFiles/qtui.dir/chatbridge.cpp.obj"
+},
+{
+  "directory": "C:/Users/ASUSTUF/Desktop/SE_JOURNEY/build",
+  "command": "C:\\msys64\\mingw64\\bin\\c++.exe -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NEEDS_QMAIN -DQT_NETWORK_LIB -DQT_OPENGL_LIB -DQT_QMLINTEGRATION_LIB -DQT_QML_LIB -DQT_QUICKWIDGETS_LIB -DQT_QUICK_LIB -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64 @CMakeFiles/qtui.dir/includes_CXX.rsp -g -std=gnu++20 -o CMakeFiles\\qtui.dir\\statewidget.cpp.obj -c C:\\Users\\ASUSTUF\\Desktop\\SE_JOURNEY\\full-stack-project\\cpp_project\\WhatsApp_like_app\\qtui\\statewidget.cpp",
+  "file": "C:/Users/ASUSTUF/Desktop/SE_JOURNEY/full-stack-project/cpp_project/WhatsApp_like_app/qtui/statewidget.cpp",
+  "output": "CMakeFiles/qtui.dir/statewidget.cpp.obj"
+},
+{
+  "directory": "C:/Users/ASUSTUF/Desktop/SE_JOURNEY/build",
+  "command": "C:\\msys64\\mingw64\\bin\\c++.exe -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NEEDS_QMAIN -DQT_NETWORK_LIB -DQT_OPENGL_LIB -DQT_QMLINTEGRATION_LIB -DQT_QML_LIB -DQT_QUICKWIDGETS_LIB -DQT_QUICK_LIB -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64 @CMakeFiles/qtui.dir/includes_CXX.rsp -g -std=gnu++20 -o CMakeFiles\\qtui.dir\\searchlist.cpp.obj -c C:\\Users\\ASUSTUF\\Desktop\\SE_JOURNEY\\full-stack-project\\cpp_project\\WhatsApp_like_app\\qtui\\searchlist.cpp",
+  "file": "C:/Users/ASUSTUF/Desktop/SE_JOURNEY/full-stack-project/cpp_project/WhatsApp_like_app/qtui/searchlist.cpp",
+  "output": "CMakeFiles/qtui.dir/searchlist.cpp.obj"
+},
+{
+  "directory": "C:/Users/ASUSTUF/Desktop/SE_JOURNEY/build",
+  "command": "C:\\msys64\\mingw64\\bin\\c++.exe -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NEEDS_QMAIN -DQT_NETWORK_LIB -DQT_OPENGL_LIB -DQT_QMLINTEGRATION_LIB -DQT_QML_LIB -DQT_QUICKWIDGETS_LIB -DQT_QUICK_LIB -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64 @CMakeFiles/qtui.dir/includes_CXX.rsp -g -std=gnu++20 -o CMakeFiles\\qtui.dir\\userdata.cpp.obj -c C:\\Users\\ASUSTUF\\Desktop\\SE_JOURNEY\\full-stack-project\\cpp_project\\WhatsApp_like_app\\qtui\\userdata.cpp",
+  "file": "C:/Users/ASUSTUF/Desktop/SE_JOURNEY/full-stack-project/cpp_project/WhatsApp_like_app/qtui/userdata.cpp",
+  "output": "CMakeFiles/qtui.dir/userdata.cpp.obj"
+},
+{
+  "directory": "C:/Users/ASUSTUF/Desktop/SE_JOURNEY/build",
+  "command": "C:\\msys64\\mingw64\\bin\\c++.exe -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NEEDS_QMAIN -DQT_NETWORK_LIB -DQT_OPENGL_LIB -DQT_QMLINTEGRATION_LIB -DQT_QML_LIB -DQT_QUICKWIDGETS_LIB -DQT_QUICK_LIB -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64 @CMakeFiles/qtui.dir/includes_CXX.rsp -g -std=gnu++20 -o CMakeFiles\\qtui.dir\\adduseritem.cpp.obj -c C:\\Users\\ASUSTUF\\Desktop\\SE_JOURNEY\\full-stack-project\\cpp_project\\WhatsApp_like_app\\qtui\\adduseritem.cpp",
+  "file": "C:/Users/ASUSTUF/Desktop/SE_JOURNEY/full-stack-project/cpp_project/WhatsApp_like_app/qtui/adduseritem.cpp",
+  "output": "CMakeFiles/qtui.dir/adduseritem.cpp.obj"
+},
+{
+  "directory": "C:/Users/ASUSTUF/Desktop/SE_JOURNEY/build",
+  "command": "C:\\msys64\\mingw64\\bin\\c++.exe -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NEEDS_QMAIN -DQT_NETWORK_LIB -DQT_OPENGL_LIB -DQT_QMLINTEGRATION_LIB -DQT_QML_LIB -DQT_QUICKWIDGETS_LIB -DQT_QUICK_LIB -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64 @CMakeFiles/qtui.dir/includes_CXX.rsp -g -std=gnu++20 -o CMakeFiles\\qtui.dir\\findsuccessdialog.cpp.obj -c C:\\Users\\ASUSTUF\\Desktop\\SE_JOURNEY\\full-stack-project\\cpp_project\\WhatsApp_like_app\\qtui\\findsuccessdialog.cpp",
+  "file": "C:/Users/ASUSTUF/Desktop/SE_JOURNEY/full-stack-project/cpp_project/WhatsApp_like_app/qtui/findsuccessdialog.cpp",
+  "output": "CMakeFiles/qtui.dir/findsuccessdialog.cpp.obj"
+},
+{
+  "directory": "C:/Users/ASUSTUF/Desktop/SE_JOURNEY/build",
+  "command": "C:\\msys64\\mingw64\\bin\\c++.exe -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NEEDS_QMAIN -DQT_NETWORK_LIB -DQT_OPENGL_LIB -DQT_QMLINTEGRATION_LIB -DQT_QML_LIB -DQT_QUICKWIDGETS_LIB -DQT_QUICK_LIB -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64 @CMakeFiles/qtui.dir/includes_CXX.rsp -g -std=gnu++20 -o CMakeFiles\\qtui.dir\\applyfriend.cpp.obj -c C:\\Users\\ASUSTUF\\Desktop\\SE_JOURNEY\\full-stack-project\\cpp_project\\WhatsApp_like_app\\qtui\\applyfriend.cpp",
+  "file": "C:/Users/ASUSTUF/Desktop/SE_JOURNEY/full-stack-project/cpp_project/WhatsApp_like_app/qtui/applyfriend.cpp",
+  "output": "CMakeFiles/qtui.dir/applyfriend.cpp.obj"
+},
+{
+  "directory": "C:/Users/ASUSTUF/Desktop/SE_JOURNEY/build",
+  "command": "C:\\msys64\\mingw64\\bin\\c++.exe -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NEEDS_QMAIN -DQT_NETWORK_LIB -DQT_OPENGL_LIB -DQT_QMLINTEGRATION_LIB -DQT_QML_LIB -DQT_QUICKWIDGETS_LIB -DQT_QUICK_LIB -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64 @CMakeFiles/qtui.dir/includes_CXX.rsp -g -std=gnu++20 -o CMakeFiles\\qtui.dir\\clickedoncelabel.cpp.obj -c C:\\Users\\ASUSTUF\\Desktop\\SE_JOURNEY\\full-stack-project\\cpp_project\\WhatsApp_like_app\\qtui\\clickedoncelabel.cpp",
+  "file": "C:/Users/ASUSTUF/Desktop/SE_JOURNEY/full-stack-project/cpp_project/WhatsApp_like_app/qtui/clickedoncelabel.cpp",
+  "output": "CMakeFiles/qtui.dir/clickedoncelabel.cpp.obj"
+},
+{
+  "directory": "C:/Users/ASUSTUF/Desktop/SE_JOURNEY/build",
+  "command": "C:\\msys64\\mingw64\\bin\\c++.exe -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NEEDS_QMAIN -DQT_NETWORK_LIB -DQT_OPENGL_LIB -DQT_QMLINTEGRATION_LIB -DQT_QML_LIB -DQT_QUICKWIDGETS_LIB -DQT_QUICK_LIB -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64 @CMakeFiles/qtui.dir/includes_CXX.rsp -g -std=gnu++20 -o CMakeFiles\\qtui.dir\\friendlabel.cpp.obj -c C:\\Users\\ASUSTUF\\Desktop\\SE_JOURNEY\\full-stack-project\\cpp_project\\WhatsApp_like_app\\qtui\\friendlabel.cpp",
+  "file": "C:/Users/ASUSTUF/Desktop/SE_JOURNEY/full-stack-project/cpp_project/WhatsApp_like_app/qtui/friendlabel.cpp",
+  "output": "CMakeFiles/qtui.dir/friendlabel.cpp.obj"
+},
+{
+  "directory": "C:/Users/ASUSTUF/Desktop/SE_JOURNEY/build",
+  "command": "C:\\msys64\\mingw64\\bin\\c++.exe -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NEEDS_QMAIN -DQT_NETWORK_LIB -DQT_OPENGL_LIB -DQT_QMLINTEGRATION_LIB -DQT_QML_LIB -DQT_QUICKWIDGETS_LIB -DQT_QUICK_LIB -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64 @CMakeFiles/qtui.dir/includes_CXX.rsp -g -std=gnu++20 -o CMakeFiles\\qtui.dir\\contactuserlist.cpp.obj -c C:\\Users\\ASUSTUF\\Desktop\\SE_JOURNEY\\full-stack-project\\cpp_project\\WhatsApp_like_app\\qtui\\contactuserlist.cpp",
+  "file": "C:/Users/ASUSTUF/Desktop/SE_JOURNEY/full-stack-project/cpp_project/WhatsApp_like_app/qtui/contactuserlist.cpp",
+  "output": "CMakeFiles/qtui.dir/contactuserlist.cpp.obj"
+},
+{
+  "directory": "C:/Users/ASUSTUF/Desktop/SE_JOURNEY/build",
+  "command": "C:\\msys64\\mingw64\\bin\\c++.exe -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NEEDS_QMAIN -DQT_NETWORK_LIB -DQT_OPENGL_LIB -DQT_QMLINTEGRATION_LIB -DQT_QML_LIB -DQT_QUICKWIDGETS_LIB -DQT_QUICK_LIB -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64 @CMakeFiles/qtui.dir/includes_CXX.rsp -g -std=gnu++20 -o CMakeFiles\\qtui.dir\\conuseritem.cpp.obj -c C:\\Users\\ASUSTUF\\Desktop\\SE_JOURNEY\\full-stack-project\\cpp_project\\WhatsApp_like_app\\qtui\\conuseritem.cpp",
+  "file": "C:/Users/ASUSTUF/Desktop/SE_JOURNEY/full-stack-project/cpp_project/WhatsApp_like_app/qtui/conuseritem.cpp",
+  "output": "CMakeFiles/qtui.dir/conuseritem.cpp.obj"
+},
+{
+  "directory": "C:/Users/ASUSTUF/Desktop/SE_JOURNEY/build",
+  "command": "C:\\msys64\\mingw64\\bin\\c++.exe -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NEEDS_QMAIN -DQT_NETWORK_LIB -DQT_OPENGL_LIB -DQT_QMLINTEGRATION_LIB -DQT_QML_LIB -DQT_QUICKWIDGETS_LIB -DQT_QUICK_LIB -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64 @CMakeFiles/qtui.dir/includes_CXX.rsp -g -std=gnu++20 -o CMakeFiles\\qtui.dir\\grouptipitem.cpp.obj -c C:\\Users\\ASUSTUF\\Desktop\\SE_JOURNEY\\full-stack-project\\cpp_project\\WhatsApp_like_app\\qtui\\grouptipitem.cpp",
+  "file": "C:/Users/ASUSTUF/Desktop/SE_JOURNEY/full-stack-project/cpp_project/WhatsApp_like_app/qtui/grouptipitem.cpp",
+  "output": "CMakeFiles/qtui.dir/grouptipitem.cpp.obj"
+},
+{
+  "directory": "C:/Users/ASUSTUF/Desktop/SE_JOURNEY/build",
+  "command": "C:\\msys64\\mingw64\\bin\\c++.exe -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NEEDS_QMAIN -DQT_NETWORK_LIB -DQT_OPENGL_LIB -DQT_QMLINTEGRATION_LIB -DQT_QML_LIB -DQT_QUICKWIDGETS_LIB -DQT_QUICK_LIB -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64 @CMakeFiles/qtui.dir/includes_CXX.rsp -g -std=gnu++20 -o CMakeFiles\\qtui.dir\\applyfriendpage.cpp.obj -c C:\\Users\\ASUSTUF\\Desktop\\SE_JOURNEY\\full-stack-project\\cpp_project\\WhatsApp_like_app\\qtui\\applyfriendpage.cpp",
+  "file": "C:/Users/ASUSTUF/Desktop/SE_JOURNEY/full-stack-project/cpp_project/WhatsApp_like_app/qtui/applyfriendpage.cpp",
+  "output": "CMakeFiles/qtui.dir/applyfriendpage.cpp.obj"
+},
+{
+  "directory": "C:/Users/ASUSTUF/Desktop/SE_JOURNEY/build",
+  "command": "C:\\msys64\\mingw64\\bin\\c++.exe -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NEEDS_QMAIN -DQT_NETWORK_LIB -DQT_OPENGL_LIB -DQT_QMLINTEGRATION_LIB -DQT_QML_LIB -DQT_QUICKWIDGETS_LIB -DQT_QUICK_LIB -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64 @CMakeFiles/qtui.dir/includes_CXX.rsp -g -std=gnu++20 -o CMakeFiles\\qtui.dir\\applyfrienditem.cpp.obj -c C:\\Users\\ASUSTUF\\Desktop\\SE_JOURNEY\\full-stack-project\\cpp_project\\WhatsApp_like_app\\qtui\\applyfrienditem.cpp",
+  "file": "C:/Users/ASUSTUF/Desktop/SE_JOURNEY/full-stack-project/cpp_project/WhatsApp_like_app/qtui/applyfrienditem.cpp",
+  "output": "CMakeFiles/qtui.dir/applyfrienditem.cpp.obj"
+},
+{
+  "directory": "C:/Users/ASUSTUF/Desktop/SE_JOURNEY/build",
+  "command": "C:\\msys64\\mingw64\\bin\\c++.exe -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NEEDS_QMAIN -DQT_NETWORK_LIB -DQT_OPENGL_LIB -DQT_QMLINTEGRATION_LIB -DQT_QML_LIB -DQT_QUICKWIDGETS_LIB -DQT_QUICK_LIB -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64 @CMakeFiles/qtui.dir/includes_CXX.rsp -g -std=gnu++20 -o CMakeFiles\\qtui.dir\\applyfriendlist.cpp.obj -c C:\\Users\\ASUSTUF\\Desktop\\SE_JOURNEY\\full-stack-project\\cpp_project\\WhatsApp_like_app\\qtui\\applyfriendlist.cpp",
+  "file": "C:/Users/ASUSTUF/Desktop/SE_JOURNEY/full-stack-project/cpp_project/WhatsApp_like_app/qtui/applyfriendlist.cpp",
+  "output": "CMakeFiles/qtui.dir/applyfriendlist.cpp.obj"
+},
+{
+  "directory": "C:/Users/ASUSTUF/Desktop/SE_JOURNEY/build",
+  "command": "C:\\msys64\\mingw64\\bin\\c++.exe -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NEEDS_QMAIN -DQT_NETWORK_LIB -DQT_OPENGL_LIB -DQT_QMLINTEGRATION_LIB -DQT_QML_LIB -DQT_QUICKWIDGETS_LIB -DQT_QUICK_LIB -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64 @CMakeFiles/qtui.dir/includes_CXX.rsp -g -std=gnu++20 -o CMakeFiles\\qtui.dir\\qtui_autogen\\EWIEGA46WW\\qrc_resources.cpp.obj -c C:\\Users\\ASUSTUF\\Desktop\\SE_JOURNEY\\build\\qtui_autogen\\EWIEGA46WW\\qrc_resources.cpp",
+  "file": "C:/Users/ASUSTUF/Desktop/SE_JOURNEY/build/qtui_autogen/EWIEGA46WW/qrc_resources.cpp",
+  "output": "CMakeFiles/qtui.dir/qtui_autogen/EWIEGA46WW/qrc_resources.cpp.obj"
+}
+]

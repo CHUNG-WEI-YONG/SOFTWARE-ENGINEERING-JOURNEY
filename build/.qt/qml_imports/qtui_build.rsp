@@ -1,0 +1,9 @@
+-rootPath
+C:/Users/ASUSTUF/Desktop/SE_JOURNEY/full-stack-project/cpp_project/WhatsApp_like_app/qtui
+-cmake-output
+-output-file
+C:/Users/ASUSTUF/Desktop/SE_JOURNEY/build/.qt/qml_imports/qtui_build.cmake
+-importPath
+C:/Users/ASUSTUF/Desktop/SE_JOURNEY/build
+-importPath
+C:/Qt/6.11.1/mingw_64/qml
