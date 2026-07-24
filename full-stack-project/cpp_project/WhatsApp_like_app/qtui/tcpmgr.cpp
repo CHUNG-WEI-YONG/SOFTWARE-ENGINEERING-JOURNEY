@@ -93,6 +93,11 @@ void TcpMgr::HandleMessage(ReqId id, int len, QByteArray data)
 
 }
 
+std::vector<std::shared_ptr<ApplyInfo> > TcpMgr::GetApplyList()
+{
+    return _apply_list;
+}
+
 void TcpMgr::slot_tcp_connect(Serverinfo si)
 {
     _host=si.host;
@@ -120,3 +125,5 @@ void TcpMgr::slot_send_data(ReqId Reqid, QString data)
 TcpMgr::~TcpMgr(){
     qDebug()<<"TCPMGR destruct";
 }
+
+

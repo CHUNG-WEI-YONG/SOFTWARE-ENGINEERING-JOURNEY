@@ -64,6 +64,11 @@ qt_add_executable(qtui
     clickedoncelabel.h clickedoncelabel.cpp
     friendlabel.h friendlabel.cpp friendlabel.ui
     contactuserlist.h contactuserlist.cpp
+    conuseritem.h conuseritem.cpp conuseritem.ui
+    grouptipitem.h grouptipitem.cpp grouptipitem.ui
+    applyfriendpage.h applyfriendpage.cpp applyfriendpage.ui
+    applyfrienditem.h applyfrienditem.cpp applyfrienditem.ui
+    applyfriendlist.h applyfriendlist.cpp
 
 
 )

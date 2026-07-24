@@ -6,11 +6,13 @@
 #include <functional>
 #include <QObject>
 #include "userdata.h"
+#include <vector>
 class TcpMgr:public QObject , public Singleton<TcpMgr>, public std::enable_shared_from_this<TcpMgr>
 {
     Q_OBJECT
 public:
     ~TcpMgr();
+    std::vector<std::shared_ptr<ApplyInfo>> GetApplyList();
 private:
     TcpMgr();
     friend Singleton<TcpMgr>;
@@ -24,6 +26,7 @@ private:
     quint16 _message_id;
     quint16 _message_len;
     QMap<ReqId,std::function<void(ReqId d,int len,QByteArray data)>>_handlers;
+    std::vector<std::shared_ptr<ApplyInfo>> _apply_list;
 
 public slots:
     void slot_tcp_connect(Serverinfo);
@@ -36,6 +39,9 @@ signals:
     void login_failed(int);
     void sig_login_failed(ErrorCode err);
     void sig_user_search(std::shared_ptr<SearchInfo> );
+    void sig_add_auth_friend();
+    void sig_auth_rsp(std::shared_ptr<AuthRsp>);
+
 
 };
 

@@ -65,7 +65,9 @@ enum ListItemType{
     SearchUserItem,
     Add_User_Tip_Item,
     InvalidItem,
-    GroupTipItem
+    Group_Tip_Item,
+    LineItem,
+    Apply_Friend_Item
 };
 
 struct Serverinfo{
@@ -110,11 +112,11 @@ const std::vector<QString>  strs ={"hello world !",
                                    "My love is written in the wind ever since the whole world is you"};
 
 const std::vector<QString> heads = {
-    ":/rc/head_1.jpg",
-    ":/rc/head_2.jpg",
-    ":/rc/head_3.jpg",
-    ":/rc/head_4.jpg",
-    ":/rc/head_5.jpg"
+    ":/rc/chat_picture/head_1.jpg",
+    ":/rc/chat_picture/head_2.jpg",
+    ":/rc/chat_picture/head_3.jpg",
+    ":/rc/chat_picture/head_4.jpg",
+    ":/rc/chat_picture/head_5.jpg"
 };
 
 const std::vector<QString> names = {

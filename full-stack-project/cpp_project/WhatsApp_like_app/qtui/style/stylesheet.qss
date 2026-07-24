@@ -675,39 +675,55 @@ LoadingDlg{
     border-bottom: none;
 }
 
-ApplyFriendItem {
+/* 1. 正常状态：精准匹配类名，确保底边框线存在 */
+.ApplyFriendItem {
     background-color: #f1f2f3;
     border-bottom: 2px solid #dbd9d9;
 }
 
-ApplyFriendItem #user_chat_lb{
-    color: #a2a2a2;
-    font-size: 14px; /* 设置字体大小 */
-    font-family: "Microsoft YaHei"; /* 设置字体 */
+/* 💻 2. 关键补齐：鼠标悬停状态，强制维持底部边框线不消失 */
+.ApplyFriendItem:hover {
+    background-color: #f1f2f3;      /* 保持背景色一致，或改成 #e8e9ea 制造悬停微变效果 */
+    border-bottom: 2px solid #dbd9d9; /* ❗ 显式强制重绘底边框，防止被列表项的 hover 遮罩吃掉 */
 }
 
-ApplyFriendItem #addBtn[state='normal'] {
+/* 后续子控件选择器保持正常，也可以在类名前加点以提高解析效率 */
+.ApplyFriendItem #user_chat_lb {
+    color: #a2a2a2;
+    font-size: 14px;
+    font-family: "Microsoft YaHei";
+}
+
+.ApplyFriendItem #addBtn[state='normal'] {
     background-color: #d3d7d4;
     color: #2cb46e;
-    font-size: 16px; /* 设置字体大小 */
-    font-family: "Microsoft YaHei"; /* 设置字体 */
-    border-radius: 20px; /* 设置圆角 */
+    font-size: 16px;
+    font-family: "Microsoft YaHei";
+    border-radius: 20px;
 }
 
-ApplyFriendItem #addBtn[state='hover'] {
+.ApplyFriendItem #addBtn[state='hover'] {
     background-color: #D3D3D3;
     color: #2cb46e;
-    font-size: 16px; /* 设置字体大小 */
-    font-family: "Microsoft YaHei"; /* 设置字体 */
-    border-radius: 20px; /* 设置圆角 */
+    font-size: 16px;
+    font-family: "Microsoft YaHei";
+    border-radius: 20px;
 }
 
-ApplyFriendItem #addBtn[state='press'] {
+.ApplyFriendItem #addBtn[state='press'] {
     background-color: #BEBEBE;
     color: #2cb46e;
-    font-size: 16px; /* 设置字体大小 */
-    font-family: "Microsoft YaHei"; /* 设置字体 */
-    border-radius: 20px; /* 设置圆角 */
+    font-size: 16px;
+    font-family: "Microsoft YaHei";
+    border-radius: 20px;
+}
+
+#apply_friend_list::item:hover {
+    background-color: transparent;
+}
+
+#apply_friend_list::item:selected {
+    background-color: transparent;
 }
 
 #AuthenFriend {
