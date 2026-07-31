@@ -1,3 +1,4 @@
+#pragma once
 #include "const.h"
 
 struct SectionInfo {
@@ -17,11 +18,12 @@ struct SectionInfo {
 	}
 
 
-	std::string operator [](const std::string& key) {
-		if (_section_datas.find(key) == _section_datas.end()) {
+	std::string operator [](const std::string& key) const{
+		auto iter = _section_datas.find(key);
+		if (iter == _section_datas.end()) {
 			return "";
 		}
-		return _section_datas[key];
+		return iter->second;
 	}
 
 	std::map<std::string, std::string> _section_datas;

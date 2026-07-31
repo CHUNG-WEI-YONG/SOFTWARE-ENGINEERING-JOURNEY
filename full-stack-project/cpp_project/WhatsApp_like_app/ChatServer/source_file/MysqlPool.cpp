@@ -133,6 +133,7 @@ int MysqlDao::RegUser(const std::string& name, const std::string& email, const s
 			_pool->returnConn(std::move(conn));
 			return result;
 		}
+		return false;
 	}
 	catch (mysqlx::Error &e) {
 		_pool->returnConn(std::move(conn));
@@ -178,16 +179,20 @@ bool MysqlDao::UpdatePwd(const std::string& name, const std::string& email, cons
 	if (conn == nullptr) {
 		return false;
 	}
+	bool r;
 	try {
 		auto result = conn->_session->sql("UPDATE user_table set pwd=? where email= ?").bind(newpasswd).bind(email).execute();
 		if (result.getAffectedItemsCount() == 0) {
 			std::cout << "FAILED TO RESET PASSWORD" << std::endl;
+			r = false;
 		}
 		else {
 			std::cout << "Affected sql row:" << result.getAffectedItemsCount() << std::endl;
+			r= true;
 
 		}
 		_pool->returnConn(std::move(conn));
+		return r;
 	}
 	catch (mysqlx::Error& e) {
 		_pool->returnConn(std::move(conn));
