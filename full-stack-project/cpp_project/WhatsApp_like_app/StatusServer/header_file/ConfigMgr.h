@@ -1,4 +1,6 @@
+#pragma once
 #include "const.h"
+
 
 struct SectionInfo {
 	SectionInfo() {};
@@ -57,7 +59,7 @@ public :
 	};
 
 private:
-	std::map<std::string, SectionInfo> _config_map;
+	std::unordered_map<std::string, SectionInfo> _config_map;
 	ConfigMgr();
 
 };

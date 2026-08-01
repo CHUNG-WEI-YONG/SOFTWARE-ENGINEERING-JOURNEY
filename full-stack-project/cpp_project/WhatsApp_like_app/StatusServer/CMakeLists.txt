@@ -53,7 +53,7 @@ add_executable(StatusServer
     ${ALL_HEADERS}
     ${PROTO_SRCS} 
     ${PROTO_HDRS}
- "header_file/StatusServiceImpl.h" "source_file/StatusServiceImpl.cpp")
+ "header_file/StatusServiceImpl.h" "source_file/StatusServiceImpl.cpp" "header_file/ChatGrpcClient.h" "source_file/ChatGrpcClient.cpp")
 
 # =================================================================
 # 🛠️ 5. 链接底层二进制肌肉

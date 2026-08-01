@@ -37,8 +37,10 @@ using message::LoginRsp;
 //
 //};
 struct ChatServer {
+    std::string name;
     std::string host;
     std::string port;
+    int conn_count=0;
 };
 class StatusServiceImpl final : public StatusService::Service
 {
@@ -46,12 +48,12 @@ public:
     StatusServiceImpl();
     Status GetChatServer(ServerContext* context, const GetChatServerReq* request,
         GetChatServerRsp* reply) override;
-    std::vector<ChatServer> _servers;
+    std::unordered_map <std::string,ChatServer> _servers;
     int _server_index;
-    Status Login(ServerContext* context, const LoginReq* request,LoginRsp* reply);
+    Status Login(ServerContext* context, const LoginReq* request,LoginRsp* reply) override;
+
 private:
-        std::unordered_map<int,std::string>_tokens;
-        std::mutex _tokens_mutex;
+        ChatServer getChatServer();
         std::mutex _ChatServerLock;
         void InsertToken(int uid, std::string token);
 };

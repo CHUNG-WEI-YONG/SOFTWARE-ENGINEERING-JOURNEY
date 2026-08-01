@@ -1,5 +1,6 @@
 #include "MysqlPool.h"
 #include "ConfigMgr.h"
+#include "const.h"
 
 MysqlPool::MysqlPool(std::string& url,std::string& user, std::string& passwd,std::size_t size,std::string& schema):
 _url(url),_user(user),_passwd(passwd),_Poolsize(size),_schema(schema),_b_stop(false)

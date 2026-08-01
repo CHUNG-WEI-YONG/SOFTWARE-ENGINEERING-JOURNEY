@@ -30,12 +30,12 @@ private:
 
 };
 
-struct UserInfo {
-	std::string name;
-	std::string passwd;
-	std::string email;
-	int u_id;
-};
+//struct UserInfo {
+//	std::string name;
+//	std::string passwd;
+//	std::string email;
+//	int u_id;
+//};
 
 
 //final use class
