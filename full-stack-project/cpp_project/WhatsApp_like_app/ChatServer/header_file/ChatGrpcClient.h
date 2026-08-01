@@ -95,4 +95,11 @@ class ChatGrpcClient :public Singleton<ChatGrpcClient> {
 private:
 	ChatGrpcClient();
 	std::unordered_map <std::string, std::unique_ptr<ChatConPool>> _pools;
+
+public:
+	AddFriendRsp NotifyAddFriend(std::string server_ip, const AddFriendReq& req);
+	AuthFriendRsp NotifyAuthFriend(std::string server_ip, const AuthFriendReq& req);
+	bool GetBaseInfo(std::string base_key, int uid, std::shared_ptr<UserInfo>& userinfo);
+	TextChatMsgRsp NotifyTextChatMsg(std::string server_ip, const TextChatMsgReq& req, const Json::Value& rtvalue);
+	//KickUserRsp NotifyKickUser(std::string server_ip, const KickUserReq& req);
 };

@@ -52,11 +52,15 @@ file(GLOB ALL_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/source_file/*.cpp
 )
 
+file(GLOB ALL_HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/header_file/*.h)
+file(GLOB ALL_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/source_file/*.cpp)
+
 add_executable(ChatServer
     ${ALL_SOURCES}
+    ${ALL_HEADERS}
     ${GEN_PB_SRC}
     ${GEN_GRPC_SRC}
-)
+ "header_file/data.h")
 
 target_include_directories(ChatServer PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/header_file

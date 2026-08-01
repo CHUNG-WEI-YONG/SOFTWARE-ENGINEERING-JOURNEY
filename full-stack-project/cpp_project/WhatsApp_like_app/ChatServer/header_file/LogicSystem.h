@@ -22,6 +22,7 @@ public:
 	~LogicSystem();
 	void PostMsgToQue(shared_ptr < LogicNode> msg);
 	void SetServer(std::shared_ptr<Cserver> pserver);
+	bool GetBaseInfo(std::string base_key, int uid, std::shared_ptr<UserInfo>& user_info);
 private:
 	LogicSystem();
 	void DealMsg();
@@ -34,5 +35,4 @@ private:
 	bool _b_stop;
 	std::map<short, FunCallBack> _fun_callbacks;
 	std::shared_ptr<Cserver> _p_server;
-	std::unordered_map<int, std::shared_ptr<UserInfo>> _users;
 };

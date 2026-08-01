@@ -191,3 +191,10 @@ boost::asio::ip::tcp::socket& CSession::GetSocket() {
 std::string CSession::get_uuid() {
 	return _session_id;
 }
+
+void CSession::SetUserId(int id) {
+	_uid = id;
+}
+int CSession::GetUserId() {
+	return _uid;
+}

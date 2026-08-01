@@ -4,6 +4,8 @@
 #include "MsgNode.h"
 #include "StatusGrpcClient.h"
 #include "MysqlMgr.h"
+#include "RedisMjr.h"
+#include "ConfigMgr.h"
 
 LogicSystem::LogicSystem():_b_stop(false),_p_server(nullptr) {
 	RegisterCallBacks();
@@ -35,42 +37,62 @@ void LogicSystem::LoginHandler(shared_ptr<CSession> session, const short& msg_id
 
 	auto rsp = StatusGrpcClient::GetInstance()->Login(uid, token);
 
+
+
 	Defer defer([this,&rtvalue,session]() {
 		std::string return_val = rtvalue.toStyledString();
 		session->Send(return_val, MSG_CHAT_LOGIN_RSP);
 
 		});
 
-	if (token != "123456") {
-		rtvalue["error"] = ErrorCodes::TokenInvalid;
+	std::string uid_str = std::to_string(uid);
+	std::string token_key = USERTOKENPREFIX + uid_str;
+	std::string token_value = "";
+	bool success = RedisMjr::GetInstance()->Get(token_key, token_value);
+	if (!success) {
+		rtvalue["error"] = ErrorCodes::UidInvalid;
 		return;
 	}
-
-	//rtvalue["name"] = "TESTUSER";
-	//rtvalue["uid"] = uid;
-	rtvalue["error"] = rsp.error();
-
-	if (rsp.error()!= ErrorCodes::Success) {
+	if (token_value != token) {
+		rtvalue["value"] = ErrorCodes::TokenInvalid;
 		return;
 	}
+	rtvalue["error"] = ErrorCodes::Success;
 
-	auto iter = _users.find(uid);
-	std::shared_ptr<UserInfo> user_info = nullptr;
-	if (iter == _users.end()){
-		auto userinfo = MysqlMgr::GetInstance()->GetUser(uid);
-		if (userinfo == nullptr) {
-			rtvalue["error"] = ErrorCodes::UidInvalid;
-			return;
-		}
-
-		_users[uid] = userinfo;
-	}
-	else {
-		user_info = iter->second;
+	std::string base_key = USER_BASE_INFO + uid_str;
+	std::shared_ptr<UserInfo> user_info = std::make_shared<UserInfo>();
+	bool bsuccess = GetBaseInfo(base_key, uid, user_info);
+	if (!bsuccess) {
+		rtvalue["error"] = ErrorCodes::UidInvalid;
+		return;
 	}
 	rtvalue["uid"] = uid;
-	rtvalue["token"] = rsp.token();
+	rtvalue["passwd"] = user_info->passwd;
+	rtvalue["email"] = user_info->email;
+	rtvalue["desc"] = user_info->desc;
+	rtvalue["nick"] = user_info->nick;
+	rtvalue["sex"] = user_info->sex;
+	rtvalue["icon"] = user_info->icon;
+	//rtvalue["token"] = rsp.token();
 	rtvalue["name"] = user_info->name;
+	//rtvalue["token"] = rsp.token();
+	//do for mysql to do the search for friend list and user list
+
+	auto config = ConfigMgr::Inst();
+	auto server_name = config["SelfServer"]["Name"];
+	std::string c = "";
+	bool success = RedisMjr::GetInstance()->HGet(LOGIN_COUNT, server_name, c);
+	int count = 0;
+	if (!c.empty()) {
+		count = std::stoi(c);
+	}
+	count++;
+
+	std::string count_str = std::to_string(count);
+	bool success = RedisMjr::GetInstance()->HSet(LOGIN_COUNT, server_name, count_str);
+
+	session->SetUserId(uid);
+
 	if (_p_server) {
 	//	auto old_session = _p_server->getsess(uuid);
 
@@ -138,5 +160,32 @@ void LogicSystem::DealMsg() {
 			std::string(msg_node->_recvnode->_data, msg_node->_recvnode->_total_len));
 		_msg_que.pop();
 
+	}
+}
+
+bool LogicSystem::GetBaseInfo(std::string base_key, int uid, std::shared_ptr<UserInfo>& user_info) {
+	std::string info_Str = "";
+	bool success = RedisMjr::GetInstance()->Get(base_key, info_Str);
+	if (success) {
+		Json::Reader reader;
+		Json::Value value;
+		reader.parse(info_Str, value);
+		user_info->name = value["name"].asString();
+		user_info->email = value["email"].asString();
+		user_info->uid = value["uid"].asInt();
+		user_info->passwd = value["passwd"].asString();
+		user_info->nick = value["nick"].asString();
+		user_info->icon = value["icon"].asString();
+		user_info->nick = value["desc"].asString();
+		user_info->sex = value["sex"].asInt();
+		std::cout << "User login id is " << user_info->uid << " , email is " << user_info->email << " , password is " << user_info->passwd << " , name is " << user_info->name;
+	}
+	else{
+		std::shared_ptr<UserInfo> userinfo=nullptr;
+		userinfo=MysqlMgr::GetInstance()->GetUser(uid);
+		if (user_info == nullptr) {
+			return false;
+		}
+		user_info = userinfo;
 	}
 }

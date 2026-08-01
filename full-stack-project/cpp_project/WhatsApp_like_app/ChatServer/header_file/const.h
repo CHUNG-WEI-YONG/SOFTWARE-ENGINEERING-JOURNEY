@@ -117,9 +117,24 @@ enum MSG_IDS {
 //};
 
 struct UserInfo {
+	UserInfo() :name(""), passwd(""), uid(0), email(""), nick(""), desc(""), sex(0), icon(""), back("") {}
 	std::string name;
 	std::string passwd;
-	std::string email;
 	int uid;
-	std::string token;
+	std::string email;
+	std::string nick;
+	std::string desc;
+	int sex;
+	std::string icon;
+	std::string back;
 };
+
+#define USERIPPREFIX  "uip_"
+#define USERTOKENPREFIX  "utoken_"
+#define IPCOUNTPREFIX  "ipcount_"
+#define USER_BASE_INFO "ubaseinfo_"
+#define LOGIN_COUNT  "logincount"
+#define NAME_INFO  "nameinfo_"
+#define LOCK_PREFIX "lock_"
+#define USER_SESSION_PREFIX "usession_"
+#define LOCK_COUNT "lockcount"
