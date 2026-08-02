@@ -6,6 +6,7 @@
 #include "MysqlMgr.h"
 #include "RedisMjr.h"
 #include "ConfigMgr.h"
+#include "UserMgr.h"
 
 LogicSystem::LogicSystem():_b_stop(false),_p_server(nullptr) {
 	RegisterCallBacks();
@@ -48,8 +49,8 @@ void LogicSystem::LoginHandler(shared_ptr<CSession> session, const short& msg_id
 	std::string uid_str = std::to_string(uid);
 	std::string token_key = USERTOKENPREFIX + uid_str;
 	std::string token_value = "";
-	bool success = RedisMjr::GetInstance()->Get(token_key, token_value);
-	if (!success) {
+	bool rsuccess = RedisMjr::GetInstance()->Get(token_key, token_value);
+	if (!rsuccess) {
 		rtvalue["error"] = ErrorCodes::UidInvalid;
 		return;
 	}
@@ -81,7 +82,7 @@ void LogicSystem::LoginHandler(shared_ptr<CSession> session, const short& msg_id
 	auto config = ConfigMgr::Inst();
 	auto server_name = config["SelfServer"]["Name"];
 	std::string c = "";
-	bool success = RedisMjr::GetInstance()->HGet(LOGIN_COUNT, server_name, c);
+	bool redissuccess = RedisMjr::GetInstance()->HGet(LOGIN_COUNT, server_name, c);
 	int count = 0;
 	if (!c.empty()) {
 		count = std::stoi(c);
@@ -89,9 +90,16 @@ void LogicSystem::LoginHandler(shared_ptr<CSession> session, const short& msg_id
 	count++;
 
 	std::string count_str = std::to_string(count);
-	bool success = RedisMjr::GetInstance()->HSet(LOGIN_COUNT, server_name, count_str);
+	bool Setsuccess = RedisMjr::GetInstance()->HSet(LOGIN_COUNT, server_name, count_str);
+	if (!Setsuccess) {
+		return;
+	}
 
 	session->SetUserId(uid);
+
+	std::string user_uuid = USERIPPREFIX + uid_str;
+	RedisMjr::GetInstance()->Set(user_uuid, server_name);
+	UserMgr::GetInstance()->SetUserSession(uid, session);
 
 	if (_p_server) {
 	//	auto old_session = _p_server->getsess(uuid);
@@ -105,6 +113,7 @@ void LogicSystem::LoginHandler(shared_ptr<CSession> session, const short& msg_id
 	//	_p_server->ClearSession(session->GetSessionId());
 	}
 	std::cout << "User " << uid << " logged in successfully on pure memory mode." << std::endl;
+	return;
 
 
 
@@ -188,4 +197,5 @@ bool LogicSystem::GetBaseInfo(std::string base_key, int uid, std::shared_ptr<Use
 		}
 		user_info = userinfo;
 	}
+	return true;
 }

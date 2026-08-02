@@ -1,6 +1,7 @@
 #include "Cserver.h"
 #include "AsioIOServerPool.h"
 #include "CSession.h"
+#include "UserMgr.h"
 
 Cserver::Cserver(boost::asio::io_context& ioc, uint16_t port):_port(port),_ioc(ioc),_acceptor(ioc,tcp::endpoint(tcp::v4(),port)) {
 	std::cout << "Server start at port: " << port << std::endl;
@@ -39,6 +40,9 @@ void Cserver::HandleAccept(std::shared_ptr<CSession> new_session, const boost::s
 }
 
 void Cserver::ClearSession(std::string session_id) {
+	if (_sessions.find(session_id) != _sessions.end()) {
+		UserMgr::GetInstance()->RmvUserSession(_sessions[session_id]->GetUserId(), session_id);
+	}
 	lock_guard<mutex> lock(_mutex);
 	_sessions.erase(session_id);
 
