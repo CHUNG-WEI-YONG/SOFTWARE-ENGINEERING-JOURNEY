@@ -20,6 +20,16 @@
 void RunServer() {
 	ConfigMgr gcfg = ConfigMgr::Inst();
 	std::string server_address = gcfg["StatusServer"]["Host"] + ":" + gcfg["StatusServer"]["Port"];
+	std::string redishost = gcfg["RedisServer"]["Host"];
+	std::string redisport = gcfg["RedisServer"]["Port"];
+	std::string password = gcfg["RedisServer"]["Passwd"];
+	int redis_int = std::stoi(redisport);
+	if (RedisMjr::GetInstance()->Connect(redishost, redis_int, password, 5)) {
+		std::cout << "Redis connect correctly at " << redishost << ":" << redisport;
+	}
+	else {
+		std::cout << "Redis cannot connect";
+	}
 	StatusServiceImpl service;
 	grpc::ServerBuilder builder;
 	builder.AddListeningPort(server_address, grpc::InsecureServerCredentials());

@@ -38,7 +38,7 @@ public slots:
     void slot_loading_user();
     void slot_side_contact();
     void slot_side_chat();
-    void slot_text_changed(const QString& str);
+    void slot_text_changed(const QString& str="Find");
 };
 
 

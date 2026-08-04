@@ -1,12 +1,13 @@
 #include "userdata.h"
 
-SearchInfo::SearchInfo(int _uid, QString name, QString nick, QString desc, int sex)
+SearchInfo::SearchInfo(int _uid, QString name, QString nick, QString desc, int sex,QString icon)
 {
     _uid=_uid;
     _name=name;
     _nick=nick;
     _desc=desc;
     _sex=sex;
+    _icon=icon;
 }
 
 SearchInfo::SearchInfo(){
@@ -15,4 +16,5 @@ SearchInfo::SearchInfo(){
     _nick="";
     _desc="";
     _sex=-1;
+    _icon="";
 }

@@ -1,3 +1,4 @@
+#pragma once
 #include "const.h"
 
 class RedisMjr :public Singleton<RedisMjr> {

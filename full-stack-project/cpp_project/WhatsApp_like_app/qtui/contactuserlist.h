@@ -23,12 +23,14 @@ private:
 
 public slots:
     void slot_item_click(QListWidgetItem *item);
+    //void slot_switch_apply_friend_page();
     // void slot_add_auth_friend(std::shared_ptr<AuthInfo>);
     // void slot_auth_resp(std::shared_ptr<AuthRsp>);
 
+
 signals:
     void sig_loading_contact_user();
-    void sig_switch_apply_friend_page();
+    void sig_switch_apply_friend_page(const QString);
     void sig_switch_friend_info_page();
 
  private:

@@ -15,6 +15,8 @@ public:
     QString returnName();
     void Setlogo(QString path);
     QString returnLogo();
+    int GetUid();
+    QString GetName();
 
 private:
     int _uid;

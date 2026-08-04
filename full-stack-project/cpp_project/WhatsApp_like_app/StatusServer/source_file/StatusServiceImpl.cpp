@@ -35,34 +35,58 @@ std::string GenerateStringUUID() {
 ChatServer StatusServiceImpl::getChatServer() {
     std::lock_guard<std::mutex> lock(_ChatServerLock);
 
-    auto Minserver = _servers.begin()->second;
-    std::string count_str;
-   bool found = RedisMjr::GetInstance()->HGet(LOGIN_COUNT, Minserver.name,count_str);
-   if (!found) {
-       Minserver.conn_count = INT_MAX;
-   }
-   else {
-       Minserver.conn_count = std::stoi(count_str);
-   }
-
-
-    for (const auto& server : _servers) {
-        if (server.second.name == Minserver.name) {
-            continue;
-        }
-        std::string count_str;
-        bool found = RedisMjr::GetInstance()->HGet(LOGIN_COUNT, Minserver.name, count_str);
-        if (!found) {
-            Minserver.conn_count = INT_MAX;
+    ChatServer minServer;
+    int conn_max = INT_MAX;
+    bool has_valid_server = false;
+    for (const auto server : _servers) {
+        std::string count_str ;
+        int count = 0;
+        ChatServer curr = server.second;
+        bool success = RedisMjr::GetInstance()->HGet(LOGIN_COUNT, curr.name, count_str);
+        if (!success) {
+            count = 0;
         }
         else {
-            Minserver.conn_count = std::stoi(count_str);
+            count = std::stoi(count_str);
         }
-        if (server.second.conn_count < Minserver.conn_count) {
-            Minserver = server.second;
+        curr.conn_count = count;
+
+        if (!has_valid_server || curr.conn_count < conn_max) {
+            minServer = curr;
+            conn_max = count;
+            has_valid_server = true;
         }
+
     }
-    return Minserver;
+    return minServer;
+   // auto Minserver = _servers.begin()->second;
+   // std::string count_str;
+   //bool found = RedisMjr::GetInstance()->HGet(LOGIN_COUNT, Minserver.name,count_str);
+   //if (!found) {
+   //    Minserver.conn_count = INT_MAX;
+   //}
+   //else {
+   //    Minserver.conn_count = std::stoi(count_str);
+   //}
+
+
+   // for (const auto& server : _servers) {
+   //     if (server.second.name == Minserver.name) {
+   //         continue;
+   //     }
+   //     std::string count_str;
+   //     bool found = RedisMjr::GetInstance()->HGet(LOGIN_COUNT, Minserver.name, count_str);
+   //     if (!found) {
+   //         Minserver.conn_count = INT_MAX;
+   //     }
+   //     else {
+   //         Minserver.conn_count = std::stoi(count_str);
+   //     }
+   //     if (server.second.conn_count < Minserver.conn_count) {
+   //         Minserver = server.second;
+   //     }
+   // }
+   // return Minserver;
 
 }
 

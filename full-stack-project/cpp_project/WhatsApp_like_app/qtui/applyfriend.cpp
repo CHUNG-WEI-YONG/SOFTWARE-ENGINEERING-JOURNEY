@@ -489,31 +489,31 @@ void ApplyFriend::SlotAddFirendLabelByClickTip(QString text)
 
 void ApplyFriend::SlotApplySure()
 {
-    // qDebug()<<"Slot Apply Sure called" ;
-    // //发送请求逻辑
-    // QJsonObject jsonObj;
-    // auto uid = UserMgr::GetInstance()->GetUid();
-    // jsonObj["uid"] = uid;
-    // auto name = ui->name_ed->text();
-    // if(name.isEmpty()){
-    //     name = ui->name_ed->placeholderText();
-    // }
+    qDebug()<<"Slot Apply Sure called" ;
+    //发送请求逻辑
+    QJsonObject jsonObj;
+    auto uid = UserMgr::getInstance()->GetUid();
+    jsonObj["uid"] = uid;
+    auto name = ui->name_edit->text();
+    if(name.isEmpty()){
+        name = ui->name_edit->placeholderText();
+    }
 
-    // jsonObj["applyname"] = name;
+    jsonObj["applyname"] = name;
 
-    // auto bakname = ui->back_ed->text();
-    // if(bakname.isEmpty()){
-    //     bakname = ui->back_ed->placeholderText();
-    // }
+    auto bakname = ui->nick_edit->text();
+    if(bakname.isEmpty()){
+        bakname = ui->nick_edit->placeholderText();
+    }
 
-    // jsonObj["bakname"] = bakname;
-    // jsonObj["touid"] = _si->uid;
+    jsonObj["nickname"] = bakname;
+    jsonObj["touid"] = _si->_uid;
 
-    // QJsonDocument doc(jsonObj);
-    // QByteArray jsonData = doc.toJson(QJsonDocument::Compact);
+    QJsonDocument doc(jsonObj);
+    QByteArray jsonData = doc.toJson(QJsonDocument::Compact);
 
-    // //发送tcp请求给chat server
-    // emit TcpMgr::GetInstance()->sig_send_data(ReqId::ID_ADD_FRIEND_REQ, jsonData);
+    //发送tcp请求给chat server
+    emit TcpMgr::getInstance()->sig_send_data(ReqId::ID_ADD_FRIEND_REQ, jsonData);
     this->hide();
     deleteLater();
 }

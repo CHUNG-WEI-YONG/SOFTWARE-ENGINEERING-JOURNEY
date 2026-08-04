@@ -35,3 +35,12 @@ QString UserMgr::returnLogo()
 {
     return _logoPath;
 }
+
+int UserMgr::GetUid()
+{
+    return _uid;
+}
+
+QString UserMgr::GetName(){
+    return _name;
+}

@@ -50,7 +50,7 @@ private:
     void CloseFindDialog();
     bool _search_pending;
     void AddTipItem();
-   FindSuccessDialog* _find_dlg = nullptr;
+    std::shared_ptr<QDialog> _find_dlg = nullptr;
     QWidget* _search_edit;
     LoadingDialog* _loadingDialog;
 private slots:

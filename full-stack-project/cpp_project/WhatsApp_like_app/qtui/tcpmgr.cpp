@@ -49,25 +49,25 @@ TcpMgr::TcpMgr() {
 
 void TcpMgr::initHandlers()
 {
-    _handlers.insert(ReqId::ID_CHAT_LOGIN,[this](ReqId id,quint16 len,QByteArray message){
+    _handlers.insert(ReqId::ID_CHAT_LOGIN_RSP,[this](ReqId id,quint16 len,QByteArray message){
         Q_UNUSED(len);
         qDebug()<<"Handle id is "<<static_cast<int>(id)<<" and data is "<<message;
         QJsonDocument jsonDoc=QJsonDocument::fromJson(message);
         QJsonObject jsonObj=jsonDoc.object();
         if(jsonDoc.isNull()){
             qDebug()<<"Error in Reading Messsage";
-            //emit sig_login_failed(static_cast<ErrorCode>(error));
+            emit sig_login_failed(ErrorCode::Err_JSON);
             return;
         }
 
 
-        if(!jsonObj.contains("Error")){
+        if(!jsonObj.contains("error")){
             ErrorCode error=ErrorCode::Err_JSON;
             qDebug()<<"Login failed. Error is "<<static_cast<int>(error);
             emit sig_login_failed(error);
             return ;
         }
-        int error=jsonObj["Error"].toInt();
+        int error=jsonObj["error"].toInt();
         if(static_cast<ErrorCode>(error)!=ErrorCode::SUCCESS){
             qDebug()<<"Error message Get";
             emit sig_login_failed(static_cast<ErrorCode>(error));
@@ -79,6 +79,36 @@ void TcpMgr::initHandlers()
         UserMgr::getInstance()->SetToken(jsonObj["token"].toString());
 
         emit sig_switch_chat_dlg();
+    });
+
+    _handlers.insert(ReqId::ID_ADD_FRIEND_RSP,[this](ReqId id,quint16 len,QByteArray message){
+        Q_UNUSED(len);
+        qDebug()<<"Handle id is "<<static_cast<int>(id)<<" and data is "<<message;
+        QJsonDocument jsonDoc=QJsonDocument::fromJson(message);
+        QJsonObject jsonObj=jsonDoc.object();
+        if(jsonDoc.isNull()){
+            qDebug()<<"Error in Reading Messsage";
+            emit sig_login_failed(ErrorCode::Err_JSON);
+            return;
+        }
+        if(!jsonObj.contains("error")){
+            ErrorCode error=ErrorCode::Err_JSON;
+            qDebug()<<"Login failed. Error is "<<static_cast<int>(error);
+            emit sig_login_failed(error);
+            return ;
+        }
+        int error=jsonObj["error"].toInt();
+        if(static_cast<ErrorCode>(error)!=ErrorCode::SUCCESS){
+            qDebug()<<"Error message Get";
+            emit sig_login_failed(static_cast<ErrorCode>(error));
+            return;
+        }
+
+        auto search_info=std::make_shared<SearchInfo>(jsonObj["uid"].toInt(),jsonObj["name"].toString(),
+                                                        jsonObj["nick"].toString(),jsonObj["desc"].toString(),jsonObj["sex"].toInt()
+                                                        ,jsonObj["icon"].toString());
+        emit sig_user_search(search_info);
+
     });
 }
 
@@ -105,10 +135,10 @@ void TcpMgr::slot_tcp_connect(Serverinfo si)
     _socket.connectToHost(si.host,_port);
 }
 
-void TcpMgr::slot_send_data(ReqId Reqid, QString data)
+
+void TcpMgr::slot_send_data(ReqId Reqid, QByteArray databytes)
 {
     quint16 id = static_cast<quint16>(Reqid);
-    QByteArray  databytes=data.toUtf8();
 
     quint16 len=static_cast<quint16>(databytes.size());
 

@@ -9,6 +9,7 @@
 #include "chatbridge.h"
 #include "usermgr.h"
 #include <QTimer>
+#include "contactuserlist.h"
 
 ChatDialog::ChatDialog(QWidget *parent)
     : QDialog(parent)
@@ -32,6 +33,8 @@ ChatDialog::ChatDialog(QWidget *parent)
     _clear_action->setIcon(QIcon(":/rc/chat_picture/close_transparent.png"));
     ui->search_edit->addAction(_clear_action, QLineEdit::TrailingPosition);
 
+
+    connect(ui->con_user_list,&ContactUserList::sig_switch_apply_friend_page,this,&ChatDialog::slot_text_changed);
     // ──► 🎯 核心修正 2：唯一绑定 textChanged 信号到 slot_text_changed，绝不搞双重绑定 ◄──
     connect(ui->search_edit, &QLineEdit::textChanged, this, [this](QString const& str){
         if (!_clear_action) return;

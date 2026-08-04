@@ -4,6 +4,7 @@
 #include "conuseritem.h"
 #include <QRandomGenerator>
 #include "tcpmgr.h"
+#include "chatdialog.h"
 
 
 ContactUserList::ContactUserList(QWidget *parent):QListWidget(parent)
@@ -125,7 +126,7 @@ void ContactUserList::slot_item_click(QListWidgetItem *item)
     }
     else if(type==ListItemType::Apply_Friend_Item){
         qDebug()<<"Apply friend item clicked";
-        emit sig_switch_apply_friend_page();
+        emit sig_switch_apply_friend_page("Friend");
         return;
     }
     else if(type==ListItemType::ContactUserItem){
@@ -135,3 +136,5 @@ void ContactUserList::slot_item_click(QListWidgetItem *item)
         return;
     }
 }
+
+

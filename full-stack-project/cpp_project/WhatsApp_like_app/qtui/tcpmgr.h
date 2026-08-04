@@ -30,11 +30,11 @@ private:
 
 public slots:
     void slot_tcp_connect(Serverinfo);
-    void slot_send_data(ReqId id, QString data);
+    void slot_send_data(ReqId id, QByteArray data);
 
 signals:
     void sig_con_success(bool bsuccess=true);
-    void sig_send_data(ReqId id ,QString data);
+    void sig_send_data(ReqId id ,QByteArray data);
     void sig_switch_chat_dlg();
     void login_failed(int);
     void sig_login_failed(ErrorCode err);

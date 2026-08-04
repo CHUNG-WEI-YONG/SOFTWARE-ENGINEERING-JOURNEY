@@ -5,6 +5,7 @@
 #include <QScrollBar>
 #include "adduseritem.h"
 #include "findsuccessdialog.h"
+#include "findfaileddialog.h"
 
 SearchList::SearchList(QWidget *parent):QListWidget(parent),_find_dlg(nullptr),_search_edit(nullptr),_search_pending(false){
     Q_UNUSED(parent);
@@ -28,7 +29,17 @@ void SearchList::SetSearchEdit(QWidget *edit)
 
 void SearchList::waitPending(bool pending)
 {
-
+    if(pending){
+        _loadingDialog=new LoadingDialog;
+        _loadingDialog->setModal(true);
+        _loadingDialog->show();
+        _search_pending=pending;
+    }
+    else{
+        _loadingDialog->hide();
+        _loadingDialog->deleteLater();
+        _search_pending=pending;
+    }
 }
 
 void SearchList::CloseFindDialog()
@@ -74,6 +85,9 @@ void SearchList::slot_item_clicked(QListWidgetItem *item)
     if (itemtype == ListItemType::InvalidItem) return;
 
     if (itemtype == ListItemType::Add_User_Tip_Item) {
+        if(_search_pending){
+            return;
+        }
         qDebug() << "🚀 [SearchList] 激活网络加人弹窗流...";
 
         // ──► 🎯 核心修正 3：如果之前有残留窗口，先安全蒸发它，释放模态死锁 ◄──
@@ -82,20 +96,15 @@ void SearchList::slot_item_clicked(QListWidgetItem *item)
             _find_dlg = nullptr;
         }
 
-        // 原生 new 分配内存，绑定 this 实现对象树联动
-        _find_dlg = new FindSuccessDialog(this);
+        auto search_edit=static_cast<CustomizeEdit*> (_search_edit);
+        auto uid_Str=search_edit->text();
+        QJsonObject obj;
+        obj["uid"]=uid_Str;
+        QJsonDocument doc(obj);
+        QByteArray jsonData=doc.toJson(QJsonDocument::Compact);
+        TcpMgr::getInstance()->sig_send_data(ReqId::ID_ADD_FRIEND_REQ,jsonData);
 
-        // ──► 🎯 核心修正 4：绝杀黑魔法！命令窗口关闭时主动自我解构 ◄──
-        _find_dlg->setAttribute(Qt::WA_DeleteOnClose);
 
-        // 组装局部 Demo 回执资产
-        auto si = std::make_shared<SearchInfo>(0, "llfc", "llfc", "hello , my friend!", 0);
-
-        // ──► 🎯 核心修正 5：裸指针天然拥有具体子类视野，直接调用，告别繁琐的 dynamic_pointer_cast！ ◄──
-        _find_dlg->SetSearchInfo(si);
-
-        // 唤醒模态框呈现！
-        _find_dlg->show();
         return;
     }
 
@@ -142,5 +151,17 @@ void SearchList::slot_item_clicked(QListWidgetItem *item)
 
 void SearchList::slot_user_search(std::shared_ptr<SearchInfo> si)
 {
+    waitPending(false);
+    if(si==nullptr){
+        _find_dlg=std::make_shared<FindFailedDialog>(this);
 
+    }
+    else{
+        //is friend
+        //add friend
+        //todo: search is friend or not
+        _find_dlg=std::make_shared<FindSuccessDialog>(this);
+        dynamic_pointer_cast<FindSuccessDialog>(_find_dlg)->SetSearchInfo(si);
+    }
+    _find_dlg->show();
 }
