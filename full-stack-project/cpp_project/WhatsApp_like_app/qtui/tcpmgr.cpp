@@ -81,7 +81,7 @@ void TcpMgr::initHandlers()
         emit sig_switch_chat_dlg();
     });
 
-    _handlers.insert(ReqId::ID_ADD_FRIEND_RSP,[this](ReqId id,quint16 len,QByteArray message){
+    _handlers.insert(ReqId::ID_SEARCH_USER_RSP,[this](ReqId id,quint16 len,QByteArray message){
         Q_UNUSED(len);
         qDebug()<<"Handle id is "<<static_cast<int>(id)<<" and data is "<<message;
         QJsonDocument jsonDoc=QJsonDocument::fromJson(message);
@@ -108,6 +108,31 @@ void TcpMgr::initHandlers()
                                                         jsonObj["nick"].toString(),jsonObj["desc"].toString(),jsonObj["sex"].toInt()
                                                         ,jsonObj["icon"].toString());
         emit sig_user_search(search_info);
+
+    });
+
+    _handlers.insert(ReqId::ID_ADD_FRIEND_RSP,[this](ReqId id,quint16 len,QByteArray message){
+        Q_UNUSED(len);
+         qDebug()<<"Handle id is "<<static_cast<int>(id)<<" and data is "<<message;
+        QJsonDocument jsonDoc=QJsonDocument::fromJson(message);
+        QJsonObject jsonObj=jsonDoc.object();
+        if(jsonDoc.isNull()){
+            qDebug()<<"Json object is null , return error";
+        }
+        if(!jsonObj.contains("error")){
+            ErrorCode error=ErrorCode::Err_JSON;
+            qDebug()<<"Add Friend failed. Error is "<<static_cast<int>(error);
+            emit sig_login_failed(error);
+            return ;
+        }
+        int error=jsonObj["error"].toInt();
+        if(static_cast<ErrorCode>(error)!=ErrorCode::SUCCESS){
+            qDebug()<<"Error message Get";
+            emit sig_login_failed(static_cast<ErrorCode>(error));
+            return;
+        }
+
+        qDebug()<<"Add friend req success";
 
     });
 }

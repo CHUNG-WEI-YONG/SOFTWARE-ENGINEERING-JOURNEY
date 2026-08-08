@@ -12,6 +12,7 @@ public:
 	bool CheckPwd(const std::string& email, const std::string& passwd, UserInfo& userinfo);
 	std::shared_ptr<UserInfo> GetUser(int uid);
 	std::shared_ptr<UserInfo> GetUserByEmail(const std::string& email);
+	std::shared_ptr<UserInfo> GetUser(const std::string& name);
 
 private:
 	MysqlMgr()=default;

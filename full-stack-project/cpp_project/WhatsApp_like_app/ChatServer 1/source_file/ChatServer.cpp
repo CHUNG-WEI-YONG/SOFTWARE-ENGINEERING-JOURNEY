@@ -15,7 +15,6 @@ std::condition_variable cv_quit;
 void InitServerStatus() {
 	std::string server_name = ConfigMgr::Inst()["SelfServer"]["Name"];
 
-	// 🎯 服务器启动时，强制将当前 ChatServer 节点在 Redis 中的在线人数归零
 	bool res = RedisMjr::GetInstance()->HSet(LOGIN_COUNT, server_name, "0");
 	if (res) {
 		std::cout << "Successfully initialized " << server_name << " logincount to 0 in Redis." << std::endl;
@@ -27,55 +26,82 @@ void InitServerStatus() {
 
 int main() {
 	try {
-		//reset login count
 		auto cfg = ConfigMgr::Inst();
 		auto pool = AsioIOServerPool::GetInstance();
-		std::cout << "This is Chatserver " <<cfg["SelfServer"]["Name"] << std::endl;
-		//std::string status_server_address = cfg["StatusServer"]["Host"] + ":" + cfg["StatusServer"]["Port"];
+		std::cout << "This is Chatserver " << cfg["SelfServer"]["Name"] << std::endl;
+
 		std::string redishost = cfg["RedisServer"]["Host"];
 		std::string redisport = cfg["RedisServer"]["Port"];
 		std::string password = cfg["RedisServer"]["Passwd"];
 		std::string server_name = cfg["SelfServer"]["Name"];
 		int redis_int = std::stoi(redisport);
+
 		if (RedisMjr::GetInstance()->Connect(redishost, redis_int, password, 5)) {
-			std::cout << "Redis connect correctly at " << redishost << ":" << redisport;
+			std::cout << "Redis connected correctly at " << redishost << ":" << redisport << std::endl;
 		}
 		else {
-			std::cout << "Redis cannot connect";
+			std::cout << "Redis cannot connect" << std::endl;
 		}
+
 		InitServerStatus();
-		//initialize grpc connection
-		std::string server_address(cfg["SelfServer"]["Host"] + ":" + cfg["SelfServer"]["Port"]);
+
+		// 1. Start gRPC Server
+		std::string server_address(cfg["SelfServer"]["Host"] + ":" + cfg["SelfServer"]["RPCPort"]);
 		ChatServiceImpl Service;
 		grpc::ServerBuilder builder;
 		builder.AddListeningPort(server_address, grpc::InsecureServerCredentials());
 		builder.RegisterService(&Service);
 		std::unique_ptr<grpc::Server> server(builder.BuildAndStart());
-		std::cout << "grpc build and run on " << server_address << std::endl;
+		std::cout << "gRPC built and running on " << server_address << std::endl;
 
+		// 2. Launch gRPC Worker Thread
 		std::thread server_thread([&server]() {
-			server->Wait();
+			if (server) {
+				server->Wait();
+			}
 			});
 
+		// 🛡️ Guard: Guarantees server_thread.join() runs during stack unwinding / exceptions
+		struct ThreadJoiner {
+			std::thread& t;
+			~ThreadJoiner() {
+				if (t.joinable()) {
+					t.join();
+				}
+			}
+		} thread_guard{ server_thread };
+
+		// 3. Setup Boost.Asio Context and Signal Handling
 		boost::asio::io_context ioc;
 		boost::asio::signal_set signals(ioc, SIGINT, SIGTERM);
-		signals.async_wait([&ioc,pool,&server](auto, auto) {
+
+		signals.async_wait([&ioc, pool, &server](auto, auto) {
+			std::cout << "Shutdown signal received..." << std::endl;
 			ioc.stop();
 			pool->close();
-			server->Shutdown();
+			if (server) {
+				server->Shutdown();
+			}
 			});
-		RedisMjr::GetInstance()->HDel(LOGIN_COUNT, server_name);
-		RedisMjr::GetInstance()->Close();
-		auto self_name = cfg["SelfServer"]["Name"];
-		auto port_str = cfg[self_name]["Port"];
+
+		auto port_str = cfg["SelfServer"]["Port"];
 		uint16_t port = static_cast<uint16_t>(std::stoul(port_str));
+
 		Cserver s(ioc, port);
+
+		// 4. Block on Asio Event Loop
 		ioc.run();
 
+		// 5. Cleanup AFTER ioc.run() stops (When server shuts down)
+		RedisMjr::GetInstance()->HDel(LOGIN_COUNT, server_name);
+		RedisMjr::GetInstance()->Close();
 
+		std::cout << "ChatServer shut down cleanly." << std::endl;
 	}
 	catch (std::exception& e) {
-		std::cerr << "Exception: " << e.what() << std::endl;
+		std::cerr << "Exception in main: " << e.what() << std::endl;
 		return 1;
 	}
+
+	return 0;
 }

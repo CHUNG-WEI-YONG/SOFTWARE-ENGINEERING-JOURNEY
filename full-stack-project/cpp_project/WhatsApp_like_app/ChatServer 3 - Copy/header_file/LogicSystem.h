@@ -28,6 +28,10 @@ private:
 	void DealMsg();
 	void RegisterCallBacks();
 	void LoginHandler(shared_ptr<CSession> session, const short& msg_id, const string& msg_data);
+	void SearchUser(shared_ptr<CSession> session, const short& msg_id, const string& msg_data);
+	void SearchUserByUid(const std::string& uid, Json::Value& rt);
+	void SearchUserByName(const std::string& uid, Json::Value& rt);
+	bool isPureDigit(const std::string& word);
 	std::thread _worker_thread;
 	std::queue<shared_ptr<LogicNode>> _msg_que;
 	std::mutex _mutex;

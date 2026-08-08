@@ -26,6 +26,14 @@ struct SectionInfo {
 		return iter->second;
 	}
 
+	std::string GetValue(const std::string& key) {
+		if (_section_datas.find(key) == _section_datas.end()) {
+			return "";
+		}
+		// 这里可以添加一些边界检查  
+		return _section_datas[key];
+	}
+
 	std::map<std::string, std::string> _section_datas;
 };
 
@@ -61,5 +69,11 @@ public :
 private:
 	std::map<std::string, SectionInfo> _config_map;
 	ConfigMgr();
+	std::string GetValue(const std::string& section, const std::string& key) {
+		if (_config_map.find(section) == _config_map.end()) {
+			return "";
+		}
 
+		return _config_map[section].GetValue(key);
+	}
 };

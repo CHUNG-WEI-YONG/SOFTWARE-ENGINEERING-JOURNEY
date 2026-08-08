@@ -1,8 +1,8 @@
 #include "const.h"
 #pragma once
 #include <grpcpp/grpcpp.h>
-#include "message.pb.h"       // 👈 核心：包含消息结构 (AddFriendReq, TextChatMsgReq等)
 #include "message.grpc.pb.h"
+#include "message.pb.h"
 #include <mutex>
 #include "data.h"
 #include "CServer.h"

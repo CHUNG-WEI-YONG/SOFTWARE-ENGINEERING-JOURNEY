@@ -235,6 +235,26 @@ bool MysqlDao::CheckPwd(const std::string& email, const std::string& passwd, Use
 	}
 }
 
+bool MysqlDao::AddFriendApply(const int& from_uid, const int& to_uid)
+{
+	auto conn = _pool->getConn();
+	if (conn == nullptr) {
+		return false;
+	}
+	Defer defer([this, &conn]() {
+		_pool->returnConn(std::move(conn));
+		});
+	try {
+		auto result = conn->_session->sql("INSERT INTO friend_apply(from_uid,to_uid) values (?,?)"
+			"ON DUPLICATE KEY update from_uid=from_uid,to_uid=to_uid").bind(from_uid).bind(to_uid).execute();
+		return result.getAffectedItemsCount() >= 0;
+	}catch(mysqlx::Error& e) {
+		std::cerr << "Sql error: " << e.what();
+		return false;
+	}
+	return true;
+}
+
 std::shared_ptr<UserInfo> MysqlDao::GetUser(int uid) {
 	auto conn = _pool->getConn();
 	if (conn == nullptr) {
@@ -244,7 +264,7 @@ std::shared_ptr<UserInfo> MysqlDao::GetUser(int uid) {
 		_pool->returnConn(std::move(conn));
 		});
 	try {
-		auto result = conn->_session->sql("SELECT name,passwd,email from user_table where uid=?").bind(uid).execute();
+		auto result = conn->_session->sql("SELECT name,pwd,email from user_table where uid=?").bind(uid).execute();
 		auto row = result.fetchOne();
 		if (!row) {
 			return nullptr;
@@ -263,6 +283,76 @@ std::shared_ptr<UserInfo> MysqlDao::GetUser(int uid) {
 	}
 }
 
+std::shared_ptr<UserInfo> MysqlDao::GetUser(const std::string& name) {
+	auto conn = _pool->getConn();
+	if (conn == nullptr) {
+		return nullptr;
+	}
+	Defer defer([this, &conn]() {
+		_pool->returnConn(std::move(conn));
+		});
+	try {
+		auto result = conn->_session->sql("SELECT uid,pwd,email from user_table where name=?").bind(name).execute();
+		auto row = result.fetchOne();
+		if (!row) {
+			return nullptr;
+		}
+		std::shared_ptr<UserInfo> user_ptr = std::make_shared<UserInfo>();
+		user_ptr->uid = row[0].get<int>();
+		user_ptr->passwd = row[1].get<std::string>();
+		user_ptr->email = row[2].get<std::string>();
+		user_ptr->name = name;
+		return user_ptr;
+	}
+	catch (mysqlx::Error& e) {
+		//_pool->returnConn(std::move(conn));
+		std::cerr << "Sql error: " << e.what();
+		return nullptr;
+	}
+}
+
+//std::shared_ptr<UserInfo> MysqlDao::GetUser(std::string name)
+//{
+//	auto con = pool_->getConnection();
+//	if (con == nullptr) {
+//		return nullptr;
+//	}
+//
+//	Defer defer([this, &con]() {
+//		pool_->returnConnection(std::move(con));
+//		});
+//
+//	try {
+//		// 准备SQL语句
+//		std::unique_ptr<sql::PreparedStatement> pstmt(con->_con->prepareStatement("SELECT * FROM user WHERE name = ?"));
+//		pstmt->setString(1, name); // 将uid替换为你要查询的uid
+//
+//		// 执行查询
+//		std::unique_ptr<sql::ResultSet> res(pstmt->executeQuery());
+//		std::shared_ptr<UserInfo> user_ptr = nullptr;
+//		// 遍历结果集
+//		while (res->next()) {
+//			user_ptr.reset(new UserInfo);
+//			user_ptr->pwd = res->getString("pwd");
+//			user_ptr->email = res->getString("email");
+//			user_ptr->name = res->getString("name");
+//			user_ptr->nick = res->getString("nick");
+//			user_ptr->desc = res->getString("desc");
+//			user_ptr->sex = res->getInt("sex");
+//			user_ptr->uid = res->getInt("uid");
+//			user_ptr->icon = res->getString("icon");
+//			break;
+//		}
+//		return user_ptr;
+//	}
+//	catch (sql::SQLException& e) {
+//		std::cerr << "SQLException: " << e.what();
+//		std::cerr << " (MySQL error code: " << e.getErrorCode();
+//		std::cerr << ", SQLState: " << e.getSQLState() << " )" << std::endl;
+//		return nullptr;
+//	}
+//}
+
 std::shared_ptr<UserInfo> MysqlDao::GetUserByEmail(const std::string& email) {
 	auto conn = _pool->getConn();
 	if (conn == nullptr) {
@@ -272,7 +362,7 @@ std::shared_ptr<UserInfo> MysqlDao::GetUserByEmail(const std::string& email) {
 		_pool->returnConn(std::move(conn));
 		});
 	try {
-		auto result = conn->_session->sql("SELECT name,passwd,uid from user_table where email=?").bind(email).execute();
+		auto result = conn->_session->sql("SELECT name,pwd,uid from user_table where email=?").bind(email).execute();
 		auto row = result.fetchOne();
 		if (!row) {
 			return nullptr;
@@ -289,4 +379,5 @@ std::shared_ptr<UserInfo> MysqlDao::GetUserByEmail(const std::string& email) {
 		std::cerr << "Sql error: " << e.what();
 		return nullptr;
 	}
+	
 }

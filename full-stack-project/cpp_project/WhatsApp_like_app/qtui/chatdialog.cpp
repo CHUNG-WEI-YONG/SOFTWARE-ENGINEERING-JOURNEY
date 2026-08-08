@@ -128,6 +128,8 @@ ChatDialog::ChatDialog(QWidget *parent)
     });
     this->installEventFilter(this);
 
+    ui->search_user_list->SetSearchEdit(ui->search_edit);
+
 }
 
 ChatDialog::~ChatDialog()

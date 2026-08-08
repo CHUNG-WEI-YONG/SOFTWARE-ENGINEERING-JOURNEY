@@ -2,8 +2,8 @@
 #include "Singleton.h"
 #include "ConfigMgr.h"
 #include <grpcpp/grpcpp.h>
-#include "message.pb.h"       // 👈 核心：包含消息结构 (AddFriendReq, TextChatMsgReq等)
 #include "message.grpc.pb.h"
+#include "message.pb.h"
 #include <queue>
 #include <json/json.h>
 #include <json/reader.h>

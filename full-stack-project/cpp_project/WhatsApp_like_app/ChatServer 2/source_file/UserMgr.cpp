@@ -24,3 +24,26 @@ void UserMgr::DelSession(int uid) {
 	std::lock_guard<std::mutex> lock(_mutex);
 	_session.erase(uid);
 }
+
+void UserMgr::RmvUserSession(int uid, std::string session_id)
+{
+	{
+		std::lock_guard<std::mutex> lock(_mutex);
+		auto iter = _session.find(uid);
+		if (iter == _session.end()) {
+			return;
+		}
+
+		auto session_id_ = iter->second->GetSessionId();
+		//不相等说明是其他地方登录了
+		if (session_id_ != session_id) {
+			return;
+		}
+		_session.erase(uid);
+	}
+
+}
+
+UserMgr::UserMgr() {
+	// 可为空，或初始化你的成员变量
+}

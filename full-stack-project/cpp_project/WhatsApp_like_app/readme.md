@@ -70,3 +70,20 @@ Making the ui more attractive and testing the search ui correctly run.
 
 ## DAY 19
 Adding the ui page for friend apply request page that record name ,nickname ,and tag, the tag class divides into the tag child and tag added place when the given tags being chosen it will change into state clicked then it generate a new label at the tag place to show that the label being chosen.
+
+## DAY 20
+Adding grpc channel connection inside chatserver to allow user add friend ,send message, response message function , but no logic yet
+By now chatserver can build the connection with anothe chatserver with grpc , and token verification in redis for chatserver is done
+
+## DAY 21
+Fixing bug in the pool server inside status. When initialization , the servers will connect to redis and put its connection count inside redis ,while the statusserver read and find the 
+smallest connection server , then i the server increases its count in redis
+
+## DAY 22
+Adding connection of slot and signal in ui to allow the addfriend can be sent in tcp and search friend can also send to chatserver via tcp
+
+## DAY 23
+Adding the backend logic in chatserver, logicsystem first save the request and relationship of adding friend inside database m then continue to search at the redis to see whether the user
+at which server, if find , first compair the address to ensure that the request id is same server with the acceot id or not, if same , go for user manager to get the session and send the
+request, else call the chatservice grpc to get connection from server grpc connection pool , then call notify add friend , at the response side , chatserver find whether the user is online
+or not , if online create and send a request toward the frontend  , else just return

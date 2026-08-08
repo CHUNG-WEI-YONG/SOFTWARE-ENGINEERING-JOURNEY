@@ -22,11 +22,17 @@ public:
 	~LogicSystem();
 	void PostMsgToQue(shared_ptr < LogicNode> msg);
 	void SetServer(std::shared_ptr<Cserver> pserver);
+	bool GetBaseInfo(std::string base_key, int uid, std::shared_ptr<UserInfo>& user_info);
 private:
 	LogicSystem();
 	void DealMsg();
 	void RegisterCallBacks();
 	void LoginHandler(shared_ptr<CSession> session, const short& msg_id, const string& msg_data);
+	void SearchUser(shared_ptr<CSession> session, const short& msg_id, const string& msg_data);
+	void AddFriendApply(shared_ptr<CSession> session, const short& msg_id, const string& msg_data);
+	void SearchUserByUid(const std::string& uid, Json::Value& rt);
+	void SearchUserByName(const std::string& uid, Json::Value& rt);
+	bool isPureDigit(const std::string& word);
 	std::thread _worker_thread;
 	std::queue<shared_ptr<LogicNode>> _msg_que;
 	std::mutex _mutex;
@@ -34,5 +40,4 @@ private:
 	bool _b_stop;
 	std::map<short, FunCallBack> _fun_callbacks;
 	std::shared_ptr<Cserver> _p_server;
-	std::unordered_map<int, std::shared_ptr<UserInfo>> _users;
 };

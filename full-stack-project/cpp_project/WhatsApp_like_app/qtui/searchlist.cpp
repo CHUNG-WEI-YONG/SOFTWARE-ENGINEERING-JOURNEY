@@ -24,13 +24,13 @@ void SearchList::CloseSearch()
 
 void SearchList::SetSearchEdit(QWidget *edit)
 {
-
+    _search_edit=edit;
 }
 
 void SearchList::waitPending(bool pending)
 {
     if(pending){
-        _loadingDialog=new LoadingDialog;
+        _loadingDialog=new LoadingDialog(this);
         _loadingDialog->setModal(true);
         _loadingDialog->show();
         _search_pending=pending;
@@ -47,7 +47,7 @@ void SearchList::CloseFindDialog()
     // ──► 🎯 核心修正 2：用 deleteLater 彻底释放老窗口的操作系统句柄和模态锁 ◄──
     if (_find_dlg) {
         qDebug() << "📢 [SearchList] 正在调用 deleteLater() 异步安全销毁弹窗内存";
-        _find_dlg->deleteLater();
+        _find_dlg.reset();
         _find_dlg = nullptr; // 斩断野指针
     }
 }
@@ -85,14 +85,21 @@ void SearchList::slot_item_clicked(QListWidgetItem *item)
     if (itemtype == ListItemType::InvalidItem) return;
 
     if (itemtype == ListItemType::Add_User_Tip_Item) {
+        qDebug()<<"now search is "<<_search_pending;
         if(_search_pending){
             return;
+        }
+
+        if(!_search_edit){
+            qDebug()<<"No search edit";
+            return ;
         }
         qDebug() << "🚀 [SearchList] 激活网络加人弹窗流...";
 
         // ──► 🎯 核心修正 3：如果之前有残留窗口，先安全蒸发它，释放模态死锁 ◄──
         if (_find_dlg) {
-            _find_dlg->deleteLater();
+            _find_dlg->close();
+            _find_dlg.reset();
             _find_dlg = nullptr;
         }
 
@@ -102,7 +109,8 @@ void SearchList::slot_item_clicked(QListWidgetItem *item)
         obj["uid"]=uid_Str;
         QJsonDocument doc(obj);
         QByteArray jsonData=doc.toJson(QJsonDocument::Compact);
-        TcpMgr::getInstance()->sig_send_data(ReqId::ID_ADD_FRIEND_REQ,jsonData);
+        TcpMgr::getInstance()->sig_send_data(ReqId::ID_SEARCH_USER_REQ,jsonData);
+        waitPending(true);
 
 
         return;

@@ -11,6 +11,27 @@
 #include <json/value.h>
 #include <json/reader.h>
 #include <unordered_map>
+#include <grpcpp/grpcpp.h>
+#include "message.grpc.pb.h"
+#include "message.pb.h"
+
+using grpc::Server;
+using grpc::ServerBuilder;
+using grpc::ServerContext;
+using grpc::Status;
+using message::AddFriendReq;
+using message::AddFriendRsp;
+
+using message::AuthFriendReq;
+using message::AuthFriendRsp;
+
+using message::ChatService;
+using message::TextChatMsgReq;
+using message::TextChatMsgRsp;
+using message::TextChatData;
+using message::KickUserReq;
+using message::KickUserRsp;
+
 
 
 class Cserver;
@@ -28,6 +49,11 @@ private:
 	void DealMsg();
 	void RegisterCallBacks();
 	void LoginHandler(shared_ptr<CSession> session, const short& msg_id, const string& msg_data);
+	void SearchUser(shared_ptr<CSession> session, const short& msg_id, const string& msg_data);
+	void AddFriendApply(shared_ptr<CSession> session, const short& msg_id, const string& msg_data);
+	void SearchUserByUid(const std::string& uid, Json::Value& rt);
+	void SearchUserByName(const std::string& uid, Json::Value& rt);
+	bool isPureDigit(const std::string& word);
 	std::thread _worker_thread;
 	std::queue<shared_ptr<LogicNode>> _msg_que;
 	std::mutex _mutex;

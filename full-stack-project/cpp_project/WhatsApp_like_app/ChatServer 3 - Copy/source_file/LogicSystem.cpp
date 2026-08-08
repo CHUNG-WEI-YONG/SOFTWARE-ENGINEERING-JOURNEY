@@ -228,48 +228,6 @@ void LogicSystem::SearchUser(shared_ptr<CSession> session, const short& msg_id, 
 
 }
 
-void LogicSystem::AddFriendApply(shared_ptr<CSession> session, const short& msg_id, const string & msg_data) {
-	Json::Reader reader;
-	Json::Value value;
-	reader.parse(msg_data, value);
-	auto uid = value["uid"].asInt();
-	auto applyname = value["applyname"].asString();
-	auto nickname=value["nickname"].asString();
-	auto to_uid = value["to_uid"].asInt();
-	cout << "Apply friend receive from user id " << uid << " applyname is " << applyname << " nickname is " << nickname << " to uid " << to_uid;
-
-
-	Json::Value rtvalue;
-	rtvalue["error"] = ErrorCodes::Success;
-	Defer defer([this, &rtvalue, session]() {
-		std::string rt_str = rtvalue.toStyledString();
-		session->Send(rt_str, ID_ADD_FRIEND_RSP);
-		});
-	MysqlMgr::GetInstance()->AddFriendApply(uid, to_uid);
-	auto to_str = std::to_string(to_uid);
-	auto key = USERIPPREFIX + to_str;
-	std::string user_addr="";
-	bool success = RedisMjr::GetInstance()->Get(key, user_addr);
-	if (!success) {
-		return;
-	}
-
-	std::string server_str=ConfigMgr::Inst()["SelfServer"]["Name"];
-	if (server_str == user_addr) {
-		auto session = UserMgr::GetInstance()->GetSession(to_uid);
-		if (session) {
-			Json::Value notify;
-			notify["error"] = ErrorCodes::Success;
-			notify["applyuid"] = uid;
-			notify["name"] = applyname;
-			notify["desc"] = "";
-			std::string reply_str = notify.toStyledString();
-			session->Send(reply_str,ID_NOTIFY_ADD_FRIEND_REQ);
-		}
-		return;
-	}
-}
-
 bool LogicSystem::isPureDigit(const std::string& word) {
 	for (char c : word) {
 		if(!isdigit(c)){

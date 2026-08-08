@@ -26,7 +26,7 @@ MainWindow::MainWindow(QWidget *parent)
     //connect(_reset_dlg,&ResetDialog::switchLogin,this,&MainWindow::SlotResetSwitchLogin);
     connect(TcpMgr::getInstance().get(),&TcpMgr::sig_switch_chat_dlg,this,&MainWindow::SlotSwitchChat);
 
-    emit TcpMgr::getInstance()->sig_switch_chat_dlg();
+    //emit TcpMgr::getInstance()->sig_switch_chat_dlg();
 }
 
 

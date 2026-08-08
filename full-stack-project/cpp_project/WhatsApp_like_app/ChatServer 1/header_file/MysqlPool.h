@@ -44,6 +44,8 @@ public:
 	bool CheckEmail(const std::string& name, const std::string& email);
 	bool UpdatePwd(const std::string& name, const std::string& email,const string& newpasswd);
 	bool CheckPwd(const std::string& email, const std::string& passwd, UserInfo& userinfo);
+	bool AddFriendApply(const int& from_uid, const int& to_uid);
 	std::shared_ptr<UserInfo> GetUser(int uid);
+	std::shared_ptr<UserInfo> GetUser(const std::string& name);
 	std::shared_ptr<UserInfo> GetUserByEmail(const std::string& email);
 };

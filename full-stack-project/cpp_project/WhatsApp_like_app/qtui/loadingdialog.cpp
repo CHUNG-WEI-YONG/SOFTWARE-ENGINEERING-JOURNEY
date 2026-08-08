@@ -9,7 +9,11 @@ LoadingDialog::LoadingDialog(QWidget *parent)
     ui->setupUi(this);
     setWindowFlags(Qt::Dialog|Qt::FramelessWindowHint|Qt::WindowSystemMenuHint|Qt::WindowStaysOnTopHint);
     setAttribute(Qt::WA_TranslucentBackground);
-    setFixedSize(parent->size());
+    if (parent) {
+        setFixedSize(parent->size());
+    } else {
+        setFixedSize(100, 100); // 兜底默认尺寸，防止空指针闪退
+    }
 
     QMovie *movie=new QMovie(":/rc/chat_picture/loading.gif");
     ui->loading_lb->setMovie(movie);
