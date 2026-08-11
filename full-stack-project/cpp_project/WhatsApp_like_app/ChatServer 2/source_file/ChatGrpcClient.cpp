@@ -16,7 +16,7 @@ ChatGrpcClient::ChatGrpcClient() {
 		SectionInfo section = config[w];
 		std::string name = section["Name"];
 		std::string host = section["Host"];
-		std::string port = section["Port"];
+		std::string port = section["RPCPort"];
 
 		if (name.empty()) {
 			continue;
@@ -29,8 +29,42 @@ ChatGrpcClient::ChatGrpcClient() {
 }
 
 AddFriendRsp ChatGrpcClient::NotifyAddFriend(std::string server_ip, const AddFriendReq& req) {
-	AddFriendRsp rsp;
-	return rsp;
+    AddFriendRsp rsp;
+    // Set default response payload upfront
+    rsp.set_applyuid(req.applyuid());
+    rsp.set_touid(req.touid());
+
+    // 1. Find the target pool (use lock if _pools can be modified at runtime)
+    auto iter = _pools.find(server_ip);
+    if (iter == _pools.end()) {
+        rsp.set_error(ErrorCodes::RPCFailed);
+        return rsp;
+    }
+
+    auto& pool = iter->second;
+    auto conn = pool->GetConn();
+    if (!conn) {
+        rsp.set_error(ErrorCodes::RPCFailed);
+        return rsp;
+    }
+
+    // 2. Return connection to pool on function exit (Valid use of Defer)
+    Defer rtConn([&conn, &pool]() {
+        pool->returnConn(std::move(conn));
+        });
+
+    // 3. Execute synchronous RPC call
+    ClientContext context;
+    Status status = conn->NotifyAddFriend(&context, req, &rsp);
+
+    if (!status.ok()) {
+        rsp.set_error(ErrorCodes::RPCFailed);
+        return rsp;
+    }
+
+    // 4. Mark success only after status is confirmed OK
+    rsp.set_error(ErrorCodes::Success);
+    return rsp;
 }
 AuthFriendRsp ChatGrpcClient::NotifyAuthFriend(std::string server_ip, const AuthFriendReq& req) {
 	AuthFriendRsp rsp;

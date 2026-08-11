@@ -7,6 +7,26 @@
 #include "RedisMjr.h"
 #include "ConfigMgr.h"
 #include "UserMgr.h"
+#include "ChatGrpcClient.h"
+
+using grpc::Server;
+using grpc::ServerBuilder;
+using grpc::ServerContext;
+using grpc::Status;
+using message::AddFriendReq;
+using message::AddFriendRsp;
+
+using message::AuthFriendReq;
+using message::AuthFriendRsp;
+
+using message::ChatService;
+using message::TextChatMsgReq;
+using message::TextChatMsgRsp;
+using message::TextChatData;
+using message::KickUserReq;
+using message::KickUserRsp;
+
+
 
 LogicSystem::LogicSystem():_b_stop(false),_p_server(nullptr) {
 	RegisterCallBacks();
@@ -26,6 +46,9 @@ void LogicSystem::RegisterCallBacks() {
 
 	_fun_callbacks[ID_SEARCH_USER_REQ] = [this](shared_ptr<CSession> session, const short& msg_id, const string& msg_data) {
 		this->SearchUser(session, msg_id, msg_data);
+		};
+	_fun_callbacks[ID_ADD_FRIEND_REQ] = [this](shared_ptr<CSession> session, const short& msg_id, const string& msg_data) {
+		this->AddFriendApply(session, msg_id, msg_data);
 		};
 
 }
@@ -190,7 +213,7 @@ bool LogicSystem::GetBaseInfo(std::string base_key, int uid, std::shared_ptr<Use
 		userInfo->passwd = value["passwd"].asString();
 		userInfo->nick = value["nick"].asString();
 		userInfo->icon = value["icon"].asString();
-		userInfo->nick = value["desc"].asString();
+		userInfo->desc = value["desc"].asString();
 		userInfo->sex = value["sex"].asInt();
 		std::cout << "User login id is " << userInfo->uid << " , email is " << userInfo->email << " , password is " << userInfo->passwd << " , name is " << userInfo->name;
 	}
@@ -233,7 +256,8 @@ void LogicSystem::AddFriendApply(shared_ptr<CSession> session, const short& msg_
 	Json::Value value;
 	reader.parse(msg_data, value);
 	auto uid = value["uid"].asInt();
-	auto applyname = value["applyname"].asString();
+	auto applyname = 
+		value["applyname"].asString();
 	auto nickname=value["nickname"].asString();
 	auto to_uid = value["to_uid"].asInt();
 	cout << "Apply friend receive from user id " << uid << " applyname is " << applyname << " nickname is " << nickname << " to uid " << to_uid;
@@ -268,6 +292,22 @@ void LogicSystem::AddFriendApply(shared_ptr<CSession> session, const short& msg_
 		}
 		return;
 	}
+
+	std::string base_key = USER_BASE_INFO + std::to_string(to_uid);
+	auto to_userInfo = std::make_shared<UserInfo>();
+	bool bsuccess = GetBaseInfo(base_key, to_uid, to_userInfo);
+	AddFriendReq req;
+	req.set_name(applyname);
+	req.set_applyuid(uid);
+	req.set_touid(to_uid);
+	req.set_desc("");
+	if (bsuccess) {
+		req.set_icon(to_userInfo->icon);
+		req.set_sex(to_userInfo->sex);
+		req.set_nick(to_userInfo->nick);
+	}
+	ChatGrpcClient::GetInstance()->NotifyAddFriend(user_addr, req);
+	
 }
 
 bool LogicSystem::isPureDigit(const std::string& word) {

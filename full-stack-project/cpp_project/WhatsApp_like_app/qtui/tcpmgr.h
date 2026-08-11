@@ -41,6 +41,7 @@ signals:
     void sig_user_search(std::shared_ptr<SearchInfo> );
     void sig_add_auth_friend();
     void sig_auth_rsp(std::shared_ptr<AuthRsp>);
+    void sig_friend_apply(std::shared_ptr<AddFriendApply>);
 
 
 };

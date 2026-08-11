@@ -9,10 +9,7 @@
 //     UserData();
 // };
 
-class SearchInfo{
-public:
-    SearchInfo(int uid,QString name,QString nick,QString desc,int sex,QString icon);
-    SearchInfo();
+struct SearchInfo {
     int _uid;
     QString _name;
     QString _nick;
@@ -20,6 +17,10 @@ public:
     int _sex;
     QString _icon;
 
+    SearchInfo();
+    // 统一顺序：(uid, name, nick, desc, sex, icon)
+    SearchInfo(int uid, QString name, QString nick, QString desc, int sex, QString icon)
+        : _uid(uid), _name(name), _nick(nick), _desc(desc), _sex(sex), _icon(icon) {}
 };
 
 struct AuthInfo{
@@ -46,16 +47,21 @@ struct AuthRsp{
         _sex(sex),_nick(nick),thread_id(0),_icon(icon){};
 };
 
-struct UserInfo{
+struct UserInfo {
     int _uid;
     QString _name;
-    int _sex;
     QString _nick;
-    QString _icon;
     QString _desc;
+    int _sex;
+    QString _icon;
 
-    UserInfo(int uid,QString name,QString nick,QString icon,int sex,QString desc=""):
-        _uid(uid),_name(name),_nick(nick),_icon(icon),_sex(sex),_desc(desc){};
+    // 保持与 SearchInfo 一致
+    UserInfo(int uid, QString name, QString nick, QString desc, int sex, QString icon)
+        : _uid(uid), _name(name), _nick(nick), _desc(desc), _sex(sex), _icon(icon) {}
+
+    UserInfo(std::shared_ptr<SearchInfo> search_info)
+        : _uid(search_info->_uid), _name(search_info->_name), _nick(search_info->_nick),
+        _desc(search_info->_desc), _sex(search_info->_sex), _icon(search_info->_icon){}
 
     UserInfo(std::shared_ptr<AuthInfo> auth): _uid(auth->_uid),_name(auth->_name),_nick(auth->_nick),
         _icon(auth->_icon),_sex(auth->_sex),_desc(""){}
@@ -66,10 +72,6 @@ struct UserInfo{
         _uid(uid), _name(name), _icon(icon),_nick(_name),
         _sex(0),_desc(""){
     }
-    UserInfo(std::shared_ptr<SearchInfo> search_info):
-        _uid(search_info->_uid),_name(search_info->_name),_nick(search_info->_nick),
-        _icon(search_info->_icon),_sex(search_info->_sex), _desc(search_info->_desc)
-    {};
 
 
 };

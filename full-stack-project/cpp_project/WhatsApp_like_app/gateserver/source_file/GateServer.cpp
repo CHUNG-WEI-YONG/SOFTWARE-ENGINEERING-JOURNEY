@@ -166,7 +166,7 @@ int main(){
 	unsigned short port = atoi(port_number_str.c_str());
 
     try{
-        unsigned short port=static_cast<unsigned short>(8080);
+        unsigned short port =std::stoi(gcfg["GateServer"]["Port"]);
         net::io_context ioc{1};
         boost::asio::signal_set signals(ioc,SIGINT,SIGTERM);
         signals.async_wait([&ioc](const boost::system::error_code& ec,int signal_number){

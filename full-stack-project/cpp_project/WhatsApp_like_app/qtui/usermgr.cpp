@@ -41,6 +41,21 @@ int UserMgr::GetUid()
     return _uid;
 }
 
+bool UserMgr::has_added(int uid)
+{
+    for(auto apply:_applications){
+        if(apply->_from_uid==uid){
+            return true;
+        }
+    }
+    return false;
+}
+
+void UserMgr::add_apply(std::shared_ptr<AddFriendApply> apply)
+{
+    _applications.push_back(apply);
+}
+
 QString UserMgr::GetName(){
     return _name;
 }

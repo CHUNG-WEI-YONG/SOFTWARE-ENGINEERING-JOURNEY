@@ -168,6 +168,7 @@ void SearchList::slot_user_search(std::shared_ptr<SearchInfo> si)
         //is friend
         //add friend
         //todo: search is friend or not
+        qDebug()<<"Slot user search receive "<<si->_name<<" , "<<si->_uid;
         _find_dlg=std::make_shared<FindSuccessDialog>(this);
         dynamic_pointer_cast<FindSuccessDialog>(_find_dlg)->SetSearchInfo(si);
     }

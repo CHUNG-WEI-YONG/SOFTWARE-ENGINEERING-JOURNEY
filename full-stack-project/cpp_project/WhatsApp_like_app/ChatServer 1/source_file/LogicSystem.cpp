@@ -47,6 +47,9 @@ void LogicSystem::RegisterCallBacks() {
 	_fun_callbacks[ID_SEARCH_USER_REQ] = [this](shared_ptr<CSession> session, const short& msg_id, const string& msg_data) {
 		this->SearchUser(session, msg_id, msg_data);
 		};
+	_fun_callbacks[ID_ADD_FRIEND_REQ] = [this](shared_ptr<CSession> session, const short& msg_id, const string& msg_data) {
+		this->AddFriendApply(session, msg_id, msg_data);
+		};
 
 }
 
@@ -210,7 +213,7 @@ bool LogicSystem::GetBaseInfo(std::string base_key, int uid, std::shared_ptr<Use
 		userInfo->passwd = value["passwd"].asString();
 		userInfo->nick = value["nick"].asString();
 		userInfo->icon = value["icon"].asString();
-		userInfo->nick = value["desc"].asString();
+		userInfo->desc = value["desc"].asString();
 		userInfo->sex = value["sex"].asInt();
 		std::cout << "User login id is " << userInfo->uid << " , email is " << userInfo->email << " , password is " << userInfo->passwd << " , name is " << userInfo->name;
 	}
@@ -253,11 +256,10 @@ void LogicSystem::AddFriendApply(shared_ptr<CSession> session, const short& msg_
 	Json::Value value;
 	reader.parse(msg_data, value);
 	auto uid = value["uid"].asInt();
-	auto applyname = 
-		value["applyname"].asString();
+	auto applyname = value["applyname"].asString();
 	auto nickname=value["nickname"].asString();
 	auto to_uid = value["to_uid"].asInt();
-	cout << "Apply friend receive from user id " << uid << " applyname is " << applyname << " nickname is " << nickname << " to uid " << to_uid;
+	cout << "Apply friend receive from user id " << uid << ", applyname is " << applyname << ", nickname is " << nickname << ", to uid " << to_uid;
 
 
 	Json::Value rtvalue;
@@ -272,6 +274,7 @@ void LogicSystem::AddFriendApply(shared_ptr<CSession> session, const short& msg_
 	std::string user_addr="";
 	bool success = RedisMjr::GetInstance()->Get(key, user_addr);
 	if (!success) {
+		rtvalue["error"] = ErrorCodes::EmailNotMatch;
 		return;
 	}
 

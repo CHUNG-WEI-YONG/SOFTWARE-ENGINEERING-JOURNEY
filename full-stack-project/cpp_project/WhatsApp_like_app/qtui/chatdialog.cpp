@@ -10,6 +10,7 @@
 #include "usermgr.h"
 #include <QTimer>
 #include "contactuserlist.h"
+#include "tcpmgr.h"
 
 ChatDialog::ChatDialog(QWidget *parent)
     : QDialog(parent)
@@ -129,6 +130,7 @@ ChatDialog::ChatDialog(QWidget *parent)
     this->installEventFilter(this);
 
     ui->search_user_list->SetSearchEdit(ui->search_edit);
+    connect(TcpMgr::getInstance().get(),&TcpMgr::sig_friend_apply,this,&ChatDialog::slot_friend_apply);
 
 }
 
@@ -307,6 +309,23 @@ void ChatDialog::slot_text_changed(const QString &str)
     } else {
         ShowSearch(false);
     }
+}
+
+void ChatDialog::slot_friend_apply(std::shared_ptr<AddFriendApply> add)
+{
+    qDebug()<<"Apply friend receive from user uid "<<add->_from_uid<<" name is "<<add->_name<<" desc is "<<add->_desc;
+    bool success=UserMgr::getInstance()->has_added(add->_from_uid);
+    if(success){
+        qDebug()<<"Already been added";
+    }
+    else{
+        UserMgr::getInstance()->add_apply(add);
+    }
+    ui->side_bar->show();
+    ui->side_contact_lb->ShowRedPoint(true);
+    ui->con_user_list->ShowRedPoint();
+    ui->friend_apply_page->AddNewFriendApply(add);
+
 }
 
 void ChatDialog::slot_side_contact()

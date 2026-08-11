@@ -38,6 +38,7 @@ void FindSuccessDialog::on_add_new_friend_btn_clicked()
     this->hide();
     auto friend_pg=new ApplyFriend(_parent);
     friend_pg->SetSearchInfo(_si);
+    qDebug() << "FindSuccess Dlg received target UID:" << _si->_uid;
     friend_pg->setModal(true);
     friend_pg->show();
 }

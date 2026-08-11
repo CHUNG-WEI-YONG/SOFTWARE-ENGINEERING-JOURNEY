@@ -131,6 +131,7 @@ void ApplyFriend::SetSearchInfo(std::shared_ptr<SearchInfo> si)
     QString str = QString("您好,我是%1").arg(applyname);
     ui->name_edit->setText(str);
     ui->nick_edit->setText(bakname);
+    qDebug() << "ApplyFriend Dlg received target UID:" << _si->_uid;
 }
 
 void ApplyFriend::ShowMoreLabel()
@@ -507,7 +508,7 @@ void ApplyFriend::SlotApplySure()
     }
 
     jsonObj["nickname"] = bakname;
-    jsonObj["touid"] = _si->_uid;
+    jsonObj["to_uid"] = _si->_uid;
 
     QJsonDocument doc(jsonObj);
     QByteArray jsonData = doc.toJson(QJsonDocument::Compact);

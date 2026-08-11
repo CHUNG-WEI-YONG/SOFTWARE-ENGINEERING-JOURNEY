@@ -44,7 +44,7 @@ void MysqlPool :: checkConnection() {
 			try {
 				con->_session->sql("SELECT 1").execute();
 				con->_last_time = time_stamp;
-				std::cout << "Executor alive sql . Timestamp is " << time_stamp << std::endl;
+				//std::cout << "Executor alive sql . Timestamp is " << time_stamp << std::endl;
 				b_conn_ok = true;
 			}
 			catch (mysqlx::Error& e) {

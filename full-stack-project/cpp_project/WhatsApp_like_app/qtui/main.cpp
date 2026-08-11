@@ -28,6 +28,7 @@ int main(int argc, char *argv[])
     QString gate_host = settings.value("GateServer/host").toString();
     QString gate_port = settings.value("GateServer/port").toString();
     gate_url_prefix = "http://"+gate_host+":"+gate_port;
+    qDebug() << "Connecting to gate URL:" << gate_url_prefix;
 
     MainWindow w;
     qDebug() << QFile::exists(":/rc/loginlogo.png");
