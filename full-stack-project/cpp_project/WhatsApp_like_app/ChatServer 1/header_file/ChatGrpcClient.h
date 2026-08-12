@@ -95,6 +95,7 @@ class ChatGrpcClient :public Singleton<ChatGrpcClient> {
 private:
 	ChatGrpcClient();
 	std::unordered_map <std::string, std::unique_ptr<ChatConPool>> _pools;
+	std::unordered_map<std::string, std::string> _ip_to_name;
 
 public:
 	AddFriendRsp NotifyAddFriend(std::string server_ip, const AddFriendReq& req);

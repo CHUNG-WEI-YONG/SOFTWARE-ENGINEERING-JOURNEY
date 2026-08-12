@@ -107,6 +107,22 @@ void LogicSystem::LoginHandler(shared_ptr<CSession> session, const short& msg_id
 	//rtvalue["token"] = rsp.token();
 	//do for mysql to do the search for friend list and user list
 
+	std::vector<std::shared_ptr<ApplyInfo>> list;
+	bool gsuccess=GetFriendApply(uid, list);
+	if (gsuccess) {
+		for (auto& apply : list) {
+			Json::Value obj;
+			obj["name"] = apply->_name;
+			obj["uid"] = apply->_uid;
+			obj["desc"] = apply->_desc;
+			obj["icon"] = apply->_icon;
+			obj["nick"] = apply->_nick;
+			obj["sex"] = apply->_sex;
+			obj["status"] = apply->_status;
+			rtvalue["apply_list"].append(obj);
+		}
+	}
+
 	auto config = ConfigMgr::Inst();
 	auto server_name = config["SelfServer"]["Name"];
 	std::string c = "";
@@ -215,7 +231,7 @@ bool LogicSystem::GetBaseInfo(std::string base_key, int uid, std::shared_ptr<Use
 		userInfo->icon = value["icon"].asString();
 		userInfo->desc = value["desc"].asString();
 		userInfo->sex = value["sex"].asInt();
-		std::cout << "User login id is " << userInfo->uid << " , email is " << userInfo->email << " , password is " << userInfo->passwd << " , name is " << userInfo->name;
+		std::cout << "GetBaseInfo get :User uid is " << userInfo->uid << " , email is " << userInfo->email << " , password is " << userInfo->passwd << " , name is " << userInfo->name;
 	}
 	else{
 		std::shared_ptr<UserInfo> user_info=nullptr;
@@ -317,6 +333,12 @@ bool LogicSystem::isPureDigit(const std::string& word) {
 		}
 	}
 	return true;
+}
+
+bool LogicSystem::GetFriendApply(int to_uid, std::vector<std::shared_ptr<ApplyInfo>>& list)
+{
+
+	return MysqlMgr::GetInstance()->GetApplyList(to_uid, list, 0, 10);
 }
 
 void LogicSystem::SearchUserByUid(const std::string& uid, Json::Value& rtvalue) {

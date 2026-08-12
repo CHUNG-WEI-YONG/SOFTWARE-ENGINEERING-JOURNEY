@@ -138,3 +138,22 @@ struct UserInfo {
 #define LOCK_PREFIX "lock_"
 #define USER_SESSION_PREFIX "usession_"
 #define LOCK_COUNT "lockcount"
+
+struct ApplyInfo {
+	ApplyInfo(int uid, std::string name, std::string desc,
+		std::string icon, std::string nick, int sex, int status)
+		:_uid(uid), _name(name), _desc(desc),
+		_icon(icon), _nick(nick), _sex(sex), _status(status) {
+	}
+
+	void SetIcon(std::string head) {
+		_icon = head;
+	};
+	int _uid;
+	std::string _name;
+	std::string _desc;
+	std::string _icon;
+	std::string _nick;
+	int _sex;
+	int _status;
+};

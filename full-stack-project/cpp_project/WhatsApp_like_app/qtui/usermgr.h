@@ -18,8 +18,10 @@ public:
     QString returnLogo();
     int GetUid();
     bool has_added(int uid);
-    void add_apply(std::shared_ptr<AddFriendApply> apply);
+    void add_apply(std::shared_ptr<ApplyInfo> apply);
     QString GetName();
+    void SetUserInfo(std::shared_ptr<UserInfo> user);
+    void AppendApplyList(QJsonArray array);
 
 private:
     int _uid;
@@ -27,7 +29,8 @@ private:
     QString _name;
     QString _token;
     QString _logoPath;
-    std::vector<std::shared_ptr<AddFriendApply>> _applications;
+    std::vector<std::shared_ptr<ApplyInfo>> _applications;
+    std::shared_ptr<UserInfo> _user_info;
 
 
 

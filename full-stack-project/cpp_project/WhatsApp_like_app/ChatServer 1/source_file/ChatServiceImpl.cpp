@@ -10,6 +10,7 @@ ChatServiceImpl::ChatServiceImpl() {
 
 }
 Status ChatServiceImpl::NotifyAddFriend(ServerContext* context, const AddFriendReq* req, AddFriendRsp* rsp) {
+	std::cout << "Server correctly being notify" << std::endl;
 	int uid = req->applyuid();
 	int to_uid = req->touid();
 	Defer defer([&rsp,uid,to_uid]() {
@@ -17,7 +18,7 @@ Status ChatServiceImpl::NotifyAddFriend(ServerContext* context, const AddFriendR
 		rsp->set_touid(to_uid);
 		rsp->set_error(ErrorCodes::Success);
 		});
-	auto session = UserMgr::GetInstance()->GetSession(uid);
+	auto session = UserMgr::GetInstance()->GetSession(to_uid);
 	if (session == nullptr) {
 		return Status::OK;
 	}

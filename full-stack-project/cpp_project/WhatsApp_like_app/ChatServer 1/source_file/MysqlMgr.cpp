@@ -33,6 +33,12 @@ std::shared_ptr<UserInfo> MysqlMgr::GetUser(const std::string& name)
 	return _dao.GetUser(name);
 }
 
+bool MysqlMgr::GetApplyList(int to_uid, std::vector<std::shared_ptr<ApplyInfo>>& list, int begin, int limit)
+{
+
+	return _dao.GetApplyList(to_uid,list,begin,limit);
+}
+
 std::shared_ptr<UserInfo> MysqlMgr::GetUserByEmail(const std::string& email)
 {
 	return _dao.GetUserByEmail(email);

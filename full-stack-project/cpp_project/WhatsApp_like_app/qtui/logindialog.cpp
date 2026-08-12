@@ -3,6 +3,7 @@
 #include "httpmgr.h"
 #include <QMap>
 #include "tcpmgr.h"
+#include "usermgr.h"
 
 LoginDialog::LoginDialog(QWidget *parent)
     : QDialog(parent)
@@ -110,6 +111,8 @@ void LoginDialog::slot_conn_success(bool success)
         qDebug()<<"connection success";
         QJsonDocument doc(obj);
         QByteArray jsonString=doc.toJson(QJsonDocument::Indented);
+        UserMgr::getInstance()->SetUid(_uid);
+        UserMgr::getInstance()->SetToken(_token);
         TcpMgr::getInstance()->sig_send_data(ReqId::ID_CHAT_LOGIN,jsonString);
     }
     else{

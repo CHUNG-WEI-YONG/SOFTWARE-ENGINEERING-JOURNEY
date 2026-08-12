@@ -319,7 +319,7 @@ void ChatDialog::slot_friend_apply(std::shared_ptr<AddFriendApply> add)
         qDebug()<<"Already been added";
     }
     else{
-        UserMgr::getInstance()->add_apply(add);
+        UserMgr::getInstance()->add_apply(std::make_shared<ApplyInfo>(add));
     }
     ui->side_bar->show();
     ui->side_contact_lb->ShowRedPoint(true);

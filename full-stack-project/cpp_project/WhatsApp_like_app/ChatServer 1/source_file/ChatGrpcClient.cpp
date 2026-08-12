@@ -2,41 +2,46 @@
 #include "ConfigMgr.h"
 
 ChatGrpcClient::ChatGrpcClient() {
-	auto& config = ConfigMgr::Inst();
-	auto serverlist = config["PeerServer"]["Servers"];
+    auto& config = ConfigMgr::Inst();
+    auto serverlist = config["PeerServer"]["Servers"];
 
-	std::vector<std::string>words;
-	std::string word;
+    std::vector<std::string> words;
+    std::string word;
 
-	std::stringstream ss(serverlist);
-	while (std::getline(ss, word, ',')) {
-		words.push_back(word);
-	}
-	for (auto& w : words) {
-		SectionInfo section = config[w];
-		std::string name = section["Name"];
-		std::string host = section["Host"];
-		std::string port = section["RPCPort"];
+    std::stringstream ss(serverlist);
+    while (std::getline(ss, word, ',')) {
+        words.push_back(word);
+    }
+    for (auto& w : words) {
+        SectionInfo section = config[w];
+        std::string name = section["Name"];
+        std::string host = section["Host"];
+        std::string port = section["RPCPort"];
 
-		if (name.empty()) {
-			continue;
-		}
+        if (name.empty()) {
+            continue;
+        }
 
-		// ✅ 避免连续临时对象的 [] 链式调用，用局部变量接住更安全且易调试
-		_pools[name] = std::make_unique<ChatConPool>(5, host, port);
-	}
+        std::cout << "Connect correctly to " << w << " host :" << host << " rpc port: " << port << "\n";
 
+        // ✅ 同时存入 "Host:Port" 和 "Host"，提高查找容错率
+        std::string ip_port = host + ":" + port;
+        _ip_to_name[ip_port] = name;
+
+        // 初始化连接池
+        _pools[name] = std::make_unique<ChatConPool>(5, host, port);
+    }
 }
 
-AddFriendRsp ChatGrpcClient::NotifyAddFriend(std::string server_ip, const AddFriendReq& req) {
+AddFriendRsp ChatGrpcClient::NotifyAddFriend(std::string server_name, const AddFriendReq& req) {
     AddFriendRsp rsp;
-    // Set default response payload upfront
     rsp.set_applyuid(req.applyuid());
     rsp.set_touid(req.touid());
-
-    // 1. Find the target pool (use lock if _pools can be modified at runtime)
-    auto iter = _pools.find(server_ip);
+    std::cout << "Notify success run" << std::endl;
+    // 3. 获取对应的连接池
+    auto iter = _pools.find(server_name);
     if (iter == _pools.end()) {
+        std::cout << "Cannot find connection pool for server_name: " << server_name << std::endl;
         rsp.set_error(ErrorCodes::RPCFailed);
         return rsp;
     }
@@ -48,12 +53,12 @@ AddFriendRsp ChatGrpcClient::NotifyAddFriend(std::string server_ip, const AddFri
         return rsp;
     }
 
-    // 2. Return connection to pool on function exit (Valid use of Defer)
+    // 4. 析构时归还连接
     Defer rtConn([&conn, &pool]() {
         pool->returnConn(std::move(conn));
         });
 
-    // 3. Execute synchronous RPC call
+    // 5. 发送 RPC 请求
     ClientContext context;
     Status status = conn->NotifyAddFriend(&context, req, &rsp);
 
@@ -62,7 +67,6 @@ AddFriendRsp ChatGrpcClient::NotifyAddFriend(std::string server_ip, const AddFri
         return rsp;
     }
 
-    // 4. Mark success only after status is confirmed OK
     rsp.set_error(ErrorCodes::Success);
     return rsp;
 }

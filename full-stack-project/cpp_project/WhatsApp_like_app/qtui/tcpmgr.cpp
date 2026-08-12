@@ -2,6 +2,8 @@
 #include "usermgr.h"
 #include <QAbstractSocket>
 #include <QJsonDocument>
+#include "userdata.h"
+#include <QJsonArray>
 
 
 TcpMgr::TcpMgr() {
@@ -74,9 +76,20 @@ void TcpMgr::initHandlers()
             return;
         }
         qDebug()<<"Log in successful";
-        UserMgr::getInstance()->SetUid(jsonObj["uid"].toInt());
-        UserMgr::getInstance()->SetName(jsonObj["name"].toString());
+        auto uid = jsonObj["uid"].toInt();
+        auto name = jsonObj["name"].toString();
+        auto nick = jsonObj["nick"].toString();
+        auto icon = jsonObj["icon"].toString();
+        auto sex = jsonObj["sex"].toInt();
+        auto desc = jsonObj["desc"].toString();
+        auto user_info = std::make_shared<UserInfo>(uid, name, nick, desc, sex,"");
+        UserMgr::getInstance()->SetUserInfo(user_info);
         UserMgr::getInstance()->SetToken(jsonObj["token"].toString());
+
+        if(jsonObj.contains("applylist")){
+            UserMgr::getInstance()->AppendApplyList(jsonObj["applylist"].toArray());
+        }
+
 
         emit sig_switch_chat_dlg();
     });
@@ -165,6 +178,7 @@ void TcpMgr::initHandlers()
         int sex=jsonObj["sex"].toInt();
         QString nick=jsonObj["nick"].toString();
         std::shared_ptr<AddFriendApply> req_user=std::make_shared<AddFriendApply>(uid,name,desc,icon,nick,sex);
+
         emit sig_friend_apply(req_user);
         qDebug()<<"Notify Add friend req success";
 
