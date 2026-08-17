@@ -51,6 +51,10 @@ void LogicSystem::RegisterCallBacks() {
 		this->AddFriendApply(session, msg_id, msg_data);
 		};
 
+	_fun_callbacks[ID_AUTH_FRIEND_REQ] = [this](shared_ptr<CSession> session, const short& msg_id, const string& msg_data) {
+		this->AuthFriendApply(session, msg_id, msg_data);
+		};
+
 }
 
 void LogicSystem::LoginHandler(shared_ptr<CSession> session, const short& msg_id, const string& msg_data) {
@@ -106,6 +110,22 @@ void LogicSystem::LoginHandler(shared_ptr<CSession> session, const short& msg_id
 	rtvalue["name"] = userInfo->name;
 	//rtvalue["token"] = rsp.token();
 	//do for mysql to do the search for friend list and user list
+
+	std::vector<std::shared_ptr<ApplyInfo>> list;
+	bool gsuccess=GetFriendApply(uid, list);
+	if (gsuccess) {
+		for (auto& apply : list) {
+			Json::Value obj;
+			obj["name"] = apply->_name;
+			obj["uid"] = apply->_uid;
+			obj["desc"] = apply->_desc;
+			obj["icon"] = apply->_icon;
+			obj["nick"] = apply->_nick;
+			obj["sex"] = apply->_sex;
+			obj["status"] = apply->_status;
+			rtvalue["apply_list"].append(obj);
+		}
+	}
 
 	auto config = ConfigMgr::Inst();
 	auto server_name = config["SelfServer"]["Name"];
@@ -215,7 +235,7 @@ bool LogicSystem::GetBaseInfo(std::string base_key, int uid, std::shared_ptr<Use
 		userInfo->icon = value["icon"].asString();
 		userInfo->desc = value["desc"].asString();
 		userInfo->sex = value["sex"].asInt();
-		std::cout << "User login id is " << userInfo->uid << " , email is " << userInfo->email << " , password is " << userInfo->passwd << " , name is " << userInfo->name;
+		std::cout << "GetBaseInfo get :User uid is " << userInfo->uid << " , email is " << userInfo->email << " , password is " << userInfo->passwd << " , name is " << userInfo->name;
 	}
 	else{
 		std::shared_ptr<UserInfo> user_info=nullptr;
@@ -224,6 +244,18 @@ bool LogicSystem::GetBaseInfo(std::string base_key, int uid, std::shared_ptr<Use
 			return false;
 		}
 		userInfo = user_info;
+
+		Json::Value user_json;
+		user_json["uid"] = userInfo->uid;
+		user_json["name"] = userInfo->name;
+		user_json["email"] = userInfo->email;
+		user_json["passwd"] = userInfo->passwd;
+		user_json["nick"] = userInfo->nick;
+		user_json["icon"] = userInfo->icon;
+		user_json["desc"] = userInfo->desc;
+		user_json["sex"] = userInfo->sex;
+
+		RedisMjr::GetInstance()->Set(base_key, user_json.toStyledString());
 	}
 	return true;
 }
@@ -256,11 +288,10 @@ void LogicSystem::AddFriendApply(shared_ptr<CSession> session, const short& msg_
 	Json::Value value;
 	reader.parse(msg_data, value);
 	auto uid = value["uid"].asInt();
-	auto applyname = 
-		value["applyname"].asString();
+	auto applyname = value["applyname"].asString();
 	auto nickname=value["nickname"].asString();
 	auto to_uid = value["to_uid"].asInt();
-	cout << "Apply friend receive from user id " << uid << " applyname is " << applyname << " nickname is " << nickname << " to uid " << to_uid;
+	cout << "Apply friend receive from user id " << uid << ", applyname is " << applyname << ", nickname is " << nickname << ", to uid " << to_uid;
 
 
 	Json::Value rtvalue;
@@ -275,6 +306,7 @@ void LogicSystem::AddFriendApply(shared_ptr<CSession> session, const short& msg_
 	std::string user_addr="";
 	bool success = RedisMjr::GetInstance()->Get(key, user_addr);
 	if (!success) {
+		rtvalue["error"] = ErrorCodes::EmailNotMatch;
 		return;
 	}
 
@@ -310,6 +342,89 @@ void LogicSystem::AddFriendApply(shared_ptr<CSession> session, const short& msg_
 	
 }
 
+void LogicSystem::AuthFriendApply(shared_ptr<CSession> session, const short& msg_id, const string& msg_data)
+{
+	Json::Reader reader;
+	Json::Value value;
+	reader.parse(msg_data, value);
+	auto uid = value["fromuid"].asInt();
+	auto to_uid = value["touid"].asInt();
+	auto nick = value["nick"].asString();
+	cout << "Auth friend receive from user id " << uid << " to user id " << to_uid << " which nickname is " << nick;
+
+	auto user_info = std::make_shared<UserInfo>();
+	std::string basic_key = USER_BASE_INFO + std::to_string(to_uid);
+
+	Json::Value rt;
+	bool success = GetBaseInfo(basic_key, to_uid, user_info);
+	if (!success) {
+		cout << "Error , friend does not exist";
+		rt["error"] = ErrorCodes::UidInvalid;
+		return;
+	}
+	else {
+		rt["name"] = user_info->name;
+		//rt["email"] = user_info->email;
+		rt["desc"] = user_info->desc;
+		rt["sex"] = user_info->sex;
+		rt["icon"] = user_info->icon;
+		rt["nick"] = user_info->nick;
+		rt["uid"] = to_uid;
+	}
+	rt["error"] = ErrorCodes::Success;
+	Defer defer([this, &session, &rt,msg_id] {
+		std::string rt_str = rt.toStyledString();
+		session->Send(rt_str, ID_AUTH_FRIEND_RSP);
+	});
+
+	bool add_res=MysqlMgr::GetInstance()->AddFriend(uid, to_uid, nick);
+	if (!add_res) {
+		rt["error"] = ErrorCodes::Error_Json; // 或其它错误码
+		return;
+	}
+
+	auto key = USERIPPREFIX + std::to_string(to_uid);
+	std::string to_server = "";
+	bool rsuccess=RedisMjr::GetInstance()->Get(key, to_server);
+	if (!rsuccess) {
+		return;
+	}
+
+	auto& cfg = ConfigMgr::Inst();
+	std::string thisserver = cfg["SelfServer"]["Name"];
+	if (thisserver == to_server) {
+		auto Rsession = UserMgr::GetInstance()->GetSession(to_uid);
+		if (Rsession) {
+			Json::Value value;
+			value["error"] = ErrorCodes::Success;
+			value["fromuid"] = uid;
+			value["to_uid"] = to_uid;
+			std::string base_key = USER_BASE_INFO + std::to_string(uid);
+			auto sender_info = std::make_shared<UserInfo>();
+			bool findsuccess = GetBaseInfo(base_key, uid, sender_info);
+			if (findsuccess) {
+				value["name"] = sender_info->name;
+				value["nick"] = sender_info->nick;
+				value["icon"] = sender_info->icon;
+				value["sex"] = sender_info->sex;
+			}
+			else {
+				value["error"] = ErrorCodes::UidInvalid;
+			}
+
+			std::string rtvalue = value.toStyledString();
+			Rsession->Send(rtvalue, ID_NOTIFY_AUTH_FRIEND_REQ);
+		}
+		return;
+
+	}
+	AuthFriendReq req;
+	req.set_fromuid(uid);
+	req.set_touid(to_uid);
+	ChatGrpcClient::GetInstance()->NotifyAuthFriend(to_server, req);
+
+}
+
 bool LogicSystem::isPureDigit(const std::string& word) {
 	for (char c : word) {
 		if(!isdigit(c)){
@@ -317,6 +432,12 @@ bool LogicSystem::isPureDigit(const std::string& word) {
 		}
 	}
 	return true;
+}
+
+bool LogicSystem::GetFriendApply(int to_uid, std::vector<std::shared_ptr<ApplyInfo>>& list)
+{
+
+	return MysqlMgr::GetInstance()->GetApplyList(to_uid, list, 0, 10);
 }
 
 void LogicSystem::SearchUserByUid(const std::string& uid, Json::Value& rtvalue) {

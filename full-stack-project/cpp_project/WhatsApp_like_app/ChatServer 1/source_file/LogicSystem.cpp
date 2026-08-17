@@ -51,6 +51,9 @@ void LogicSystem::RegisterCallBacks() {
 		this->AddFriendApply(session, msg_id, msg_data);
 		};
 
+	_fun_callbacks[ID_AUTH_FRIEND_REQ] = [this](shared_ptr<CSession> session, const short& msg_id, const string& msg_data) {
+		this->AuthFriendApply(session, msg_id, msg_data);
+		};
 }
 
 void LogicSystem::LoginHandler(shared_ptr<CSession> session, const short& msg_id, const string& msg_data) {
@@ -240,6 +243,18 @@ bool LogicSystem::GetBaseInfo(std::string base_key, int uid, std::shared_ptr<Use
 			return false;
 		}
 		userInfo = user_info;
+
+		Json::Value user_json;
+		user_json["uid"] = userInfo->uid;
+		user_json["name"] = userInfo->name;
+		user_json["email"] = userInfo->email;
+		user_json["passwd"] = userInfo->passwd;
+		user_json["nick"] = userInfo->nick;
+		user_json["icon"] = userInfo->icon;
+		user_json["desc"] = userInfo->desc;
+		user_json["sex"] = userInfo->sex;
+
+		RedisMjr::GetInstance()->Set(base_key, user_json.toStyledString());
 	}
 	return true;
 }
@@ -295,23 +310,29 @@ void LogicSystem::AddFriendApply(shared_ptr<CSession> session, const short& msg_
 	}
 
 	std::string server_str=ConfigMgr::Inst()["SelfServer"]["Name"];
+	std::string base_key = USER_BASE_INFO + std::to_string(to_uid);
+	auto to_userInfo = std::make_shared<UserInfo>();
+	bool bsuccess = GetBaseInfo(base_key, to_uid, to_userInfo);
+
 	if (server_str == user_addr) {
 		auto session = UserMgr::GetInstance()->GetSession(to_uid);
 		if (session) {
-			Json::Value notify;
+			Json::Value notify;j
 			notify["error"] = ErrorCodes::Success;
 			notify["applyuid"] = uid;
 			notify["name"] = applyname;
-			notify["desc"] = "";
+			if (bsuccess) {
+				notify["desc"] = to_userInfo->desc;
+				notify["icon"] = to_userInfo->icon;
+				notify["sex"] = to_userInfo->sex;
+				notify["nick"] = to_userInfo->nick;
+			}
 			std::string reply_str = notify.toStyledString();
 			session->Send(reply_str,ID_NOTIFY_ADD_FRIEND_REQ);
 		}
 		return;
 	}
 
-	std::string base_key = USER_BASE_INFO + std::to_string(to_uid);
-	auto to_userInfo = std::make_shared<UserInfo>();
-	bool bsuccess = GetBaseInfo(base_key, to_uid, to_userInfo);
 	AddFriendReq req;
 	req.set_name(applyname);
 	req.set_applyuid(uid);
@@ -324,6 +345,89 @@ void LogicSystem::AddFriendApply(shared_ptr<CSession> session, const short& msg_
 	}
 	ChatGrpcClient::GetInstance()->NotifyAddFriend(user_addr, req);
 	
+}
+
+void LogicSystem::AuthFriendApply(shared_ptr<CSession> session, const short& msg_id, const string& msg_data)
+{
+	Json::Reader reader;
+	Json::Value value;
+	reader.parse(msg_data, value);
+	auto uid = value["fromuid"].asInt();
+	auto to_uid = value["touid"].asInt();
+	auto nick = value["nick"].asString();
+	cout << "Auth friend receive from user id " << uid << " to user id " << to_uid << " which nickname is " << nick;
+
+	auto user_info = std::make_shared<UserInfo>();
+	std::string basic_key = USER_BASE_INFO + std::to_string(to_uid);
+
+	Json::Value rt;
+	bool success = GetBaseInfo(basic_key, to_uid, user_info);
+	if (!success) {
+		cout << "Error , friend does not exist";
+		rt["error"] = ErrorCodes::UidInvalid;
+		return;
+	}
+	else {
+		rt["name"] = user_info->name;
+		//rt["email"] = user_info->email;
+		rt["desc"] = user_info->desc;
+		rt["sex"] = user_info->sex;
+		rt["icon"] = user_info->icon;
+		rt["nick"] = user_info->nick;
+		rt["uid"] = to_uid;
+	}
+	rt["error"] = ErrorCodes::Success;
+	Defer defer([this, &session, &rt,msg_id] {
+		std::string rt_str = rt.toStyledString();
+		session->Send(rt_str, ID_AUTH_FRIEND_RSP);
+	});
+
+	bool add_res=MysqlMgr::GetInstance()->AddFriend(uid, to_uid, nick);
+	if (!add_res) {
+		rt["error"] = ErrorCodes::Error_Json; // 或其它错误码
+		return;
+	}
+
+	auto key = USERIPPREFIX + std::to_string(to_uid);
+	std::string to_server = "";
+	bool rsuccess=RedisMjr::GetInstance()->Get(key, to_server);
+	if (!rsuccess) {
+		return;
+	}
+
+	auto& cfg = ConfigMgr::Inst();
+	std::string thisserver = cfg["SelfServer"]["Name"];
+	if (thisserver == to_server) {
+		auto Rsession = UserMgr::GetInstance()->GetSession(to_uid);
+		if (Rsession) {
+			Json::Value value;
+			value["error"] = ErrorCodes::Success;
+			value["fromuid"] = uid;
+			value["to_uid"] = to_uid;
+			std::string base_key = USER_BASE_INFO + std::to_string(uid);
+			auto sender_info = std::make_shared<UserInfo>();
+			bool findsuccess = GetBaseInfo(base_key, uid, sender_info);
+			if (findsuccess) {
+				value["name"] = sender_info->name;
+				value["nick"] = sender_info->nick;
+				value["icon"] = sender_info->icon;
+				value["sex"] = sender_info->sex;
+			}
+			else {
+				value["error"] = ErrorCodes::UidInvalid;
+			}
+
+			std::string rtvalue = value.toStyledString();
+			Rsession->Send(rtvalue, ID_NOTIFY_AUTH_FRIEND_REQ);
+		}
+		return;
+
+	}
+	AuthFriendReq req;
+	req.set_fromuid(uid);
+	req.set_touid(to_uid);
+	ChatGrpcClient::GetInstance()->NotifyAuthFriend(to_server, req);
+
 }
 
 bool LogicSystem::isPureDigit(const std::string& word) {

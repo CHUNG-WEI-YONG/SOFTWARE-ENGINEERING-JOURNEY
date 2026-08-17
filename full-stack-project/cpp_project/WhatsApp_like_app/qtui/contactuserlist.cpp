@@ -5,6 +5,10 @@
 #include <QRandomGenerator>
 #include "tcpmgr.h"
 #include "chatdialog.h"
+#include "userdata.h"
+#include "usermgr.h"
+#include "chatuserwid.h"
+
 
 
 ContactUserList::ContactUserList(QWidget *parent):QListWidget(parent)
@@ -16,8 +20,8 @@ ContactUserList::ContactUserList(QWidget *parent):QListWidget(parent)
     this->viewport()->installEventFilter(this);
     addContectUserList();
     connect(this, &QListWidget::itemClicked, this, &ContactUserList::slot_item_click);
-    // connect(TcpMgr::getInstance.get(),&TcpMgr::sig_add_auth_friend,this,&ContactUserList::slot_add_auth_friend);
-    // connect(TcpMgr::getInstance.get(),&TcpMgr::sig_auth_rsp,this,&ContactUserList::slot_auth_rsp);
+    connect(TcpMgr::getInstance().get(),&TcpMgr::sig_add_auth_friend,this,&ContactUserList::slot_add_auth_friend);
+    connect(TcpMgr::getInstance().get(),&TcpMgr::sig_auth_rsp,this,&ContactUserList::slot_auth_rsp);
 
 }
 
@@ -135,6 +139,36 @@ void ContactUserList::slot_item_click(QListWidgetItem *item)
         emit sig_switch_friend_info_page();
         return;
     }
+}
+
+void ContactUserList::slot_add_auth_friend(std::shared_ptr<AuthInfo> auth)
+{
+    qDebug()<<"Slot add auth friend run";
+    bool exist=UserMgr::getInstance()->CheckFriendById(auth->_uid);
+    if(exist){
+        return;
+    }
+    int randomValue = QRandomGenerator::global()->bounded(100); // 生成0到99之间的随机整数
+    int str_i = randomValue%strs.size();
+    int head_i = randomValue%heads.size();
+
+    auto *con_user_wid = new ConUserItem();
+    con_user_wid->setInfo(auth);
+    QListWidgetItem *item = new QListWidgetItem;
+    //qDebug()<<"chat_user_wid sizeHint is " << chat_user_wid->sizeHint();
+    item->setSizeHint(con_user_wid->sizeHint());
+
+    // 获取 groupitem 的索引
+    int index = this->row(_group_item);
+    // 在 groupitem 之后插入新项
+    this->insertItem(index + 1, item);
+
+    this->setItemWidget(item, con_user_wid);
+}
+
+void ContactUserList::slot_auth_rsp(std::shared_ptr<AuthRsp>)
+{
+
 }
 
 

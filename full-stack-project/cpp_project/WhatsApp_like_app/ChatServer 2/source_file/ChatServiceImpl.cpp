@@ -3,6 +3,7 @@
 #include <json/json.h>
 #include <json/value.h>
 #include <json/reader.h>
+#include "RedisMjr.h"
 #include "CSession.h"
 
 
@@ -36,7 +37,36 @@ Status ChatServiceImpl::NotifyAddFriend(ServerContext* context, const AddFriendR
 	return Status::OK;
 }
 Status ChatServiceImpl::NotifyAuthFriend(ServerContext* context, const AuthFriendReq* req, AuthFriendRsp* rsp) {
+	auto from_uid = req->fromuid();
+	auto to_uid = req->touid();
+	auto session = UserMgr::GetInstance()->GetSession(to_uid);
+	Defer defer([this, &rsp, from_uid,to_uid] {
+		rsp->set_error(ErrorCodes::Success);
+		rsp->set_fromuid(from_uid);
+		rsp->set_touid(to_uid);
+		});
+	if (session == nullptr) {
+		return Status::OK;
+	}
+	Json::Value rt;
+	auto user_info = std::make_shared<UserInfo>();
+	auto key = USER_BASE_INFO + std::to_string(from_uid);
+	bool bsuccess=GetBaseInfo(key,from_uid, user_info);
+	if (!bsuccess) {
+		rt["error"] = ErrorCodes::UidInvalid;
+	}
+	rt["fromuid"] = from_uid;
+	rt["to_uid"] = to_uid;
+	rt["name"] = user_info->name;
+	rt["nick"] = user_info->nick;
+	rt["icon"] = user_info->icon;
+	rt["desc"] = user_info->desc;
+	rt["sex"] = user_info->sex;
+
+	auto rt_str = rt.toStyledString();
+	session->Send(rt_str, ID_NOTIFY_AUTH_FRIEND_REQ);
 	return Status::OK;
+
 }
 Status ChatServiceImpl::NotifyTextChatMsg(ServerContext* context, const TextChatMsgReq* req, TextChatMsgRsp* rsp) {
 	return Status::OK;

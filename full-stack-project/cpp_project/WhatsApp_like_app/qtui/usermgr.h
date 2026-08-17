@@ -10,7 +10,7 @@ public:
     UserMgr();
     ~UserMgr();
     friend Singleton<UserMgr>;
-    void SetName(QString name);
+    //void SetName(QString name);
     void SetUid(int uid);
     void SetToken(QString token);
     QString returnName();
@@ -22,15 +22,18 @@ public:
     QString GetName();
     void SetUserInfo(std::shared_ptr<UserInfo> user);
     void AppendApplyList(QJsonArray array);
+    bool CheckFriendById(int uid);
+    void AddFriend(std::shared_ptr<AuthInfo>);
+    void AddFriend(std::shared_ptr<AuthRsp>);
+    std::shared_ptr<FriendInfo> getFriend(int uid);
 
 private:
-    int _uid;
-    QString email;
-    QString _name;
     QString _token;
     QString _logoPath;
     std::vector<std::shared_ptr<ApplyInfo>> _applications;
     std::shared_ptr<UserInfo> _user_info;
+    std::map<int,std::shared_ptr<FriendInfo>> _friend_list;
+    int _uid;
 
 
 

@@ -33,6 +33,7 @@ void ApplyFriendPage::AddNewFriendApply(std::shared_ptr<AddFriendApply> apply)
     auto* apply_item = new ApplyFriendItem();
     auto apply_info = std::make_shared<ApplyInfo>(apply->_from_uid,
                                                   apply->_name, apply->_desc,heads[head_i], apply->_name, 0, 0);
+    qDebug()<<"Add new friend apply success, from uid is  "<<apply_info->_uid<<", name is "<<apply_info->_name;
     apply_item->SetInfo(apply_info);
     QListWidgetItem* item = new QListWidgetItem;
     //qDebug()<<"chat_user_wid sizeHint is " << chat_user_wid->sizeHint();
@@ -125,6 +126,6 @@ void ApplyFriendPage::slot_auth_rsp(std::shared_ptr<AuthRsp> rsp)
     if(find_iter==_unauth_items.end()){
         return;
     }
-    _unauth_items[uid]->ShowAddBtn(false);
+    find_iter->second->ShowAddBtn(false);
 
 }

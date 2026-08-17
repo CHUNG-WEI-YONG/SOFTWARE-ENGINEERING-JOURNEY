@@ -52,10 +52,12 @@ private:
 	void LoginHandler(shared_ptr<CSession> session, const short& msg_id, const string& msg_data);
 	void SearchUser(shared_ptr<CSession> session, const short& msg_id, const string& msg_data);
 	void AddFriendApply(shared_ptr<CSession> session, const short& msg_id, const string& msg_data);
+	void AuthFriendApply(shared_ptr<CSession> session, const short &msg_id, const string& msg_data);
 	void SearchUserByUid(const std::string& uid, Json::Value& rt);
 	void SearchUserByName(const std::string& uid, Json::Value& rt);
 	bool isPureDigit(const std::string& word);
 	bool GetFriendApply(int to_uid, std::vector<std::shared_ptr<ApplyInfo>>& list);
+
 	std::thread _worker_thread;
 	std::queue<shared_ptr<LogicNode>> _msg_que;
 	std::mutex _mutex;

@@ -7,6 +7,7 @@
 #include <QObject>
 #include "userdata.h"
 #include <vector>
+#include "authfriend.h"
 class TcpMgr:public QObject , public Singleton<TcpMgr>, public std::enable_shared_from_this<TcpMgr>
 {
     Q_OBJECT
@@ -39,7 +40,7 @@ signals:
     void login_failed(int);
     void sig_login_failed(ErrorCode err);
     void sig_user_search(std::shared_ptr<SearchInfo> );
-    void sig_add_auth_friend();
+    void sig_add_auth_friend(std::shared_ptr<AuthInfo>);
     void sig_auth_rsp(std::shared_ptr<AuthRsp>);
     void sig_friend_apply(std::shared_ptr<AddFriendApply>);
 

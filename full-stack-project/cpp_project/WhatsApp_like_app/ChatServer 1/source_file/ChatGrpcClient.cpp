@@ -70,9 +70,40 @@ AddFriendRsp ChatGrpcClient::NotifyAddFriend(std::string server_name, const AddF
     rsp.set_error(ErrorCodes::Success);
     return rsp;
 }
-AuthFriendRsp ChatGrpcClient::NotifyAuthFriend(std::string server_ip, const AuthFriendReq& req) {
+AuthFriendRsp ChatGrpcClient::NotifyAuthFriend(std::string server_name, const AuthFriendReq& req) {
 	AuthFriendRsp rsp;
-	return rsp;
+    int from_uid = req.fromuid();
+    int to_uid = req.touid();
+    rsp.set_fromuid(from_uid);
+    rsp.set_touid(to_uid);
+    rsp.set_error(ErrorCodes::Success);
+
+    auto iter = _pools.find(server_name);
+    if (iter == _pools.end()) {
+        cout << "Error Grpc not find " << server_name;
+        rsp.set_error(ErrorCodes::RPCFailed);
+        return rsp;
+    }
+    auto& pool = iter->second;
+    auto conn = pool->GetConn();
+    if (!conn) {
+        std::cout << "Error: Failed to get connection from pool: " << server_name << std::endl;
+        rsp.set_error(ErrorCodes::RPCFailed); // 修复：连接获取失败处理
+        return rsp;
+    }
+
+    Defer defer([&pool, &conn]() {
+        pool->returnConn(std::move(conn));
+        });
+
+    ClientContext context;
+    Status status = conn->NotifyAuthFriend(&context, req, &rsp);
+    if (!status.ok()) {
+        rsp.set_error(ErrorCodes::RPCFailed);
+        return rsp;
+    }
+    return rsp;
+
 }
 bool ChatGrpcClient::GetBaseInfo(std::string base_key, int uid, std::shared_ptr<UserInfo>& userinfo) {
 	return true;

@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include "listitembase.h"
+#include "userdata.h"
 namespace Ui {
 class ChatUserWid;
 }
@@ -21,14 +22,16 @@ public:
     }
     QString GetUserIcon();
 
-    void SetInfo(QString name, QString head, QString msg);
+    //void SetInfo(QString name, QString head, QString msg);
+    void SetInfo(std::shared_ptr<UserInfo> user);
 
 private:
     Ui::ChatUserWid *ui;
-    QString _name;
-    QString _head;
-    QString _msg;
+    // QString _name;
+    // QString _head;
+    // QString _msg;
     QVariantList m_chatHistory;
+    std::shared_ptr<UserInfo> _user;
 
     // 初始化时或者构造时加两条假数据方便你直接测试：
     void initFakeData(const QString& name) {

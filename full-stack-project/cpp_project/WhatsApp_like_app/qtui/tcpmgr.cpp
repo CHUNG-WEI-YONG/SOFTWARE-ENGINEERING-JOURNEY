@@ -82,7 +82,7 @@ void TcpMgr::initHandlers()
         auto icon = jsonObj["icon"].toString();
         auto sex = jsonObj["sex"].toInt();
         auto desc = jsonObj["desc"].toString();
-        auto user_info = std::make_shared<UserInfo>(uid, name, nick, desc, sex,"");
+        auto user_info = std::make_shared<UserInfo>(uid, name, nick, desc, sex,"","");
         UserMgr::getInstance()->SetUserInfo(user_info);
         UserMgr::getInstance()->SetToken(jsonObj["token"].toString());
 
@@ -178,10 +178,83 @@ void TcpMgr::initHandlers()
         int sex=jsonObj["sex"].toInt();
         QString nick=jsonObj["nick"].toString();
         std::shared_ptr<AddFriendApply> req_user=std::make_shared<AddFriendApply>(uid,name,desc,icon,nick,sex);
+        qDebug() << "🔔 Friend Apply Received from UID:" << req_user->_from_uid << ", Name:" << name;
 
+        // 3. 发射信号通知 UI 层
         emit sig_friend_apply(req_user);
-        qDebug()<<"Notify Add friend req success";
 
+        qDebug() << "✅ Notify Add friend req success";
+
+    });
+
+    _handlers.insert(ReqId::ID_NOTIFY_AUTH_FRIEND_REQ,[this](ReqId id,quint16 len,QByteArray message){
+        Q_UNUSED(len);
+        qDebug()<<"Handle id is "<<static_cast<int>(id)<<" and data is "<<message;
+        QJsonDocument jsonDoc=QJsonDocument::fromJson(message);
+        QJsonObject jsonObj=jsonDoc.object();
+        if(jsonDoc.isNull()){
+            qDebug()<<"Error in Reading Messsage";
+            emit sig_login_failed(ErrorCode::Err_JSON);
+            return;
+        }
+
+
+        if(!jsonObj.contains("error")){
+            ErrorCode error=ErrorCode::Err_JSON;
+            qDebug()<<"Login failed. Error is "<<static_cast<int>(error);
+            emit sig_login_failed(error);
+            return ;
+        }
+        int error=jsonObj["error"].toInt();
+        if(static_cast<ErrorCode>(error)!=ErrorCode::SUCCESS){
+            qDebug()<<"Error message Get";
+            emit sig_login_failed(static_cast<ErrorCode>(error));
+            return;
+        }
+        qDebug()<<"Authen friend successful";
+        auto from_uid = jsonObj["fromuid"].toInt();
+        auto name = jsonObj["name"].toString();
+        auto nick = jsonObj["nick"].toString();
+        auto icon = jsonObj["icon"].toString();
+        auto sex = jsonObj["sex"].toInt();
+        auto authInfo=std::make_shared<AuthInfo>(from_uid,name,nick,icon,sex);
+        emit sig_add_auth_friend(authInfo);
+    });
+
+    _handlers.insert(ReqId::ID_AUTH_FRIEND_REQ,[this](ReqId id,quint16 len,QByteArray message){
+        Q_UNUSED(len);
+        qDebug()<<"Handle id is "<<static_cast<int>(id)<<" and data is "<<message;
+        QJsonDocument jsonDoc=QJsonDocument::fromJson(message);
+        QJsonObject jsonObj=jsonDoc.object();
+        if(jsonDoc.isNull()){
+            qDebug()<<"Error in Reading Messsage";
+            emit sig_login_failed(ErrorCode::Err_JSON);
+            return;
+        }
+
+
+        if(!jsonObj.contains("error")){
+            ErrorCode error=ErrorCode::Err_JSON;
+            qDebug()<<"Login failed. Error is "<<static_cast<int>(error);
+            emit sig_login_failed(error);
+            return ;
+        }
+        int error=jsonObj["error"].toInt();
+        if(static_cast<ErrorCode>(error)!=ErrorCode::SUCCESS){
+            qDebug()<<"Error message Get";
+            emit sig_login_failed(static_cast<ErrorCode>(error));
+            return;
+        }
+        qDebug()<<"Authen friend successful";
+        auto uid = jsonObj["uid"].toInt();
+        auto name = jsonObj["name"].toString();
+        auto nick = jsonObj["nick"].toString();
+        auto icon = jsonObj["icon"].toString();
+        auto sex = jsonObj["sex"].toInt();
+        auto authInfo=std::make_shared<AuthRsp>(uid,name,nick,icon,sex);
+        emit sig_auth_rsp(authInfo);
+
+        qDebug()<<"Auth friend success";
     });
 }
 

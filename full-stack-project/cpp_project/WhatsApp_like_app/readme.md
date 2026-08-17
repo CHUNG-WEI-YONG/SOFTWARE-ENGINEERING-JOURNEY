@@ -87,3 +87,7 @@ Adding the backend logic in chatserver, logicsystem first save the request and r
 at which server, if find , first compair the address to ensure that the request id is same server with the acceot id or not, if same , go for user manager to get the session and send the
 request, else call the chatservice grpc to get connection from server grpc connection pool , then call notify add friend , at the response side , chatserver find whether the user is online
 or not , if online create and send a request toward the frontend  , else just return
+
+## DAY 24
+Fixing bug in why when on different server adding friend , no notifyaddfriend run , the bug is due to miss using of sender_id as receiver_id in receiver server , so the receiver dont get
+any notifications, therefore the bug is fixed, and the authentification ui page for qt is done , and next is add authentication logic.

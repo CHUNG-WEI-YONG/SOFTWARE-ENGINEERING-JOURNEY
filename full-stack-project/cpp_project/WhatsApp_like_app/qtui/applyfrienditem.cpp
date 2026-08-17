@@ -12,6 +12,7 @@ ApplyFriendItem::ApplyFriendItem(QWidget *parent) :
     ui->addBtn->SetState("normal","hover", "press");
     ui->addBtn->hide();
     connect(ui->addBtn, &ClickedButton::clicked,  [this](){
+        qDebug()<<"Apply friend item has apply_info is "<<_apply_info->_uid;
         emit this->sig_auth_friend(_apply_info);
     });
 }

@@ -264,7 +264,7 @@ std::shared_ptr<UserInfo> MysqlDao::GetUser(int uid) {
 		_pool->returnConn(std::move(conn));
 		});
 	try {
-		auto result = conn->_session->sql("SELECT name,pwd,email from user_table where uid=?").bind(uid).execute();
+		auto result = conn->_session->sql("SELECT name,pwd,email ,nick,desc,sex,icon from user_table where uid=?").bind(uid).execute();
 		auto row = result.fetchOne();
 		if (!row) {
 			return nullptr;
@@ -273,6 +273,10 @@ std::shared_ptr<UserInfo> MysqlDao::GetUser(int uid) {
 		user_ptr->name = row[0].get<std::string>();
 		user_ptr->passwd = row[1].get<std::string>();
 		user_ptr->email = row[2].get<std::string>();
+		user_ptr->nick = row[3].get<std::string>();
+		user_ptr->nick = row[3].isNull() ? "" : row[3].get<std::string>();
+		user_ptr->desc = row[4].isNull() ? "" : row[4].get<std::string>();
+		user_ptr->icon = row[6].isNull() ? "" : row[6].get<std::string>();
 		user_ptr->uid = uid;
 		return user_ptr;
 	}
@@ -311,47 +315,91 @@ std::shared_ptr<UserInfo> MysqlDao::GetUser(const std::string& name) {
 	}
 }
 
-//std::shared_ptr<UserInfo> MysqlDao::GetUser(std::string name)
-//{
-//	auto con = pool_->getConnection();
-//	if (con == nullptr) {
-//		return nullptr;
-//	}
-//
-//	Defer defer([this, &con]() {
-//		pool_->returnConnection(std::move(con));
-//		});
-//
-//	try {
-//		// 准备SQL语句
-//		std::unique_ptr<sql::PreparedStatement> pstmt(con->_con->prepareStatement("SELECT * FROM user WHERE name = ?"));
-//		pstmt->setString(1, name); // 将uid替换为你要查询的uid
-//
-//		// 执行查询
-//		std::unique_ptr<sql::ResultSet> res(pstmt->executeQuery());
-//		std::shared_ptr<UserInfo> user_ptr = nullptr;
-//		// 遍历结果集
-//		while (res->next()) {
-//			user_ptr.reset(new UserInfo);
-//			user_ptr->pwd = res->getString("pwd");
-//			user_ptr->email = res->getString("email");
-//			user_ptr->name = res->getString("name");
-//			user_ptr->nick = res->getString("nick");
-//			user_ptr->desc = res->getString("desc");
-//			user_ptr->sex = res->getInt("sex");
-//			user_ptr->uid = res->getInt("uid");
-//			user_ptr->icon = res->getString("icon");
-//			break;
-//		}
-//		return user_ptr;
-//	}
-//	catch (sql::SQLException& e) {
-//		std::cerr << "SQLException: " << e.what();
-//		std::cerr << " (MySQL error code: " << e.getErrorCode();
-//		std::cerr << ", SQLState: " << e.getSQLState() << " )" << std::endl;
-//		return nullptr;
-//	}
-//}
+
+bool MysqlDao::GetApplyList(int touid, std::vector<std::shared_ptr<ApplyInfo>>& applyList, int begin, int limit) {
+	auto con = _pool->getConn();
+	if (con == nullptr) {
+		return false;
+	}
+
+	Defer defer([this, &con]() {
+		_pool->returnConn(std::move(con));
+		});
+
+
+	try {
+		// 准备SQL语句, 根据起始id和限制条数返回列表
+		
+
+		auto result = con->_session->sql("select apply.from_uid, apply.status, user.name, "
+			"user.nick, user.sex from friend_apply as apply join user_table as user on apply.from_uid = user.uid where apply.to_uid = ? "
+			"and apply.id > ? order by apply.id ASC LIMIT ? ").bind(touid,begin,limit).execute();
+
+		// 遍历结果集
+		for (auto row : result) {
+			int from_uid = row[0].get<int>();
+			int status = row[1].get<int>();
+			std::string name = row[2].get<std::string>();
+			std::string nick = row[3].get<std::string>();
+			int sex = row[4].get<int>();
+			auto apply = std::make_shared<ApplyInfo>();
+			apply->_uid = from_uid;
+			apply->_status = status;
+			apply->_name = name;
+			apply->_nick = nick;
+			apply->_sex = sex;
+			applyList.push_back(apply);
+		}
+		return true;
+	}
+	catch (mysqlx::Error& e) {
+		std::cerr << "SQLException: " << e.what();
+		return false;
+	}
+}
+
+bool MysqlDao::AddFriend(int uid, int to_uid, std::string nickname)
+{
+	auto conn = _pool->getConn();
+	if (conn == nullptr) {
+		return false;
+	}
+
+	Defer defer([this, &conn]() {
+		_pool->returnConn(std::move(conn));
+		});
+
+	try {
+		// 1. 开启事务保证原子性
+		conn->_session->startTransaction();
+
+		// 2. 更新好友申请状态 (0: 申请中, 1: 已同意)
+		// 注意：如果是 to_uid 同意 uid 的申请，条件通常为 from_uid = uid AND to_uid = to_uid
+		conn->_session->sql(
+			"UPDATE friend_apply SET status = 1 WHERE from_uid = ? AND to_uid = ?"
+		).bind(uid, to_uid).execute();
+
+		// 3. 插入 A -> B 的好友关系 (去除 WHERE 关键字)
+		conn->_session->sql(
+			"INSERT IGNORE INTO friend (self_id, friend_id, back) VALUES (?, ?, ?)"
+		).bind(uid, to_uid, nickname).execute();
+
+		// 4. 插入 B -> A 的好友关系 (对方对当前用户的备注默认为空 "")
+		conn->_session->sql(
+			"INSERT IGNORE INTO friend (self_id, friend_id, back) VALUES (?, ?, '')"
+		).bind(to_uid, uid).execute();
+
+		// 5. 提交事务
+		conn->_session->commit();
+		return true;
+	}
+	catch (mysqlx::Error& e) {
+		// 发生异常回滚事务
+		conn->_session->rollback();
+		std::cerr << "AddFriend SQLException: " << e.what() << std::endl;
+		return false;
+	}
+}
 
 std::shared_ptr<UserInfo> MysqlDao::GetUserByEmail(const std::string& email) {
 	auto conn = _pool->getConn();

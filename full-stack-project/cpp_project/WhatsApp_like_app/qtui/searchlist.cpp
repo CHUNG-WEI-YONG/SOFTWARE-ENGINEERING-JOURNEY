@@ -6,7 +6,7 @@
 #include "adduseritem.h"
 #include "findsuccessdialog.h"
 #include "findfaileddialog.h"
-
+#include "usermgr.h"
 SearchList::SearchList(QWidget *parent):QListWidget(parent),_find_dlg(nullptr),_search_edit(nullptr),_search_pending(false){
     Q_UNUSED(parent);
     this->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -168,6 +168,15 @@ void SearchList::slot_user_search(std::shared_ptr<SearchInfo> si)
         //is friend
         //add friend
         //todo: search is friend or not
+        int uid=UserMgr::getInstance()->GetUid();
+        if(si->_uid==uid){
+            qDebug()<<"Adding to your own account uid";
+            return;
+        }
+        bool friendget=UserMgr::getInstance()->CheckFriendById(si->_uid);
+        if(friendget){
+            emit sig_jump_chat_item(si);
+        }
         qDebug()<<"Slot user search receive "<<si->_name<<" , "<<si->_uid;
         _find_dlg=std::make_shared<FindSuccessDialog>(this);
         dynamic_pointer_cast<FindSuccessDialog>(_find_dlg)->SetSearchInfo(si);

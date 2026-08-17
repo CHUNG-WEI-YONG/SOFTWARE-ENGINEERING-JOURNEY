@@ -140,6 +140,11 @@ struct UserInfo {
 #define LOCK_COUNT "lockcount"
 
 struct ApplyInfo {
+	ApplyInfo()
+		:_uid(-1), _name(""), _desc(""),
+		_icon(""), _nick(""), _sex(0), _status(0) {
+	}
+
 	ApplyInfo(int uid, std::string name, std::string desc,
 		std::string icon, std::string nick, int sex, int status)
 		:_uid(uid), _name(name), _desc(desc),

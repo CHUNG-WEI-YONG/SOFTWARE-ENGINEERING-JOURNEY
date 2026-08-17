@@ -33,7 +33,7 @@ private:
     void addLabel(QString name);
     std::vector<QString> _tip_data;
     QPoint _tip_cur_point;
-    std::shared_ptr<ApplyInfo> _si;
+    std::shared_ptr<ApplyInfo> _apply_info;
 
 public slots:
     //显示更多label标签

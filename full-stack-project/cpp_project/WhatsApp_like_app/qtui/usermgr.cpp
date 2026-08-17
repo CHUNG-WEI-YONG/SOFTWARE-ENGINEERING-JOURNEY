@@ -7,10 +7,10 @@ UserMgr::~UserMgr()
 
 }
 
-void UserMgr::SetName(QString name)
-{
-    _name = name;
-}
+// void UserMgr::SetName(QString name)
+// {
+//     _name = name;
+// }
 
 void UserMgr::SetUid(int uid)
 {
@@ -24,7 +24,7 @@ void UserMgr::SetToken(QString token)
 
 QString UserMgr::returnName()
 {
-    return _name;
+    return _user_info->_name;
 }
 
 void UserMgr::Setlogo(QString path)
@@ -39,7 +39,7 @@ QString UserMgr::returnLogo()
 
 int UserMgr::GetUid()
 {
-    return _uid;
+    return _user_info->_uid;
 }
 
 bool UserMgr::has_added(int uid)
@@ -58,7 +58,7 @@ void UserMgr::add_apply(std::shared_ptr<ApplyInfo> apply)
 }
 
 QString UserMgr::GetName(){
-    return _name;
+    return _user_info->_name;
 }
 
 void UserMgr::SetUserInfo(std::shared_ptr<UserInfo> user)
@@ -79,5 +79,37 @@ void UserMgr::AppendApplyList(QJsonArray array)
         auto info=std::make_shared<ApplyInfo>(uid,name,desc,icon,nick,sex,status);
         _applications.push_back(info);
 
+    }
+}
+
+bool UserMgr::CheckFriendById(int uid)
+{
+    auto iter=_friend_list.find(uid);
+    if(iter==_friend_list.end()){
+        return false;
+    }
+    return true;
+}
+
+void UserMgr::AddFriend(std::shared_ptr<AuthInfo>auth)
+{
+    FriendInfo new_friend(auth);
+    _friend_list[auth->_uid]=std::make_shared<FriendInfo>(new_friend);
+}
+
+void UserMgr::AddFriend(std::shared_ptr<AuthRsp>auth)
+{
+    FriendInfo new_friend(auth);
+    _friend_list[auth->_uid]=std::make_shared<FriendInfo>(new_friend);
+}
+
+std::shared_ptr<FriendInfo> UserMgr::getFriend(int uid)
+{
+    auto iter=_friend_list.find(uid);
+    if(iter==_friend_list.end()){
+        return nullptr;
+    }
+    else{
+        return iter->second;
     }
 }

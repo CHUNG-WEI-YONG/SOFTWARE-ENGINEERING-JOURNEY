@@ -132,6 +132,9 @@ ChatDialog::ChatDialog(QWidget *parent)
     ui->search_user_list->SetSearchEdit(ui->search_edit);
     connect(TcpMgr::getInstance().get(),&TcpMgr::sig_friend_apply,this,&ChatDialog::slot_friend_apply);
 
+    connect(TcpMgr::getInstance().get(),&TcpMgr::sig_auth_rsp,this,&ChatDialog::slot_auth_rsp);
+    connect(TcpMgr::getInstance().get(),&TcpMgr::sig_add_auth_friend,this,&ChatDialog::slot_add_auth_friend);
+
 }
 
 ChatDialog::~ChatDialog()
@@ -165,7 +168,8 @@ void ChatDialog::AddUserlist()
 
         // 🚀 直接喂入冒号路径，左侧 ItemWidget 瞬间精准找到图片，不再裂开！
         QString baseHeadPath = heads[head_i];
-        chat_user_wid->SetInfo(names[name_i], baseHeadPath, strs[str_i]);
+        auto user_info=std::make_shared<UserInfo>(i,names[name_i],"","",0,heads[head_i],strs[str_i]);
+        chat_user_wid->SetInfo(user_info);
 
         // 💡 盲包也存冒号路径，保持实体属性的 100% 纯正统一
         QListWidgetItem *item = new QListWidgetItem;
@@ -326,6 +330,54 @@ void ChatDialog::slot_friend_apply(std::shared_ptr<AddFriendApply> add)
     ui->con_user_list->ShowRedPoint();
     ui->friend_apply_page->AddNewFriendApply(add);
 
+}
+
+void ChatDialog::slot_add_auth_friend(std::shared_ptr<AuthInfo>auth_info)
+{
+    bool isFriend = UserMgr::getInstance()->CheckFriendById(auth_info->_uid);
+    if(isFriend){
+        return;
+    }
+    // 在 groupitem 之后插入新项
+    int randomValue = QRandomGenerator::global()->bounded(100); // 生成0到99之间的随机整数
+    int str_i = randomValue%strs.size();
+    int head_i = randomValue%heads.size();
+    int name_i=randomValue%names.size();
+
+    auto *chat_user_wid = new ChatUserWid();
+    auto user_info=std::make_shared<UserInfo>(auth_info);
+    chat_user_wid->SetInfo(user_info);
+    QListWidgetItem *item = new QListWidgetItem;
+    //qDebug()<<"chat_user_wid sizeHint is " << chat_user_wid->sizeHint();
+    item->setSizeHint(chat_user_wid->sizeHint());
+
+    ui->chat_user_list->insertItem(0,item);
+    ui->chat_user_list->setItemWidget(item,chat_user_wid);
+    _chat_items_added.insert(auth_info->_uid,item);
+}
+
+void ChatDialog::slot_auth_rsp(std::shared_ptr<AuthRsp>auth_rsp)
+{
+    bool isFriend = UserMgr::getInstance()->CheckFriendById(auth_rsp->_uid);
+    if(isFriend){
+        return;
+    }
+    // 在 groupitem 之后插入新项
+    int randomValue = QRandomGenerator::global()->bounded(100); // 生成0到99之间的随机整数
+    int str_i = randomValue%strs.size();
+    int head_i = randomValue%heads.size();
+    int name_i=randomValue%names.size();
+
+    auto *chat_user_wid = new ChatUserWid();
+    auto user_info=std::make_shared<UserInfo>(auth_rsp);
+    chat_user_wid->SetInfo(user_info);
+    QListWidgetItem *item = new QListWidgetItem;
+    //qDebug()<<"chat_user_wid sizeHint is " << chat_user_wid->sizeHint();
+    item->setSizeHint(chat_user_wid->sizeHint());
+
+    ui->chat_user_list->insertItem(0,item);
+    ui->chat_user_list->setItemWidget(item,chat_user_wid);
+    _chat_items_added.insert(auth_rsp->_uid,item);
 }
 
 void ChatDialog::slot_side_contact()
