@@ -12,6 +12,7 @@
 #include "findsuccessdialog.h"
 class SearchList:public QListWidget
 {
+    Q_OBJECT
 public:
     SearchList(QWidget *parent=nullptr);
     void CloseSearch();

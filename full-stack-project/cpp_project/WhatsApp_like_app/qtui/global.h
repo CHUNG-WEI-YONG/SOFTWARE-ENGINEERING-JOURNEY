@@ -123,6 +123,8 @@ const QString add_prefix = "Add Tags ";
 
 const int  tip_offset = 5;
 
+const int MAX_COUNT_PER_PAGE=12;
+
 
 const std::vector<QString>  strs ={"hello world !",
                                    "nice to meet u",

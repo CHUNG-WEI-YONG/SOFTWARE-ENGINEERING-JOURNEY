@@ -95,6 +95,16 @@ void ContactUserList::addContectUserList()
     this->setItemWidget(_group_item,groupcon);
     _group_item->setFlags(_group_item->flags() & ~Qt::ItemIsSelectable);
 
+    auto con_list=UserMgr::getInstance()->GetConListPerPage();
+    for(auto& con:con_list){
+        ConUserItem* con_user=new ConUserItem();
+        con_user->setInfo(con->_uid,con->_name,con->_icon);
+        QListWidgetItem *item=new QListWidgetItem();
+        item->setSizeHint(con_user->sizeHint());
+        this->addItem(item);
+        this->setItemWidget(item,con_user);
+    }
+
     for(int i = 0; i < 13; i++){
         int randomValue = QRandomGenerator::global()->bounded(100); // 生成0到99之间的随机整数
         int str_i = randomValue%strs.size();
@@ -144,9 +154,13 @@ void ContactUserList::slot_item_click(QListWidgetItem *item)
 void ContactUserList::slot_add_auth_friend(std::shared_ptr<AuthInfo> auth)
 {
     qDebug()<<"Slot add auth friend run";
-    bool exist=UserMgr::getInstance()->CheckFriendById(auth->_uid);
-    if(exist){
-        return;
+
+    for (int i = 0; i < this->count(); ++i) {
+        auto *item = this->item(i);
+        auto *widget = qobject_cast<ConUserItem*>(this->itemWidget(item));
+        if (widget && widget->GetInfo() && widget->GetInfo()->_uid == auth->_uid) {
+            return;
+        }
     }
     int randomValue = QRandomGenerator::global()->bounded(100); // 生成0到99之间的随机整数
     int str_i = randomValue%strs.size();

@@ -126,6 +126,23 @@ void LogicSystem::LoginHandler(shared_ptr<CSession> session, const short& msg_id
 		}
 	}
 
+
+	std::vector<std::shared_ptr<UserInfo>> friend_list;
+	bool fsuccess = GetFriendList(uid, friend_list);
+	if (fsuccess) {
+		for (auto f : friend_list) {
+			Json::Value obj;
+			obj["name"] = f->name;
+			obj["uid"] = f->uid;
+			obj["icon"] = f->icon;
+			obj["desc"] = f->desc;
+			obj["sex"] = f->sex;
+			obj["nick"] = f->nick;
+			rtvalue["friend_list"].append(obj);
+		}
+	}
+
+	//Log in server logic
 	auto config = ConfigMgr::Inst();
 	auto server_name = config["SelfServer"]["Name"];
 	std::string c = "";
@@ -317,7 +334,7 @@ void LogicSystem::AddFriendApply(shared_ptr<CSession> session, const short& msg_
 	if (server_str == user_addr) {
 		auto session = UserMgr::GetInstance()->GetSession(to_uid);
 		if (session) {
-			Json::Value notify;j
+			Json::Value notify;
 			notify["error"] = ErrorCodes::Success;
 			notify["applyuid"] = uid;
 			notify["name"] = applyname;
@@ -354,7 +371,7 @@ void LogicSystem::AuthFriendApply(shared_ptr<CSession> session, const short& msg
 	reader.parse(msg_data, value);
 	auto uid = value["fromuid"].asInt();
 	auto to_uid = value["touid"].asInt();
-	auto nick = value["nick"].asString();
+	auto nick = value["nickname"].asString();
 	cout << "Auth friend receive from user id " << uid << " to user id " << to_uid << " which nickname is " << nick;
 
 	auto user_info = std::make_shared<UserInfo>();
@@ -373,7 +390,7 @@ void LogicSystem::AuthFriendApply(shared_ptr<CSession> session, const short& msg
 		rt["desc"] = user_info->desc;
 		rt["sex"] = user_info->sex;
 		rt["icon"] = user_info->icon;
-		rt["nick"] = user_info->nick;
+		rt["nickname"] = user_info->nick;
 		rt["uid"] = to_uid;
 	}
 	rt["error"] = ErrorCodes::Success;
@@ -409,7 +426,7 @@ void LogicSystem::AuthFriendApply(shared_ptr<CSession> session, const short& msg
 			bool findsuccess = GetBaseInfo(base_key, uid, sender_info);
 			if (findsuccess) {
 				value["name"] = sender_info->name;
-				value["nick"] = sender_info->nick;
+				value["nickname"] = sender_info->nick;
 				value["icon"] = sender_info->icon;
 				value["sex"] = sender_info->sex;
 			}
@@ -573,4 +590,8 @@ void LogicSystem::SearchUserByName(const std::string& name, Json::Value& rtvalue
 	rtvalue["desc"] = user_info->desc;
 	rtvalue["sex"] = user_info->sex;
 	rtvalue["icon"] = user_info->icon;
+}
+
+bool LogicSystem::GetFriendList(int uid, std::vector<std::shared_ptr<UserInfo>>& friend_list) {
+	return MysqlMgr::GetInstance()->GetFriendList(uid, friend_list);
 }

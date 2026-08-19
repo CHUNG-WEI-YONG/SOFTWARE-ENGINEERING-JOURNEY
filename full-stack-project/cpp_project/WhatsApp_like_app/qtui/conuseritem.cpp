@@ -59,6 +59,11 @@ void ConUserItem::showRedPoint(bool bshow)
     }
 }
 
+std::shared_ptr<UserInfo> ConUserItem::GetInfo()
+{
+    return _info;
+}
+
 
 QSize ConUserItem::sizeHint() const
 {

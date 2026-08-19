@@ -32,6 +32,9 @@ private:
     bool _added;
 signals:
     void sig_auth_friend(std::shared_ptr<ApplyInfo> apply_info);
+
+public slots:
+    void slot_apply_sure();
 };
 
 #endif // APPLYFRIENDITEM_H

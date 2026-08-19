@@ -5,6 +5,7 @@
 #include <json/reader.h>
 #include "RedisMjr.h"
 #include "CSession.h"
+#include "MySqlMgr.h"
 
 
 ChatServiceImpl::ChatServiceImpl() {
@@ -73,5 +74,28 @@ Status ChatServiceImpl::NotifyTextChatMsg(ServerContext* context, const TextChat
 }
 
 bool ChatServiceImpl::GetBaseInfo(std::string base_key, int uid, std::shared_ptr<UserInfo> userinfo) {
+	std::string info_str = "";
+	bool success=RedisMjr::GetInstance()->Get(base_key, info_str);
+	if (success) {
+		Json::Reader reader;
+		Json::Value value;
+		reader.parse(info_str,value);
+		userinfo->name = value["name"].asString();
+		userinfo->uid = value["uid"].asInt();
+		userinfo->desc = value["desc"].asString();
+		userinfo->icon = value["icon"].asString();
+		userinfo->sex = value["sex"].asInt();
+		userinfo->nick = value["nick"].asString();
+		std::cout << "user login id is " << userinfo->uid << " , name is " << userinfo->name << " , user desc is " << userinfo->desc;
+
+	}
+	else {
+		std::shared_ptr<UserInfo> user;
+		user=MysqlMgr::GetInstance()->GetUser(uid);
+		if (user == nullptr) {
+			return false;
+		}
+		userinfo = user;
+	}
 	return true;
 }

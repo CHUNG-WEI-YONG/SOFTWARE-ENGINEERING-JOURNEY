@@ -429,3 +429,45 @@ std::shared_ptr<UserInfo> MysqlDao::GetUserByEmail(const std::string& email) {
 	}
 	
 }
+
+bool MysqlDao::GetFriendList(int uid, std::vector<std::shared_ptr<UserInfo>>& friend_list)
+{
+	auto conn = _pool->getConn();
+	if (conn == nullptr) {
+		return false;
+	}
+	Defer defer([this, &conn]() {
+		_pool->returnConn(std::move(conn));
+		});
+
+	try {
+		// 一次性关联查询好友信息与备注
+		auto result = conn->_session->sql(
+			"SELECT friend.back, user.name, user.uid, user.`desc`, user.sex, user.icon "
+			"FROM user_table AS user "
+			"JOIN friend ON friend.friend_id = user.uid "
+			"WHERE friend.self_id = ?"
+		).bind(uid).execute();
+
+		for (auto row : result) {
+			auto f = std::make_shared<UserInfo>();
+			f->nick = row[0].isNull() ? "" : row[0].get<std::string>();
+			f->name = row[1].isNull() ? "" : row[1].get<std::string>();
+			f->uid = row[2].isNull() ? 0 : row[2].get<int>();
+			f->desc = row[3].isNull() ? "" : row[3].get<std::string>();
+			f->sex = row[4].isNull() ? 0 : row[4].get<int>();
+			f->icon = row[5].isNull() ? "" : row[5].get<std::string>();
+
+			if (f->nick.empty()) {
+				f->nick = f->name; // 无备注时默认展示用户名
+			}
+			friend_list.push_back(f);
+		}
+		return true;
+	}
+	catch (const mysqlx::Error& e) {
+		std::cerr << "Sql error in GetFriendList: " << e.what() << std::endl;
+		return false;
+	}
+}
+

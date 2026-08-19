@@ -14,6 +14,7 @@ public:
     ChatUserList(QWidget *parent=nullptr);
 private:
     bool eventFilter(QObject *watched,QEvent *event)override;
+    bool _load_pending;
 
 signals:
     void sig_loading_user();

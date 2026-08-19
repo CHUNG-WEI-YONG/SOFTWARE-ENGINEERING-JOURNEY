@@ -50,5 +50,6 @@ public:
 	std::shared_ptr<UserInfo> GetUser(int uid);
 	std::shared_ptr<UserInfo> GetUser(const std::string& name);
 	std::shared_ptr<UserInfo> GetUserByEmail(const std::string& email);
+	bool GetFriendList(int uid, std::vector<std::shared_ptr<UserInfo>>& friend_list);
 
 };

@@ -15,6 +15,7 @@ ApplyFriendItem::ApplyFriendItem(QWidget *parent) :
         qDebug()<<"Apply friend item has apply_info is "<<_apply_info->_uid;
         emit this->sig_auth_friend(_apply_info);
     });
+    //connect
 }
 
 ApplyFriendItem::~ApplyFriendItem()
@@ -61,4 +62,9 @@ void ApplyFriendItem::paintEvent(QPaintEvent *event)
 
     // 必须要显式调用基类的绘制，确保继承链完整
     ListItemBase::paintEvent(event);
+}
+
+void ApplyFriendItem::slot_apply_sure()
+{
+    ShowAddBtn(false);
 }

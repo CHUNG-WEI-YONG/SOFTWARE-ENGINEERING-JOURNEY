@@ -55,6 +55,9 @@ public slots:
     //处理取消回调
     void SlotApplyCancel();
 
+signals:
+    void sig_apply_sure();
+
 };
 
 #endif // AUTHFRIEND_H

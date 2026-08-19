@@ -91,3 +91,12 @@ or not , if online create and send a request toward the frontend  , else just re
 ## DAY 24
 Fixing bug in why when on different server adding friend , no notifyaddfriend run , the bug is due to miss using of sender_id as receiver_id in receiver server , so the receiver dont get
 any notifications, therefore the bug is fixed, and the authentification ui page for qt is done , and next is add authentication logic.
+
+## DAY 25
+Adding auth friend request handle in chatserver ,when the accept side of request authen the request, it will first find the basic information for the request user and give to the authen user
+for qt to develop its name and logo , then it will use grpc to connect with the req server to notify the request side , then it will send the information of authen user to the requested
+side for the qt to develop and notify
+
+## DAY 26
+Adding login logic when the qt login , chatserver get the apply friend list and friend list from sql and then return to the qt, qt then process and add item shown ui at the contact user 
+list and chat user list to allow the ui efficiency

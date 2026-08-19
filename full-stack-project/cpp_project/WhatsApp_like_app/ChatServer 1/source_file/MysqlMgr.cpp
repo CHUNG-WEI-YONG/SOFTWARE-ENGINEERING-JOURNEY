@@ -44,6 +44,11 @@ bool MysqlMgr::GetApplyList(int to_uid, std::vector<std::shared_ptr<ApplyInfo>>&
 	return _dao.GetApplyList(to_uid,list,begin,limit);
 }
 
+bool MysqlMgr::GetFriendList(int uid, std::vector<std::shared_ptr<UserInfo>>& friend_list)
+{
+	return _dao.GetFriendList(uid,friend_list);
+}
+
 std::shared_ptr<UserInfo> MysqlMgr::GetUserByEmail(const std::string& email)
 {
 	return _dao.GetUserByEmail(email);

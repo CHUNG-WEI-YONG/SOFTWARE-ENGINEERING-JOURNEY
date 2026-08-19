@@ -16,6 +16,7 @@ public:
 	std::shared_ptr<UserInfo> GetUserByEmail(const std::string& email);
 	std::shared_ptr<UserInfo> GetUser(const std::string& name);
 	bool GetApplyList(int  to_uid, std::vector < std::shared_ptr<ApplyInfo>>& list, int begin, int limit = 10);
+	bool GetFriendList(int uid, std::vector<std::shared_ptr<UserInfo>>& friend_list);
 
 private:
 	MysqlMgr()=default;

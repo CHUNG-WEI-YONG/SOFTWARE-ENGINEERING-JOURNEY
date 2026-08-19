@@ -20,10 +20,14 @@ public:
     ~ChatDialog();
     void AddUserlist();
     void ClearState(StateWidget *lb);
+    void SetSelectedChatPage(int uid=0);
+
 
 private:
     void ShowSearch(bool b_search=false);
     void AddLBGroup(StateWidget *lb);
+    void LoadMoreChatItem();
+    void LoadMoreContactUser();
     ChatUIMode _mode;
     ChatUIMode _state;
     bool _b_loading;
@@ -31,6 +35,7 @@ private:
     QList<StateWidget*> _lb_list;
     QAction* _clear_action = nullptr;
     QMap<int,QListWidgetItem*> _chat_items_added;
+    int _curr_chat_uid;
 
 protected:
     bool eventFilter(QObject *watched,QEvent *event)override;
@@ -44,6 +49,9 @@ public slots:
     void slot_friend_apply(std::shared_ptr<AddFriendApply>);
     void slot_auth_rsp(std::shared_ptr<AuthRsp>);
     void slot_add_auth_friend(std::shared_ptr<AuthInfo>);
+    void slot_jump_chat_item(std::shared_ptr<SearchInfo> si);
+    void SetSelectedChatItem(int uid);
+    void slot_loading_contact_user();
 };
 
 

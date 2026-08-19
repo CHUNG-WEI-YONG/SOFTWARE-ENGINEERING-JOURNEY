@@ -54,7 +54,6 @@ void LogicSystem::RegisterCallBacks() {
 	_fun_callbacks[ID_AUTH_FRIEND_REQ] = [this](shared_ptr<CSession> session, const short& msg_id, const string& msg_data) {
 		this->AuthFriendApply(session, msg_id, msg_data);
 		};
-
 }
 
 void LogicSystem::LoginHandler(shared_ptr<CSession> session, const short& msg_id, const string& msg_data) {
@@ -127,6 +126,23 @@ void LogicSystem::LoginHandler(shared_ptr<CSession> session, const short& msg_id
 		}
 	}
 
+
+	std::vector<std::shared_ptr<UserInfo>> friend_list;
+	bool fsuccess = GetFriendList(uid, friend_list);
+	if (fsuccess) {
+		for (auto f : friend_list) {
+			Json::Value obj;
+			obj["name"] = f->name;
+			obj["uid"] = f->uid;
+			obj["icon"] = f->icon;
+			obj["desc"] = f->desc;
+			obj["sex"] = f->sex;
+			obj["nick"] = f->nick;
+			rtvalue["friend_list"].append(obj);
+		}
+	}
+
+	//Log in server logic
 	auto config = ConfigMgr::Inst();
 	auto server_name = config["SelfServer"]["Name"];
 	std::string c = "";
@@ -311,6 +327,10 @@ void LogicSystem::AddFriendApply(shared_ptr<CSession> session, const short& msg_
 	}
 
 	std::string server_str=ConfigMgr::Inst()["SelfServer"]["Name"];
+	std::string base_key = USER_BASE_INFO + std::to_string(to_uid);
+	auto to_userInfo = std::make_shared<UserInfo>();
+	bool bsuccess = GetBaseInfo(base_key, to_uid, to_userInfo);
+
 	if (server_str == user_addr) {
 		auto session = UserMgr::GetInstance()->GetSession(to_uid);
 		if (session) {
@@ -318,16 +338,18 @@ void LogicSystem::AddFriendApply(shared_ptr<CSession> session, const short& msg_
 			notify["error"] = ErrorCodes::Success;
 			notify["applyuid"] = uid;
 			notify["name"] = applyname;
-			notify["desc"] = "";
+			if (bsuccess) {
+				notify["desc"] = to_userInfo->desc;
+				notify["icon"] = to_userInfo->icon;
+				notify["sex"] = to_userInfo->sex;
+				notify["nick"] = to_userInfo->nick;
+			}
 			std::string reply_str = notify.toStyledString();
 			session->Send(reply_str,ID_NOTIFY_ADD_FRIEND_REQ);
 		}
 		return;
 	}
 
-	std::string base_key = USER_BASE_INFO + std::to_string(to_uid);
-	auto to_userInfo = std::make_shared<UserInfo>();
-	bool bsuccess = GetBaseInfo(base_key, to_uid, to_userInfo);
 	AddFriendReq req;
 	req.set_name(applyname);
 	req.set_applyuid(uid);
@@ -568,4 +590,8 @@ void LogicSystem::SearchUserByName(const std::string& name, Json::Value& rtvalue
 	rtvalue["desc"] = user_info->desc;
 	rtvalue["sex"] = user_info->sex;
 	rtvalue["icon"] = user_info->icon;
+}
+
+bool LogicSystem::GetFriendList(int uid, std::vector<std::shared_ptr<UserInfo>>& friend_list) {
+	return MysqlMgr::GetInstance()->GetFriendList(uid, friend_list);
 }

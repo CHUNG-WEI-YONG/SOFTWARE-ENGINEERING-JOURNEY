@@ -8,14 +8,14 @@ this->setCursor(Qt::PointingHandCursor);
 void ClickedLabel::enterEvent(QEnterEvent *e)
 {
     if(_curstate==ClickLbState::Normal){
-        qDebug()<<"User hover , change to hover";
+        //qDebug()<<"User hover , change to hover";
         setProperty("state",_normal_hover);
         repolish(this);
         update();
 
     }
     else if(_curstate==ClickLbState::Selected){
-        qDebug()<<"Enter m change to selected_hover";
+        //qDebug()<<"Enter m change to selected_hover";
         setProperty("state",_selected_hover);
         repolish(this);
         update();
@@ -26,14 +26,14 @@ void ClickedLabel::enterEvent(QEnterEvent *e)
 void ClickedLabel::leaveEvent(QEvent *event)
 {
     if(_curstate==ClickLbState::Normal){
-        qDebug()<<"leave  , change to normal";
+        //qDebug()<<"leave  , change to normal";
         setProperty("state",_normal);
         repolish(this);
         update();
 
     }
     else if(_curstate==ClickLbState::Selected){
-        qDebug()<<"Enter , change to selected";
+        //qDebug()<<"Enter , change to selected";
         setProperty("state",_selected);
         repolish(this);
         update();
@@ -90,13 +90,13 @@ void ClickedLabel::mouseReleaseEvent(QMouseEvent *e)
             if(_curstate == ClickLbState::Normal){
                 // 彻底蜕变为选中态
                 _curstate = ClickLbState::Selected;
-                qDebug() << "🎯 [状态机] 鼠标释放：从 Normal 正式蜕变为 Selected_Hover";
+                //qDebug() << "🎯 [状态机] 鼠标释放：从 Normal 正式蜕变为 Selected_Hover";
                 setProperty("state", _selected_hover);
             }
             else{
                 // 回归普通态
                 _curstate = ClickLbState::Normal;
-                qDebug() << "🎯 [状态机] 鼠标释放：从 Selected 正式翻转回 Normal_Hover";
+                //qDebug() << "🎯 [状态机] 鼠标释放：从 Selected 正式翻转回 Normal_Hover";
                 setProperty("state", _normal_hover);
             }
             repolish(this);

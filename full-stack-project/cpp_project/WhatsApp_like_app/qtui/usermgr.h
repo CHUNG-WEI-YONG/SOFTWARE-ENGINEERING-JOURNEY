@@ -26,14 +26,24 @@ public:
     void AddFriend(std::shared_ptr<AuthInfo>);
     void AddFriend(std::shared_ptr<AuthRsp>);
     std::shared_ptr<FriendInfo> getFriend(int uid);
+    void AppendFriendList(QJsonArray array);
+    std::vector<std::shared_ptr<FriendInfo>> GetChatListPerPage();
+    bool isLoadChatFin();
+    void UpdateChatLoadedCount();
+    std::vector<std::shared_ptr<FriendInfo>>GetConListPerPage();
+    bool isLoadConFin();
+    void UpdateConLoadedCount();
 
 private:
     QString _token;
     QString _logoPath;
     std::vector<std::shared_ptr<ApplyInfo>> _applications;
     std::shared_ptr<UserInfo> _user_info;
-    std::map<int,std::shared_ptr<FriendInfo>> _friend_list;
+    std::map<int,std::shared_ptr<FriendInfo>> _friend_map;
+    std::vector<std::shared_ptr<FriendInfo>>_friend_list;
     int _uid;
+    int _chat_loaded;
+    int _contact_loaded;
 
 
 

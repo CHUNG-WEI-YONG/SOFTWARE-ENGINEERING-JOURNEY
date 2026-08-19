@@ -44,12 +44,14 @@ void ApplyFriendPage::AddNewFriendApply(std::shared_ptr<AddFriendApply> apply)
     apply_item->ShowAddBtn(true);
     _unauth_items[apply->_from_uid] = apply_item;
     //收到审核好友信号
-    connect(apply_item, &ApplyFriendItem::sig_auth_friend,this,[this](std::shared_ptr<ApplyInfo> apply_info) {
+    connect(apply_item, &ApplyFriendItem::sig_auth_friend,this,[this, apply_item](std::shared_ptr<ApplyInfo> apply_info) {
         auto* authFriend = new AuthFriend(this);
         authFriend->setModal(true);
         authFriend->SetApplyInfo(apply_info);
         authFriend->show();
+        connect(authFriend,&AuthFriend::sig_apply_sure,apply_item,&ApplyFriendItem::slot_apply_sure);
     });
+
 }
 
 void ApplyFriendPage::paintEvent(QPaintEvent *event)

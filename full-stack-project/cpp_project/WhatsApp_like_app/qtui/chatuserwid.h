@@ -24,6 +24,7 @@ public:
 
     //void SetInfo(QString name, QString head, QString msg);
     void SetInfo(std::shared_ptr<UserInfo> user);
+    std::shared_ptr<UserInfo> GetUserInfo();
 
 private:
     Ui::ChatUserWid *ui;

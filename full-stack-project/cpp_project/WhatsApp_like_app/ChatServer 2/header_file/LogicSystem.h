@@ -57,6 +57,7 @@ private:
 	void SearchUserByName(const std::string& uid, Json::Value& rt);
 	bool isPureDigit(const std::string& word);
 	bool GetFriendApply(int to_uid, std::vector<std::shared_ptr<ApplyInfo>>& list);
+	bool GetFriendList(int uid, std::vector<std::shared_ptr<UserInfo>>& friend_list);
 
 	std::thread _worker_thread;
 	std::queue<shared_ptr<LogicNode>> _msg_que;

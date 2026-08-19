@@ -90,6 +90,9 @@ void TcpMgr::initHandlers()
             UserMgr::getInstance()->AppendApplyList(jsonObj["applylist"].toArray());
         }
 
+        if(jsonObj.contains("friend_list")){
+            UserMgr::getInstance()->AppendFriendList(jsonObj["friend_list"].toArray());
+        }
 
         emit sig_switch_chat_dlg();
     });
@@ -179,7 +182,7 @@ void TcpMgr::initHandlers()
         QString nick=jsonObj["nick"].toString();
         std::shared_ptr<AddFriendApply> req_user=std::make_shared<AddFriendApply>(uid,name,desc,icon,nick,sex);
         qDebug() << "🔔 Friend Apply Received from UID:" << req_user->_from_uid << ", Name:" << name;
-
+        //UserMgr::getInstance()->AddFriend(req_user);
         // 3. 发射信号通知 UI 层
         emit sig_friend_apply(req_user);
 
@@ -218,10 +221,11 @@ void TcpMgr::initHandlers()
         auto icon = jsonObj["icon"].toString();
         auto sex = jsonObj["sex"].toInt();
         auto authInfo=std::make_shared<AuthInfo>(from_uid,name,nick,icon,sex);
+        UserMgr::getInstance()->AddFriend(authInfo);
         emit sig_add_auth_friend(authInfo);
     });
 
-    _handlers.insert(ReqId::ID_AUTH_FRIEND_REQ,[this](ReqId id,quint16 len,QByteArray message){
+    _handlers.insert(ReqId::ID_AUTH_FRIEND_RSP,[this](ReqId id,quint16 len,QByteArray message){
         Q_UNUSED(len);
         qDebug()<<"Handle id is "<<static_cast<int>(id)<<" and data is "<<message;
         QJsonDocument jsonDoc=QJsonDocument::fromJson(message);
@@ -252,6 +256,7 @@ void TcpMgr::initHandlers()
         auto icon = jsonObj["icon"].toString();
         auto sex = jsonObj["sex"].toInt();
         auto authInfo=std::make_shared<AuthRsp>(uid,name,nick,icon,sex);
+        UserMgr::getInstance()->AddFriend(authInfo);
         emit sig_auth_rsp(authInfo);
 
         qDebug()<<"Auth friend success";

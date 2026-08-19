@@ -99,6 +99,8 @@ AuthFriendRsp ChatGrpcClient::NotifyAuthFriend(std::string server_name, const Au
     ClientContext context;
     Status status = conn->NotifyAuthFriend(&context, req, &rsp);
     if (!status.ok()) {
+        std::cerr << "gRPC NotifyAuthFriend to " << server_name
+            << " failed: " << status.error_message() << std::endl;
         rsp.set_error(ErrorCodes::RPCFailed);
         return rsp;
     }

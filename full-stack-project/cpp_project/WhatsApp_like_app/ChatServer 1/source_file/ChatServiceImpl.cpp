@@ -41,7 +41,7 @@ Status ChatServiceImpl::NotifyAuthFriend(ServerContext* context, const AuthFrien
 	auto from_uid = req->fromuid();
 	auto to_uid = req->touid();
 	auto session = UserMgr::GetInstance()->GetSession(to_uid);
-	Defer defer([this, &rsp, from_uid,to_uid] {
+	Defer defer([this, rsp, from_uid,to_uid] {
 		rsp->set_error(ErrorCodes::Success);
 		rsp->set_fromuid(from_uid);
 		rsp->set_touid(to_uid);
@@ -56,6 +56,9 @@ Status ChatServiceImpl::NotifyAuthFriend(ServerContext* context, const AuthFrien
 	if (!bsuccess) {
 		rt["error"] = ErrorCodes::UidInvalid;
 	}
+	else {
+		rt["error"] = ErrorCodes::Success;
+	}
 	rt["fromuid"] = from_uid;
 	rt["to_uid"] = to_uid;
 	rt["name"] = user_info->name;
@@ -66,6 +69,7 @@ Status ChatServiceImpl::NotifyAuthFriend(ServerContext* context, const AuthFrien
 
 	auto rt_str = rt.toStyledString();
 	session->Send(rt_str, ID_NOTIFY_AUTH_FRIEND_REQ);
+	std::cout << "Successfully sent ID_NOTIFY_AUTH_FRIEND_REQ to user " << to_uid << std::endl;
 	return Status::OK;
 
 }

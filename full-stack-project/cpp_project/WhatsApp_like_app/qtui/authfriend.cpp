@@ -432,10 +432,15 @@ void AuthFriend::SlotApplySure()
                             ui->nick_edit->placeholderText() :
                             ui->nick_edit->text();
     jsonObj["nickname"] = back_name;
+    if (!_apply_info) {
+        qWarning() << "AuthFriend::_apply_info is null!";
+        return;
+    }
 
     QJsonDocument doc(jsonObj);
     QByteArray jsonData = doc.toJson(QJsonDocument::Compact);
     qDebug()<<"Auth friend sending "<<_apply_info->_uid;
+    emit sig_apply_sure();
     emit TcpMgr::getInstance()->sig_send_data(ReqId::ID_AUTH_FRIEND_REQ, jsonData);
     this->hide();
     deleteLater();
