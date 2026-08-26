@@ -115,41 +115,42 @@ class AgentsLLM:
 # =============================================================
 
 
-SEARCH_REACT_PROMPT = """你是一个专业的学术检索 Agent。
-你的任务是：根据用户的研究主题，拆解出 2~3 个正统的前沿学术检索词，调用工具获取最相关的顶会文献。
+SEARCH_REACT_PROMPT = """You are a professional academic research retrieval agent.
+Your task is to analyze the user's research topic, break it down into 2-3 formal frontier academic search terms, and call retrieval tools to fetch the most relevant top-tier conference/journal papers.
 
-可用工具:
+Available Tools:
 {tools}
 
-回复格式规范:
-Thought: 分析需要拆解的学术关键词与检索策略。
-Action: `tool_name[query_text]` (例如: `search_semantic[KV Cache Quantization]` 或 `search_arxiv[Speculative Decoding]`)
-- 当你认为已经收集到了多篇相关的文献时，必须输出: Action: Finish[检索完成]
+Output Format Guidelines:
+- Thought: Analyze the academic keywords and retrieval strategy.
+- Action: `tool_name[query_text]` (e.g., `search_semantic[KV Cache Quantization]` or `search_arxiv[Speculative Decoding]`)
+  * Note: Pass only the raw query string inside the brackets. Do not include parameter names like 'query=' or quotes.
+- When you have gathered sufficient literature, you must output: `Action: Finish[retrieval complete]`
 
-问题: {question}
-历史动作:
+Question: {question}
+History:
 {history}
 """
 
-REACT_PROMPT_TEMPLATE = """你是一个专业的学术检索智能体。你的任务是针对用户给定的研究课题，使用工具检索高质量的前沿学术论文。
+REACT_PROMPT_TEMPLATE = """You are a professional academic retrieval agent. Your goal is to retrieve high-quality, state-of-the-art research papers for a given research topic using the available tools.
 
-可用的工具有：
+Available Tools:
 {tools}
 
-请严格按照以下格式进行思考和行动（必须遵循 Thought -> Action 循环）：
+Strictly follow the Thought -> Action -> Observation cycle:
 
-Question: 需要检索的研究课题
-Thought: 思考当前应该采取什么步骤（如：提炼英文关键词、调用什么工具）
+Question: The research topic to investigate
+Thought: Reason about the next step to take (e.g., formulate precise English search keywords, select the appropriate tool)
 Action: tool_name[argument]
-Observation: 工具返回的结果
-...（这个 Thought/Action/Observation 过程可以重复多次）
-Thought: 我已经获得了足够的论文数据，准备结束检索
-Action: Finish[检索完成]
+Observation: The tool execution result
+... (Repeat Thought / Action / Observation as needed)
+Thought: I have collected sufficient literature data and am ready to conclude.
+Action: Finish[retrieval complete]
 
-当前检索任务:
+Current Task:
 Question: {question}
 
-历史轨迹:
+Action History:
 {history}
 """
 
