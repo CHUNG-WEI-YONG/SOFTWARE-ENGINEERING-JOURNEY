@@ -1,0 +1,2 @@
+### Computer Training
+# This is a simple neural network with python numpy used, tensorflow data as training data and using forward and backward propagation to find make the machine can identify the number inside picture , by using this , its allow a simple computer vision to be done
