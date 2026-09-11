@@ -797,27 +797,27 @@ LoadingDlg{
  border-image: url(:/rc/chat_picture/msg_chat_press.png);
 }
 
-#video_chat[state='normal'] {
+#video_call[state='normal'] {
  border-image: url(:/rc/chat_picture/video_chat_normal.png);
 }
 
-#video_chat[state='hover'] {
+#video_call[state='hover'] {
  border-image: url(:/rc/chat_picture/video_chat_hover.png);
 }
 
-#video_chat[state='press'] {
+#video_call[state='press'] {
  border-image: url(:/rc/chat_picture/video_chat_press.png);
 }
 
-#voice_chat[state='normal'] {
+#phone_call[state='normal'] {
  border-image: url(:/rc/chat_picture/voice_chat_normal.png);
 }
 
-#voice_chat[state='hover'] {
+#phone_call[state='hover'] {
  border-image: url(:/rc/chat_picture/voice_chat_hover.png);
 }
 
-#voice_chat[state='press'] {
+#phone_call[state='press'] {
  border-image: url(:/rc/chat_picture/voice_chat_press.png);
 }
 

@@ -204,7 +204,7 @@ void TcpMgr::initHandlers()
 
         if(!jsonObj.contains("error")){
             ErrorCode error=ErrorCode::Err_JSON;
-            qDebug()<<"Login failed. Error is "<<static_cast<int>(error);
+            qDebug()<<"Notify auth friend failed. Error is "<<static_cast<int>(error);
             emit sig_login_failed(error);
             return ;
         }
@@ -239,7 +239,7 @@ void TcpMgr::initHandlers()
 
         if(!jsonObj.contains("error")){
             ErrorCode error=ErrorCode::Err_JSON;
-            qDebug()<<"Login failed. Error is "<<static_cast<int>(error);
+            qDebug()<<"Auth friend failed. Error is "<<static_cast<int>(error);
             emit sig_login_failed(error);
             return ;
         }
@@ -260,6 +260,109 @@ void TcpMgr::initHandlers()
         emit sig_auth_rsp(authInfo);
 
         qDebug()<<"Auth friend success";
+    });
+
+    _handlers.insert(ReqId::ID_LOAD_CHAT_MSG_RSP,[this](ReqId id,quint16 len,QByteArray message){
+        Q_UNUSED(len);
+        qDebug()<<"Handle id is "<<static_cast<int>(id)<<" and data is "<<message;
+        QJsonDocument jsonDoc=QJsonDocument::fromJson(message);
+        QJsonObject jsonObj=jsonDoc.object();
+        if(jsonDoc.isNull()){
+            qDebug()<<"Error in Reading Messsage";
+            emit sig_login_failed(ErrorCode::Err_JSON);
+            return;
+        }
+
+
+        if(!jsonObj.contains("error")){
+            ErrorCode error=ErrorCode::Err_JSON;
+            qDebug()<<"Load chat msg failed. Error is "<<static_cast<int>(error);
+            emit sig_login_failed(error);
+            return ;
+        }
+        int error=jsonObj["error"].toInt();
+        if(static_cast<ErrorCode>(error)!=ErrorCode::SUCCESS){
+            qDebug()<<"Error message Get";
+            emit sig_login_failed(static_cast<ErrorCode>(error));
+            return;
+        }
+
+        int from_uid = jsonObj["to_uid"].toInt(); // 对应聊天好友的 UID
+        int next_last_msg_id = jsonObj["next_last_msg_id"].toInt(); // 服务器返回下一次拉取的起始 msg_id
+        QJsonArray msgArray = jsonObj["messages"].toArray();
+
+        QList<ChatMsg> historyList;
+        for(const auto& item:msgArray){
+            historyList.append(ChatMsg::fromJson(item.toObject()));
+        }
+        emit sig_load_history_finish(from_uid, historyList, next_last_msg_id);
+
+
+    });
+
+    _handlers.insert(ReqId::ID_TEXT_CHAT_MSG_RSP,[this](ReqId id,quint16 len,QByteArray message){
+        Q_UNUSED(len);
+        qDebug()<<"Handle id is "<<static_cast<int>(id)<<" and data is "<<message;
+        QJsonDocument jsonDoc=QJsonDocument::fromJson(message);
+        QJsonObject jsonObj=jsonDoc.object();
+        if(jsonDoc.isNull()){
+            qDebug()<<"Error in Reading Messsage";
+            emit sig_login_failed(ErrorCode::Err_JSON);
+            return;
+        }
+
+
+        if(!jsonObj.contains("error")){
+            ErrorCode error=ErrorCode::Err_JSON;
+            qDebug()<<"Chat msg failed. Error is "<<static_cast<int>(error);
+            emit sig_login_failed(error);
+            return ;
+        }
+        int error=jsonObj["error"].toInt();
+        if(static_cast<ErrorCode>(error)!=ErrorCode::SUCCESS){
+            qDebug()<<"Error message Get";
+            emit sig_login_failed(static_cast<ErrorCode>(error));
+            return;
+        }
+
+        qDebug()<<"Chat message sent successfully";
+
+
+    });
+
+    _handlers.insert(ReqId::ID_NOTIFY_TEXT_CHAT_MSG_REQ,[this](ReqId id,quint16 len,QByteArray message){
+        Q_UNUSED(len);
+        qDebug()<<"Handle id is "<<static_cast<int>(id)<<" and data is "<<message;
+        QJsonDocument jsonDoc=QJsonDocument::fromJson(message);
+        QJsonObject jsonObj=jsonDoc.object();
+        if(jsonDoc.isNull()){
+            qDebug()<<"Error in Reading Messsage";
+            emit sig_login_failed(ErrorCode::Err_JSON);
+            return;
+        }
+
+
+        if(!jsonObj.contains("error")){
+            ErrorCode error=ErrorCode::Err_JSON;
+            qDebug()<<"Nofity message failed. Error is "<<static_cast<int>(error);
+            emit sig_login_failed(error);
+            return ;
+        }
+        int error=jsonObj["error"].toInt();
+        if(static_cast<ErrorCode>(error)!=ErrorCode::SUCCESS){
+            qDebug()<<"Error message Get";
+            emit sig_login_failed(static_cast<ErrorCode>(error));
+            return;
+        }
+
+        int from_uid=jsonObj["from_uid"].toInt();
+        int to_uid=jsonObj["to_uid"].toInt();
+        if(UserMgr::getInstance()->GetUid()!=to_uid){
+            return;
+        }
+        auto msg=std::make_shared<ChatMsg>(ChatMsg::fromJsonObject(jsonObj,from_uid,to_uid));
+
+        emit sig_text_chat_msg(msg);
     });
 }
 

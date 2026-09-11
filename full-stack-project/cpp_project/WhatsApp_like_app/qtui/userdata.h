@@ -2,6 +2,9 @@
 #define USERDATA_H
 #include <QString>
 #include <memory>
+#include <QVariantMap>
+#include <QJsonObject>
+
 
 // class UserData
 // {
@@ -91,6 +94,88 @@ struct FriendInfo {
     QString _last_msg;
 };
 
+struct ChatMsg{
+    int msg_id;
+    QString content;
+    int from_uid;
+    int to_uid;
+    QString type{"text"};
+    QString timeStr{""};
+
+    // ChatMsg(int id,QString content,int from_uid,int to_uid,QString type,QString time=""):msg_id(id),content(content),
+    //     from_uid(from_uid),to_uid(to_uid),type(type),timeStr(time){};
+
+    QVariantMap toVariantMap(int my_uid) const {
+        QVariantMap map;
+        map["msg_id"]  = msg_id;
+        map["sender"]  = (from_uid == my_uid) ? "me" : "other";
+        map["type"]    = type;
+        map["content"] = content;
+        map["timeStr"] = timeStr;
+        return map;
+    }
+
+    static ChatMsg fromJson(const QJsonObject& obj) {
+        ChatMsg msg;
+        msg.msg_id   = obj["msg_id"].toInt();
+        msg.from_uid = obj["from_uid"].toInt();
+        msg.to_uid   = obj["to_uid"].toInt();
+        msg.type     = obj["type"].toString("text");
+        msg.content  = obj["content"].toString();
+        msg.timeStr  = obj["time"].toString();
+        return msg;
+    }
+
+    static ChatMsg fromJsonObject(const QJsonObject& itemObj, int from_uid, int to_uid) {
+        ChatMsg msg;
+        msg.msg_id   = itemObj["msg_id"].toInt();
+        msg.content  = itemObj["content"].toString();
+        msg.from_uid = from_uid;
+        msg.to_uid   = to_uid;
+        msg.type     = itemObj["type"].toString("text");
+        msg.timeStr  = itemObj["time"].toString();
+        if (msg.timeStr.isEmpty()) {
+            msg.timeStr = QTime::currentTime().toString("hh:mm AP");
+        }
+        return msg;
+    }
+
+};
+
+
+class ChatData{
+public:
+    int _uid{0};
+    QString nick{""};
+    QString name{""};
+    QString icon{""};
+
+    bool _is_online{false};      // 是否在线
+    QString _last_time{""};      // 最后消息时间 (如 "10:30 AM")
+    QString _last_msg{""};       // 最后一条消息预览文本
+    int _unread_count{0};
+
+    QVector<ChatMsg> _msg;
+
+    ChatData()=default;
+    ChatData(int uid,QString name,QString icon):_uid(uid),name(name),icon(icon){};
+    QVariantList getHistoryVariantList(int my_uid) const {
+        QVariantList list;
+        for (const auto& msg : _msg) {
+            list.append(msg.toVariantMap(my_uid)); // 👈 直接复用你写的 toVariantMap
+        }
+        return list;
+    }
+
+    void AppendMsg(const ChatMsg& msg){
+        _msg.append(msg);
+        _last_time=msg.timeStr;
+        _last_msg=msg.content;
+    }
+
+
+};
+
 struct UserInfo {
     int _uid;
     QString _name;
@@ -99,6 +184,9 @@ struct UserInfo {
     int _sex;
     QString _icon;
     QString _last_msg;
+
+    UserInfo()
+        : _uid(0), _name(""), _nick(""), _desc(""), _sex(0), _icon(""),_last_msg("") {}
 
     // 保持与 SearchInfo 一致
     UserInfo(int uid, QString name, QString nick, QString desc, int sex, QString icon,QString msg)

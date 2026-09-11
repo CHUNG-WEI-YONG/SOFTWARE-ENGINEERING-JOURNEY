@@ -54,6 +54,10 @@ void LogicSystem::RegisterCallBacks() {
 	_fun_callbacks[ID_AUTH_FRIEND_REQ] = [this](shared_ptr<CSession> session, const short& msg_id, const string& msg_data) {
 		this->AuthFriendApply(session, msg_id, msg_data);
 		};
+
+	_fun_callbacks[ID_TEXT_CHAT_MSG_REQ] = [this](shared_ptr<CSession > session, const short& msg_id, const string& msg_data) {
+		this->DealChatTextMsg(session, msg_id, msg_data);
+		};
 }
 
 void LogicSystem::LoginHandler(shared_ptr<CSession> session, const short& msg_id, const string& msg_data) {
@@ -371,7 +375,7 @@ void LogicSystem::AuthFriendApply(shared_ptr<CSession> session, const short& msg
 	reader.parse(msg_data, value);
 	auto uid = value["fromuid"].asInt();
 	auto to_uid = value["touid"].asInt();
-	auto nick = value["nick"].asString();
+	auto nick = value["nickname"].asString();
 	cout << "Auth friend receive from user id " << uid << " to user id " << to_uid << " which nickname is " << nick;
 
 	auto user_info = std::make_shared<UserInfo>();
@@ -390,7 +394,7 @@ void LogicSystem::AuthFriendApply(shared_ptr<CSession> session, const short& msg
 		rt["desc"] = user_info->desc;
 		rt["sex"] = user_info->sex;
 		rt["icon"] = user_info->icon;
-		rt["nick"] = user_info->nick;
+		rt["nickname"] = user_info->nick;
 		rt["uid"] = to_uid;
 	}
 	rt["error"] = ErrorCodes::Success;
@@ -426,7 +430,7 @@ void LogicSystem::AuthFriendApply(shared_ptr<CSession> session, const short& msg
 			bool findsuccess = GetBaseInfo(base_key, uid, sender_info);
 			if (findsuccess) {
 				value["name"] = sender_info->name;
-				value["nick"] = sender_info->nick;
+				value["nickname"] = sender_info->nick;
 				value["icon"] = sender_info->icon;
 				value["sex"] = sender_info->sex;
 			}
@@ -444,6 +448,63 @@ void LogicSystem::AuthFriendApply(shared_ptr<CSession> session, const short& msg
 	req.set_fromuid(uid);
 	req.set_touid(to_uid);
 	ChatGrpcClient::GetInstance()->NotifyAuthFriend(to_server, req);
+
+}
+
+void LogicSystem::DealChatTextMsg(shared_ptr<CSession> session, const short& msg_id, const string& msg_data)
+{
+	Json::Value value;
+	Json::Reader reader;
+	reader.parse(msg_data, value);
+
+	auto from_uid = value["from_uid"].asInt();
+	auto to_uid = value["to_uid"].asInt();
+	auto chat_msg_id = value["msg_id"].asInt();
+
+	std::string content = value["content"].asString();
+
+	Json::Value rt;
+	rt["error"] = ErrorCodes::Success;
+	rt["from_uid"] = from_uid;
+	rt["to_uid"] = to_uid;
+	rt["content"] = content;
+	rt["msg_id"] = chat_msg_id;
+
+	Defer defer([&rt, &session]() {
+		std::string rt_str = rt.toStyledString();
+		session->Send(rt_str, ID_TEXT_CHAT_MSG_RSP);
+		});
+
+	auto key = USERIPPREFIX + std::to_string(to_uid);
+	std::string server_ip="";
+	bool success = RedisMjr::GetInstance()->Get(key, server_ip);
+	if (!success) {
+		return;
+	}
+
+	auto& cfg = ConfigMgr::Inst();
+	std::string selfserver = cfg["SelfServer"]["Name"];
+
+	if (server_ip == selfserver) {
+		auto to_session = UserMgr::GetInstance()->GetSession(to_uid);
+		if (to_session) {
+			auto rt_str = rt.toStyledString();
+			to_session->Send(rt_str, ID_NOTIFY_TEXT_CHAT_MSG_REQ);
+		}
+		return;
+	}
+
+	TextChatMsgReq msgReq;
+	msgReq.set_fromuid(from_uid);
+	msgReq.set_touid(to_uid);
+	TextChatData* data=msgReq.add_textmsgs();
+	data->set_msg_id(chat_msg_id);
+	data->set_msgcontent(content);
+	std::cout << "Receive msg_id is " << chat_msg_id<<std::endl;
+	std::cout << "Content is " << content << std::endl;
+
+	ChatGrpcClient::GetInstance()->NotifyTextChatMsg(server_ip, msgReq,rt);
+
 
 }
 

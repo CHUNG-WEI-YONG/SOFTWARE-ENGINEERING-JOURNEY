@@ -21,6 +21,7 @@ Rectangle {
 
         // 当 C++ 触发好友切换时，直接抛过来装满历史记录的 history 数组
         onSig_user_switched: (name, isOnline, lastTime, iconPath, history) => {
+            console.log("🌟 [探针 6] QML 成功收到信号! 目标姓名:", name, "历史记录条数:", (history ? history.length : 0));
             chatPage.currentFriendName = name
             chatPage.currentFriendIcon = iconPath
             title_lb.text = name
@@ -55,6 +56,46 @@ Rectangle {
             chatPage.b_loading_history = false
             chatListView.positionViewAtEnd()
         }
+
+        onSig_new_message_received: (sender, message, timeStr) => {
+                // 仅当新消息属于当前正在聊天的会话时追加气泡
+                if (sender === chatPage.currentFriendName) {
+                    chatHistoryModel.append({
+                        "sender": "other",
+                        "type": "text",
+                        "content": message,
+                        "timeStr": timeStr || new Date().toLocaleTimeString(Qt.locale("en_US"), "hh:mm AP")
+                    });
+                    chatListView.positionViewAtEnd();
+                }
+            }
+
+        onSig_append_history_batch: (olderHistory) => {
+                    if (olderHistory !== undefined && olderHistory.length > 0) {
+                        // 1. 记录当前视图顶部的项索引，防止插入数据后视窗闪动跳跃
+                        var oldFirstIndex = chatListView.indexAt(chatListView.contentX, chatListView.contentY);
+
+                        // 2. 将旧消息按时间正序从最上方（索引 0）依次插入
+                        // 注意：假设 olderHistory 传过来的是按时间升序 [更早 -> 较早]，所以逆向 insert(0)
+                        for (var i = olderHistory.length - 1; i >= 0; i--) {
+                            var itemData = olderHistory[i];
+                            chatHistoryModel.insert(0, {
+                                "sender":  itemData.sender  !== undefined ? itemData.sender  : "other",
+                                "type":    itemData.type    !== undefined ? itemData.type    : "text",
+                                "content": itemData.content !== undefined ? itemData.content : "",
+                                "timeStr": itemData.timeStr !== undefined ? itemData.timeStr : ""
+                            });
+                        }
+
+                        // 3. 恢复视窗相对位置，平滑停留在加载前看的位置
+                        if (oldFirstIndex >= 0) {
+                            chatListView.positionViewAtIndex(oldFirstIndex + olderHistory.length, ListView.Beginning);
+                        }
+                    }
+
+                    // 4. 解除锁定，允许下一次下拉触顶打捞
+                    chatPage.b_loading_history = false;
+                }
     }
 
     // 三态 ClickedLabel 图标组件封装
@@ -115,6 +156,21 @@ Rectangle {
                 Component.onCompleted: chatListView.positionViewAtEnd()
                 clip: true
 
+                onContentYChanged: {
+                                if (chatListView.contentY < -30 && !chatPage.b_loading_history) {
+                                    if (chatPage.currentFriendName === "") return;
+
+                                    // ① 立即上锁
+                                    chatPage.b_loading_history = true;
+                                    console.log("📥 [QML 触顶] 开始拉取好友历史:", chatPage.currentFriendName);
+
+                                    // ② 调用 C++ 接口
+                                    if (typeof cppBridge !== 'undefined') {
+                                        cppBridge.loadMoreHistoryFromQml(chatPage.currentFriendName);
+                                    }
+                                }
+                            }
+
                 // 原生现代化滚动条
                 ScrollBar.vertical: ScrollBar {
                     id: vScrollBar
@@ -127,22 +183,7 @@ Rectangle {
                     }
                 }
 
-                // ──► 🎯 核心修正 2：触顶事件探测雷达总线（取代传统 C++ eventFilter） ◄──
-                // 当 contentY 滚动偏移量为负数，代表列表触顶并发生阻尼下拉反弹
-                onContentYChanged: {
-                    if (chatListView.contentY < -30 && !chatPage.b_loading_history) {
-                        // 立刻锁死防线，防止滚轮连续滚动引起瀑布式崩溃请求
-                        chatPage.b_loading_history = true;
 
-                        console.log("📥 [QML 触顶雷达] 检测到视窗被拉到最上方，触发 C++ 历史记录捞取！目标好友: " + chatPage.currentFriendName);
-
-                        // 🚀 核心跨界联动：调用 C++ Bridge 里的接口打捞更早的本地 JSON 或数据库历史
-                        if (typeof cppBridge !== 'undefined') {
-                            // 💡 未来在 C++ 的 ChatBridge 里定义这个槽函数即可接收
-                            cppBridge.loadMoreHistoryFromQml(chatPage.currentFriendName);
-                        }
-                    }
-                }
 
                 delegate: Item {
                     id: chatItemRow

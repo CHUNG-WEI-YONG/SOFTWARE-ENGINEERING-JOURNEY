@@ -114,6 +114,16 @@ std::shared_ptr<FriendInfo> UserMgr::getFriend(int uid)
     }
 }
 
+std::shared_ptr<FriendInfo> UserMgr::getFriendByName(QString name)
+{
+    for(auto iter=_friend_map.begin();iter!=_friend_map.end();++iter){
+        if(name==iter->second->_name){
+            return iter->second;
+        }
+    }
+    return nullptr;
+}
+
 void UserMgr::AppendFriendList(QJsonArray array)
 {
     for(const QJsonValue &value:array){
@@ -176,4 +186,9 @@ void UserMgr::UpdateConLoadedCount(){
     int start=_contact_loaded;
     int end=std::min(_contact_loaded+MAX_COUNT_PER_PAGE,static_cast<int>(_friend_list.size()));
     _contact_loaded=end;
+}
+
+bool UserMgr::hasHistoryCache(int uid)
+{
+    return _history_cache.contains(uid);
 }

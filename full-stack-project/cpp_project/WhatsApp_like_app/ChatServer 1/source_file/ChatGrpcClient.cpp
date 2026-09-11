@@ -1,5 +1,7 @@
 #include "ChatGrpcClient.h"
 #include "ConfigMgr.h"
+#include "RedisMjr.h"
+#include "MySqlMgr.h"
 
 ChatGrpcClient::ChatGrpcClient() {
     auto& config = ConfigMgr::Inst();
@@ -108,9 +110,80 @@ AuthFriendRsp ChatGrpcClient::NotifyAuthFriend(std::string server_name, const Au
 
 }
 bool ChatGrpcClient::GetBaseInfo(std::string base_key, int uid, std::shared_ptr<UserInfo>& userinfo) {
-	return true;
+    std::string info_str = "";
+    bool b_base = RedisMjr::GetInstance()->Get(base_key, info_str);
+    if (b_base) {
+        Json::Reader reader;
+        Json::Value root;
+        reader.parse(info_str, root);
+        userinfo->uid = root["uid"].asInt();
+        userinfo->name = root["name"].asString();
+        userinfo->passwd = root["pwd"].asString();
+        userinfo->email = root["email"].asString();
+        userinfo->nick = root["nick"].asString();
+        userinfo->desc = root["desc"].asString();
+        userinfo->sex = root["sex"].asInt();
+        userinfo->icon = root["icon"].asString();
+        std::cout << "user login uid is  " << userinfo->uid << " name  is "
+            << userinfo->name << " pwd is " << userinfo->passwd << " email is " << userinfo->email << endl;
+    }
+    else {
+        //redis中没有则查询mysql
+        //查询数据库
+        std::shared_ptr<UserInfo> user_info = nullptr;
+        user_info = MysqlMgr::GetInstance()->GetUser(uid);
+        if (user_info == nullptr) {
+            return false;
+        }
+
+        userinfo = user_info;
+
+        //将数据库内容写入redis缓存
+        Json::Value redis_root;
+        redis_root["uid"] = uid;
+        redis_root["passwd"] = userinfo->passwd;
+        redis_root["name"] = userinfo->name;
+        redis_root["email"] = userinfo->email;
+        redis_root["nick"] = userinfo->nick;
+        redis_root["desc"] = userinfo->desc;
+        redis_root["sex"] = userinfo->sex;
+        redis_root["icon"] = userinfo->icon;
+        RedisMjr::GetInstance()->Set(base_key, redis_root.toStyledString());
+    }
 }
+
+
 TextChatMsgRsp ChatGrpcClient::NotifyTextChatMsg(std::string server_ip, const TextChatMsgReq& req, const Json::Value& rtvalue) {
 	TextChatMsgRsp rsp;
-	return rsp;
+    int from_uid = req.fromuid();
+    int to_uid = req.touid();
+
+    //TextChatData* new_msg=rsp.add_textmsgs();
+    //for (const auto& text_data : req.textmsgs()) {
+    //    TextChatData* new_msg = rsp.add_textmsgs();
+    //    new_msg->set_unique_id(text_data.unique_id());
+    //    new_msg->set_msgcontent(text_data.msgcontent());
+    //}
+
+    auto iter = _pools.find(server_ip);
+    if (iter == _pools.end()) {
+        cout << "Grpc Cannot find server_ip: " << server_ip;
+        return rsp;
+    }
+    auto& pool = iter->second;
+    auto stub = pool->GetConn();
+    Defer defer([&pool, &stub]() {
+        pool->returnConn(std::move(stub));
+        });
+
+    ClientContext context;
+    Status result=stub->NotifyTextChatMsg(&context, req, &rsp);
+
+    if (!result.ok()) {
+        rsp.set_error(ErrorCodes::RPCFailed);
+        return rsp;
+    }
+
+    return rsp;
+
 }

@@ -26,6 +26,7 @@ public:
     void AddFriend(std::shared_ptr<AuthInfo>);
     void AddFriend(std::shared_ptr<AuthRsp>);
     std::shared_ptr<FriendInfo> getFriend(int uid);
+    std::shared_ptr<FriendInfo> getFriendByName(QString name);
     void AppendFriendList(QJsonArray array);
     std::vector<std::shared_ptr<FriendInfo>> GetChatListPerPage();
     bool isLoadChatFin();
@@ -33,6 +34,21 @@ public:
     std::vector<std::shared_ptr<FriendInfo>>GetConListPerPage();
     bool isLoadConFin();
     void UpdateConLoadedCount();
+    bool hasHistoryCache(int uid);
+    void AppendHistoryMsg(int friend_uid, const ChatMsg& msg) {
+        _history_cache[friend_uid].append(msg);
+    }
+
+    void PrependHistoryBatch(int friend_uid, const QList<ChatMsg>& msgs) {
+        auto& list = _history_cache[friend_uid];
+        for (int i = msgs.size() - 1; i >= 0; --i) {
+            list.prepend(msgs[i]);
+        }
+    }
+
+    QList<ChatMsg> GetHistoryMsgs(int friend_uid) const {
+        return _history_cache.value(friend_uid);
+    }
 
 private:
     QString _token;
@@ -44,6 +60,7 @@ private:
     int _uid;
     int _chat_loaded;
     int _contact_loaded;
+    QMap<int, QList<ChatMsg>> _history_cache;
 
 
 

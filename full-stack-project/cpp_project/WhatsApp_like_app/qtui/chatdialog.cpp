@@ -12,12 +12,15 @@
 #include "contactuserlist.h"
 #include "tcpmgr.h"
 #include "conuseritem.h"
+#include "friendinfopage.h"
+#include "friendinfopage.h"
 
 ChatDialog::ChatDialog(QWidget *parent)
     : QDialog(parent)
     , ui(new Ui::ChatDialog)
     , _mode(ChatUIMode::ChatMode)
-    , _state(ChatUIMode::ChatMode),_curr_chat_uid(0),_b_loading(false)
+    , _state(ChatUIMode::ChatMode),_curr_chat_uid(0),_b_loading(false),
+    _last_widget(nullptr)
 {
     ui->setupUi(this);
 
@@ -36,7 +39,7 @@ ChatDialog::ChatDialog(QWidget *parent)
     ui->search_edit->addAction(_clear_action, QLineEdit::TrailingPosition);
 
 
-    connect(ui->con_user_list,&ContactUserList::sig_switch_apply_friend_page,this,&ChatDialog::slot_text_changed);
+    //connect(ui->con_user_list,&ContactUserList::sig_switch_apply_friend_page,this,&ChatDialog::slot_text_changed);
     // ──► 🎯 核心修正 2：唯一绑定 textChanged 信号到 slot_text_changed，绝不搞双重绑定 ◄──
     connect(ui->search_edit, &QLineEdit::textChanged, this, [this](QString const& str){
         if (!_clear_action) return;
@@ -59,6 +62,7 @@ ChatDialog::ChatDialog(QWidget *parent)
 
     // ... 5. 实例化 QML 通信桥梁至构造函数末尾保持不变 ...
     ChatBridge* bridge = new ChatBridge(this);
+    _bridge=bridge;
     QQmlContext* context = ui->chat_quickwid->rootContext();
     QString currentUserName = UserMgr::getInstance()->returnName();
     QString myOwnLogoPath = "qrc:/rc/chat_picture/head_5.jpg";
@@ -70,39 +74,41 @@ ChatDialog::ChatDialog(QWidget *parent)
 
     ui->chat_quickwid->setSource(QUrl(QStringLiteral("qrc:/style/ChatPage.qml")));
     ui->chat_quickwid->setResizeMode(QQuickWidget::SizeRootObjectToView);
+    qDebug() << "🔍 [QML 状态诊断] Status:" << ui->chat_quickwid->status();
+    qDebug() << "🔍 [QML 错误列表]:" << ui->chat_quickwid->errors();
     ui->stackedWidget->setCurrentIndex(0);
 
-    connect(ui->chat_user_list, &QListWidget::itemClicked, this, [this, bridge](QListWidgetItem *item){
-        if (!item) return;
-        QWidget* widget = ui->chat_user_list->itemWidget(item);
-        if (!widget) return;
-        ChatUserWid* userWid = qobject_cast<ChatUserWid*>(widget);
-        QString clickedName = userWid ? userWid->GetUserName() : item->data(Qt::DisplayRole).toString();
-        if (clickedName.isEmpty()) clickedName = "Unknown User";
+    // connect(ui->chat_user_list, &QListWidget::itemClicked, this, [this, bridge](QListWidgetItem *item){
+    //     if (!item) return;
+    //     QWidget* widget = ui->chat_user_list->itemWidget(item);
+    //     if (!widget) return;
+    //     ChatUserWid* userWid = qobject_cast<ChatUserWid*>(widget);
+    //     QString clickedName = userWid ? userWid->GetUserName() : item->data(Qt::DisplayRole).toString();
+    //     if (clickedName.isEmpty()) clickedName = "Unknown User";
 
-        QString clickedIcon = item->data(Qt::UserRole).toString();
-        if (clickedIcon.isEmpty() && userWid) { clickedIcon = userWid->GetUserIcon(); }
+    //     QString clickedIcon = item->data(Qt::UserRole).toString();
+    //     if (clickedIcon.isEmpty() && userWid) { clickedIcon = userWid->GetUserIcon(); }
 
-        if (clickedIcon.contains(QLatin1String("qrc://rc/"))) {
-            clickedIcon.replace(QLatin1String("qrc://rc/"), QLatin1String("qrc:/rc/"));
-        } else if (clickedIcon.startsWith(QLatin1String(":/rc/"))) {
-            clickedIcon.replace(QLatin1String(":/rc/"), QLatin1String("qrc:/rc/"));
-        }
-        if (clickedIcon.isEmpty() || !clickedIcon.startsWith(QLatin1String("qrc:/rc/"))) {
-            clickedIcon = QStringLiteral("qrc:/rc/chat_picture/search.png");
-        }
+    //     if (clickedIcon.contains(QLatin1String("qrc://rc/"))) {
+    //         clickedIcon.replace(QLatin1String("qrc://rc/"), QLatin1String("qrc:/rc/"));
+    //     } else if (clickedIcon.startsWith(QLatin1String(":/rc/"))) {
+    //         clickedIcon.replace(QLatin1String(":/rc/"), QLatin1String("qrc:/rc/"));
+    //     }
+    //     if (clickedIcon.isEmpty() || !clickedIcon.startsWith(QLatin1String("qrc:/rc/"))) {
+    //         clickedIcon = QStringLiteral("qrc:/rc/chat_picture/search.png");
+    //     }
 
-        bool fakeOnline = (ui->chat_user_list->currentRow() % 2 == 0);
-        QVariantList fakeHistory; QVariantMap msg1, msg2;
-        msg1["sender"] = "other"; msg1["type"] = "text";
-        msg1["content"] = QString("Hello! I am %1. Welcome to QML world!").arg(clickedName);
-        msg1["timeStr"] = "10:00 AM"; fakeHistory.append(msg1);
-        msg2["sender"] = "me"; msg2["type"] = "text";
-        msg2["content"] = "Hi, glad to see you too.";
-        msg2["timeStr"] = "10:01 AM"; fakeHistory.append(msg2);
+    //     bool fakeOnline = (ui->chat_user_list->currentRow() % 2 == 0);
+    //     QVariantList fakeHistory; QVariantMap msg1, msg2;
+    //     msg1["sender"] = "other"; msg1["type"] = "text";
+    //     msg1["content"] = QString("Hello! I am %1. Welcome to QML world!").arg(clickedName);
+    //     msg1["timeStr"] = "10:00 AM"; fakeHistory.append(msg1);
+    //     msg2["sender"] = "me"; msg2["type"] = "text";
+    //     msg2["content"] = "Hi, glad to see you too.";
+    //     msg2["timeStr"] = "10:01 AM"; fakeHistory.append(msg2);
 
-        emit bridge->sig_user_switched(clickedName, fakeOnline, QStringLiteral("10 mins ago"), clickedIcon, fakeHistory);
-    });
+    //     emit bridge->sig_user_switched(clickedName, fakeOnline, QStringLiteral("10 mins ago"), clickedIcon, fakeHistory);
+    // });
 
     ShowSearch(false);
     connect(ui->chat_user_list, &ChatUserList::sig_loading_user, this, &ChatDialog::slot_loading_user);
@@ -129,6 +135,10 @@ ChatDialog::ChatDialog(QWidget *parent)
         this->setFocus();
     });
     this->installEventFilter(this);
+    ui->side_chat_lb->SetSelected(true);
+    //ui->search_user_list->SetSearchEdit(ui->search_edit);
+    SetSelectedChatItem();
+    SetSelectedChatPage();
 
     ui->search_user_list->SetSearchEdit(ui->search_edit);
     connect(TcpMgr::getInstance().get(),&TcpMgr::sig_friend_apply,this,&ChatDialog::slot_friend_apply);
@@ -137,6 +147,16 @@ ChatDialog::ChatDialog(QWidget *parent)
     connect(TcpMgr::getInstance().get(),&TcpMgr::sig_add_auth_friend,this,&ChatDialog::slot_add_auth_friend);
     connect(ui->search_user_list,&SearchList::sig_jump_chat_item,this,&ChatDialog::slot_jump_chat_item);
     connect(ui->con_user_list,&ContactUserList::sig_loading_contact_user,this,&ChatDialog::slot_loading_contact_user);
+    connect(ui->con_user_list,&ContactUserList::sig_switch_friend_info_page,this ,&ChatDialog::slot_switch_info_page);
+    connect(ui->con_user_list,&ContactUserList::sig_switch_apply_friend_page,this,&ChatDialog::slot_switch_apply_friend_page);
+    connect(ui->chat_info_page,&FriendInfoPage::sig_jump_chat_item,this,&ChatDialog::slot_jump_chat_item_from_info_page);
+
+    ui->stackedWidget->setCurrentWidget(ui->chat_widget);
+    connect(ui->chat_user_list,&QListWidget::itemClicked,this,&ChatDialog::slot_item_click);
+    connect(_bridge,&ChatBridge::sig_req_more_history,this,&ChatDialog::slot_loadMoreHistory);
+    connect(TcpMgr::getInstance().get(),&TcpMgr::sig_load_history_finish,this,&ChatDialog::slot_load_history_finish);
+    connect(_bridge,&ChatBridge::sig_send_msg,this,&ChatDialog::slot_send_msg);
+    connect(TcpMgr::getInstance().get(),&TcpMgr::sig_text_chat_msg,this,&ChatDialog::slot_text_chat_msg);
 
 }
 
@@ -150,6 +170,7 @@ void ChatDialog::AddUserlist()
     auto friend_list=UserMgr::getInstance()->GetChatListPerPage();
     if(!friend_list.empty()){
         for(auto& f:friend_list){
+            auto chat_data=std::make_shared<ChatData>(f->_uid,f->_name,f->_icon);
             auto iter=_chat_items_added.find(f->_uid);
             if(iter!=_chat_items_added.end()){
                 return;
@@ -157,6 +178,7 @@ void ChatDialog::AddUserlist()
             auto* chat_user_wid=new ChatUserWid();
             std::shared_ptr<UserInfo> f_ele=std::make_shared<UserInfo>(f);
             chat_user_wid->SetInfo(f_ele);
+            chat_user_wid->SetChatData(chat_data);
             auto *item=new QListWidgetItem();
             item->setSizeHint(chat_user_wid->sizeHint());
             ui->chat_user_list->addItem(item);
@@ -216,6 +238,47 @@ void ChatDialog::ClearState(StateWidget *lb)
 
 void ChatDialog::SetSelectedChatPage(int uid)
 {
+    if(ui->chat_user_list->count()<=0){
+        return;
+    }
+    if(uid==0){
+        auto item=ui->chat_user_list->item(0);
+        QWidget* widget=ui->chat_user_list->itemWidget(item);
+        if(!widget){
+            return;
+        }
+
+        auto con_item=qobject_cast<ChatUserWid*>(widget);
+        if(!con_item){
+            return;
+        }
+
+        std::shared_ptr<UserInfo> user=con_item->GetUserInfo();
+        ui->chat_user_list->setCurrentItem(item);
+        SwitchToUserChat(user);
+        return;
+
+    }
+
+    auto iter=_chat_items_added.find(uid);
+    if(iter==_chat_items_added.end()){
+        return;
+    }
+    auto widget=iter.value();
+    QWidget* w=ui->chat_user_list->itemWidget(widget);
+    if(!w){
+        return;
+    }
+    auto customItem=qobject_cast<ListItemBase*>(w);
+    auto type=customItem->getItem();
+    if(type==ListItemType::ChatUserItem){
+        auto conn=qobject_cast<ChatUserWid*>(w);
+        auto user=conn->GetUserInfo();
+        SwitchToUserChat(user);
+        return;
+    }
+
+
 
 }
 
@@ -258,6 +321,84 @@ void ChatDialog::SetSelectedChatItem(int uid)
     }
 }
 
+void ChatDialog::SwitchToUserChat(std::shared_ptr<UserInfo> user)
+{
+    if (!user) return;
+    qDebug() << "👉 [探针 4] 进入 SwitchToUserChat, 当前 _curr_chat_uid=" << _curr_chat_uid << "目标 uid=" << user->_uid;
+    if (_curr_chat_uid == user->_uid) {
+        qDebug() << "⚠️ [探针 4 拦截] _curr_chat_uid 相同，被拦截退出!";
+        return;
+    }
+
+    int uid = UserMgr::getInstance()->GetUid();
+    _curr_chat_uid = user->_uid;
+
+    QVariantList history;
+
+    // 1. 先判断是否有缓存，绝不在判断前提前调用 GetHistoryMsgs
+    if (!UserMgr::getInstance()->hasHistoryCache(_curr_chat_uid)) {
+        // 首次打开：初始化分页游标并触发异步拉取
+        _user_history_cursor[_curr_chat_uid] = 0;
+
+        // 🚀 恢复发射信号：通知后台线程或 SQLite 查询历史（先显示空历史，查完再追加）
+        emit sig_load_user_history(_curr_chat_uid, 0, 20);
+    } else {
+        // 2. 命中内存缓存：安全提取数据并格式化
+        auto history_cache = UserMgr::getInstance()->GetHistoryMsgs(_curr_chat_uid);
+        for (const auto& msg : history_cache) {
+            history.append(msg.toVariantMap(uid));
+        }
+    }
+    qDebug() << "👉 [探针 5] C++ 准备发射 sig_user_switched! 历史消息数量:" << history.size();
+
+    // 3. 通知前端切换会话（若无缓存，此时传递的是空的 history，等待后续槽函数追加）
+    emit _bridge->sig_user_switched(user->_name,
+                                    true,
+                                    "today",
+                                    user->_icon,
+                                    history);
+
+    ui->stackedWidget->setCurrentIndex(0);
+}
+
+// void ChatDialog::SwitchToUserChat(std::shared_ptr<UserInfo> user)
+// {
+//     if(!user)return;
+//     if (_curr_chat_uid == user->_uid) {
+//         return;
+//     }
+//     int uid=UserMgr::getInstance()->GetUid();
+//     _curr_chat_uid=user->_uid;
+
+//     QVariantList history;
+//     auto _history_cache=UserMgr::getInstance()->GetHistoryMsgs(_curr_chat_uid);
+//     if (!UserMgr::getInstance()->hasHistoryCache(_curr_chat_uid)) {
+//         // 首次打开：初始化分页游标并异步触发首次拉取（如最近 20 条）
+//         _user_history_cursor[_curr_chat_uid] = 0;
+
+//         // 🚀 发射信号查询本地 SQLite / 服务器历史记录
+//         // emit sig_load_user_history(_curr_chat_uid, 0, 20);
+//     } else {
+//         // 命中内存缓存：直接提取所有消息并格式化
+//         auto history_cache = UserMgr::getInstance()->GetHistoryMsgs(_curr_chat_uid);
+//         for (const auto& msg : history_cache) {
+//             history.append(msg.toVariantMap(uid));
+//         }
+//     }
+
+
+//         // 🚀 发射信号或调用数据库查询接口（拉取最近的 20 条消息）
+//         // 异步查询完成后会自动回调 slot_load_history_finish
+//         //emit sig_load_user_history(user->_uid, 0, 20);
+//     emit _bridge->sig_user_switched(user->_name,
+//                                     true,
+//                                     "today",
+//                                     user->_icon,
+//                                     history);
+
+//     ui->stackedWidget->setCurrentIndex(0);
+// }
+
 void ChatDialog::slot_loading_contact_user()
 {
     qDebug()<<"load more contact user";
@@ -272,6 +413,274 @@ void ChatDialog::slot_loading_contact_user()
     loading->deleteLater();
     _b_loading=false;
 }
+
+void ChatDialog::slot_switch_info_page(std::shared_ptr<UserInfo> si)
+{
+    qDebug()<<"Receive switch to friend info page";
+    _last_widget=ui->chat_info_page;
+    ui->stackedWidget->setCurrentWidget(ui->chat_info_page);
+    ui->chat_info_page->SetInfo(si);
+
+
+}
+
+void ChatDialog::slot_switch_apply_friend_page()
+{
+    qDebug()<<"switch to apply friend page";
+    _last_widget=ui->friend_apply_page;
+    ui->stackedWidget->setCurrentWidget(_last_widget);
+}
+
+void ChatDialog::slot_jump_chat_item_from_info_page(std::shared_ptr<UserInfo>info)
+{
+    qDebug()<<"from chat item to info page";
+    auto iter=_chat_items_added.find(info->_uid);
+    if(iter!=_chat_items_added.end()){
+        qDebug()<<"found chat item";
+        ui->chat_user_list->scrollToItem(iter.value());
+        ui->side_chat_lb->SetSelected(true);
+        SetSelectedChatItem(info->_uid);
+        SetSelectedChatPage(info->_uid);
+        slot_side_chat();
+        return ;
+    }
+
+    auto *chat_user_wid=new ChatUserWid();
+    chat_user_wid->SetInfo(info);
+    QListWidgetItem *item=new QListWidgetItem;
+    item->setSizeHint(chat_user_wid->sizeHint());
+    ui->chat_user_list->insertItem(0,item);
+    ui->chat_user_list->setItemWidget(item,chat_user_wid);
+
+    _chat_items_added[info->_uid]=item;
+    ui->side_chat_lb->SetSelected(true);
+    SetSelectedChatItem(info->_uid);
+    SetSelectedChatPage(info->_uid);
+    slot_side_chat();
+
+}
+
+void ChatDialog::slot_item_click(QListWidgetItem *item)
+{
+    qDebug() << "👉 [探针 1] 点击了列表项 item:" << item;
+    QWidget* widget = ui->chat_user_list->itemWidget(item); // 获取自定义widget对象
+    if (!widget) {
+        qDebug() << "slot item clicked widget is nullptr";
+        return;
+    }
+
+    // 对自定义widget进行操作， 将item 转化为基类ListItemBase
+    ListItemBase* customItem = qobject_cast<ListItemBase*>(widget);
+    if (!customItem) {
+        qDebug() << "slot item clicked widget is nullptr";
+        return;
+    }
+
+    auto itemType = customItem->getItem();
+    qDebug() << "👉 [探针 2] itemType 值为:" << static_cast<int>(itemType);
+    if (itemType == ListItemType::InvalidItem
+        || itemType == ListItemType::Group_Tip_Item) {
+        qDebug() << "slot invalid item clicked ";
+        return;
+    }
+
+
+    if (itemType == ListItemType::ChatUserItem) {
+        // 创建对话框，提示用户
+        qDebug() << "contact user item clicked ";
+
+        auto chat_wid = qobject_cast<ChatUserWid*>(customItem);
+
+        auto user_info = chat_wid->GetUserInfo();
+        if (!user_info) return;
+
+        // 2. 记录当前活跃聊天的 UID
+        //_curr_chat_uid = user_info->_uid;
+        qDebug() << "👉 [探针 3] 准备切换用户:" << user_info->_name << " UID:" << user_info->_uid;
+        SwitchToUserChat(user_info);
+
+        // int myuid=UserMgr::getInstance()->GetUid();
+        // QVariantList history;
+        // auto _history_cache=UserMgr::getInstance()->GetHistoryMsgs(_curr_chat_uid);
+        // for(auto const& msg:_history_cache){
+        //         history.append(msg.toVariantMap(myuid));
+        //     }
+
+
+        // //跳转到聊天界面
+        // emit _bridge->sig_user_switched(
+        //                 user_info->_name,
+        //                 false,
+        //                 "today",
+        //                 user_info->_icon,
+        //                 history);
+        // ui->stackedWidget->setCurrentIndex(0);
+        return;
+    }
+}
+
+void ChatDialog::slot_loadMoreHistory(const QString &user)
+{
+    auto friend_info=UserMgr::getInstance()->getFriendByName(user);
+    int to_uid=friend_info->_uid;
+    if(!friend_info){
+        qDebug()<<"This friend not exist";
+        return;
+    }
+    auto self_uid=UserMgr::getInstance()->GetUid();
+    int last_msg_id = 0;
+    if (_user_history_cursor.contains(to_uid)) {
+        last_msg_id = _user_history_cursor[to_uid];
+    }
+
+    QJsonObject root;
+    root["uid"]=self_uid;
+    root["to_uid"]=to_uid;
+    root["last_msg_id"]=last_msg_id;
+    root["pgsize"]=MAX_COUNT_PER_PAGE;
+    QJsonDocument doc(root);
+    QByteArray sendData = doc.toJson(QJsonDocument::Compact);
+
+    TcpMgr::getInstance()->sig_send_data(ReqId::ID_LOAD_CHAT_MSG_REQ,sendData);
+}
+
+void ChatDialog::slot_load_history_finish(int from_uid, QList<ChatMsg> historyList, int next_last_msg_id)
+{
+    _user_history_cursor[from_uid]=next_last_msg_id;
+    UserMgr::getInstance()->PrependHistoryBatch(from_uid,historyList);
+    //auto cachedList=UserMgr::getInstance()->GetHistoryMsgs(from_uid);
+
+    if(_curr_chat_uid!=from_uid){
+        return;
+    }
+    int my_uid = UserMgr::getInstance()->GetUid();
+    QVariantList qmlBatch;
+    for (const auto& msg : historyList) {
+        qmlBatch.append(msg.toVariantMap(my_uid));
+    }
+    emit _bridge->sig_append_history_batch(qmlBatch);
+
+
+}
+
+void ChatDialog::slot_send_msg(QString target, QString text)
+{
+    int my_uid = UserMgr::getInstance()->GetUid();
+    int friend_uid = _curr_chat_uid; // The current active chat friend UID
+    if (_curr_chat_uid == 0 || text.trimmed().isEmpty()) {
+        return;
+    }
+
+    // 1. Build ChatMsg entity for yourself
+    int uuid=static_cast<int>(QDateTime::currentMSecsSinceEpoch() & 0x7FFFFFFF);
+    ChatMsg sent_msg;
+    sent_msg.msg_id   = uuid; // Assigned by server or local DB increment
+    sent_msg.from_uid = my_uid;
+    sent_msg.to_uid   = friend_uid;
+    sent_msg.type     = "text";
+    sent_msg.content  = text;
+    sent_msg.timeStr  = QTime::currentTime().toString("hh:mm AP");
+
+    // 2. 🚀 Store inside the C++ _history_cache map!
+    UserMgr::getInstance()->AppendHistoryMsg(friend_uid,sent_msg);
+    //_history_cache[friend_uid].append(sent_msg);
+
+    // 3. (Optional) Save to local SQLite database for persistence
+    // SqliteMgr::getInstance()->saveMsg(sent_msg);
+
+    // 4. Update left list preview snippet
+    auto iter = _chat_items_added.find(friend_uid);
+    if (iter != _chat_items_added.end()) {
+        auto item=iter.value();
+        auto wid = qobject_cast<ChatUserWid*>(ui->chat_user_list->itemWidget(iter.value()));
+        if (wid) wid->updateLastMsg(text);
+
+        int row=ui->chat_user_list->row(item);
+        if(row>0){
+            ui->chat_user_list->takeItem(row);
+            ui->chat_user_list->insertItem(0, item);
+            ui->chat_user_list->setItemWidget(item, wid);
+            ui->chat_user_list->setCurrentItem(item);
+        }
+    }
+
+
+
+
+    QJsonObject obj;
+    obj["from_uid"]=my_uid;
+    obj["to_uid"]=friend_uid;
+    obj["type"]="text";
+    obj["content"]=text;
+    obj["msg_id"]=uuid;
+    QJsonDocument doc(obj);
+    QByteArray data = doc.toJson(QJsonDocument::Compact);
+    emit TcpMgr::getInstance()->sig_send_data(ReqId::ID_TEXT_CHAT_MSG_REQ,data);
+}
+
+void ChatDialog::slot_text_chat_msg(std::shared_ptr<ChatMsg> msg)
+{
+    if (!msg) return;
+
+    auto from_uid = msg->from_uid;
+    UserMgr::getInstance()->AppendHistoryMsg(from_uid, *msg);
+
+    auto iter = _chat_items_added.find(from_uid);
+    ChatUserWid* chat_user_wid = nullptr;
+    QListWidgetItem* item = nullptr;
+
+    if (iter == _chat_items_added.end()) {
+        qDebug() << "Friend message, add new chat item, id is " << from_uid;
+        auto f = UserMgr::getInstance()->getFriend(from_uid);
+        if (!f) {
+            qDebug() << "Cannot find friend info for uid:" << from_uid;
+            return;
+        }
+
+        auto chat_data = std::make_shared<ChatData>(f->_uid, f->_name, f->_icon);
+        chat_user_wid = new ChatUserWid(); // 👈 修正：直接为外部指针赋值，避免变量遮蔽
+
+        std::shared_ptr<UserInfo> f_user=std::make_shared<UserInfo>(f);
+        chat_user_wid->SetInfo(f_user);
+        chat_user_wid->SetChatData(chat_data);
+
+        item = new QListWidgetItem();
+        item->setSizeHint(chat_user_wid->sizeHint());
+        ui->chat_user_list->insertItem(0, item); // 新来消息的好友条目建议直接插入最顶端 (Row 0)
+        ui->chat_user_list->setItemWidget(item, chat_user_wid);
+        _chat_items_added[from_uid] = item;
+    } else {
+        item = iter.value();
+        QWidget* widget = ui->chat_user_list->itemWidget(item);
+        chat_user_wid = qobject_cast<ChatUserWid*>(widget);
+    }
+
+    if (chat_user_wid) {
+        // 更新最后一条消息预览
+        chat_user_wid->updateLastMsg(msg->content);
+
+        // 收到消息时将已有会话项置顶
+        if (item) {
+            int row = ui->chat_user_list->row(item);
+            if (row > 0) {
+                ui->chat_user_list->takeItem(row);
+                ui->chat_user_list->insertItem(0, item);
+                ui->chat_user_list->setItemWidget(item, chat_user_wid);
+            }
+        }
+    }
+
+    // 路由分发：如果在当前会话则推入气泡，否则点亮未读红点
+    if (_curr_chat_uid == from_uid) {
+        QString sender_name = chat_user_wid ? chat_user_wid->GetUserName() : "Friend";
+        emit _bridge->sig_new_message_received(sender_name, msg->content);
+    } else {
+        if (chat_user_wid) {
+            //chat_user_wid->ShowRedPoint(true);
+        }
+    }
+}
+
 
 
 

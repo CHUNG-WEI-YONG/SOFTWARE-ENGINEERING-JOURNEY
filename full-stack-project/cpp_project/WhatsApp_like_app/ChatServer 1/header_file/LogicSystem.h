@@ -53,6 +53,7 @@ private:
 	void SearchUser(shared_ptr<CSession> session, const short& msg_id, const string& msg_data);
 	void AddFriendApply(shared_ptr<CSession> session, const short& msg_id, const string& msg_data);
 	void AuthFriendApply(shared_ptr<CSession> session, const short &msg_id, const string& msg_data);
+	void DealChatTextMsg(shared_ptr<CSession> session, const short& msg_id, const string& msg_data);
 	void SearchUserByUid(const std::string& uid, Json::Value& rt);
 	void SearchUserByName(const std::string& uid, Json::Value& rt);
 	bool isPureDigit(const std::string& word);

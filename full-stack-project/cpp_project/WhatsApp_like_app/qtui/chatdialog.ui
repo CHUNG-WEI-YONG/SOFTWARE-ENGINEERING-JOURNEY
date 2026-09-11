@@ -332,6 +332,7 @@
        </item>
       </layout>
      </widget>
+     <widget class="FriendInfoPage" name="chat_info_page"/>
      <widget class="ApplyFriendPage" name="friend_apply_page"/>
     </widget>
    </item>
@@ -377,7 +378,13 @@
   <customwidget>
    <class>ApplyFriendPage</class>
    <extends>QWidget</extends>
-   <header location="global">applyfriendpage.h</header>
+   <header>applyfriendpage.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>FriendInfoPage</class>
+   <extends>QWidget</extends>
+   <header location="global">friendinfopage.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

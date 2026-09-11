@@ -25,6 +25,9 @@ public:
     //void SetInfo(QString name, QString head, QString msg);
     void SetInfo(std::shared_ptr<UserInfo> user);
     std::shared_ptr<UserInfo> GetUserInfo();
+    std::shared_ptr<ChatData> GetChatData();
+    void SetChatData(std::shared_ptr<ChatData> data);
+    void updateLastMsg(const QString& last_msg);
 
 private:
     Ui::ChatUserWid *ui;
@@ -33,6 +36,7 @@ private:
     // QString _msg;
     QVariantList m_chatHistory;
     std::shared_ptr<UserInfo> _user;
+    std::shared_ptr<ChatData> _chat_data;
 
     // 初始化时或者构造时加两条假数据方便你直接测试：
     void initFakeData(const QString& name) {

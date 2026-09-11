@@ -72,6 +72,8 @@ qt_add_executable(qtui
     findfaileddialog.h findfaileddialog.cpp findfaileddialog.ui
     handler_func.h handler_func.cpp
     authfriend.h authfriend.cpp authfriend.ui
+    friendinfopage.h friendinfopage.cpp friendinfopage.ui
+
 
 
 )
