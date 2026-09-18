@@ -1,5 +1,6 @@
 #include "chatuserwid.h"
 #include "ui_chatuserwid.h"
+#include <QPainter>
 
 ChatUserWid::ChatUserWid(QWidget *parent) :
     ListItemBase(parent),
@@ -91,4 +92,42 @@ void ChatUserWid::updateLastMsg(const QString &last_msg)
 {
     _user->_last_msg=last_msg;
     ui->user_chat_lb->setText(last_msg);
+}
+
+void ChatUserWid::ShowRedPoint(bool show)
+{
+    _red_point=show;
+    update();
+}
+
+void ChatUserWid::paintEvent(QPaintEvent *event)
+{
+    ListItemBase::paintEvent(event);
+
+    // 2. 如果不需要显示红点，直接返回
+    if (!_red_point || !ui->icon_lb) {
+        return;
+    }
+
+    QPainter painter(this);
+    painter.setRenderHint(QPainter::Antialiasing); // 抗锯齿
+
+    // 获取头像在整个 ChatUserWid 中的绝对矩形位置
+    QRect iconRect = ui->icon_lb->geometry();
+    // 将其从 icon_wid 坐标系转换到 ChatUserWid (this) 坐标系
+    QPoint globalTopRight = ui->icon_wid->mapTo(this, iconRect.topRight());
+
+    // 红点半径与中心坐标计算（让红点圆心稍稍压在头像右上边缘）
+    int radius = 5;
+    QPoint center(globalTopRight.x() - radius, globalTopRight.y() + radius);
+
+    // 绘制红色实心圆点
+    painter.setPen(Qt::NoPen);
+    painter.setBrush(QColor("#FF4D4F")); // 鲜艳红
+    painter.drawEllipse(center, radius, radius);
+
+    // 可选：给红点加上 1px 白色边框，在深色头像上更突出
+    painter.setPen(QPen(Qt::white, 1.5));
+    painter.setBrush(Qt::NoBrush);
+    painter.drawEllipse(center, radius, radius);
 }

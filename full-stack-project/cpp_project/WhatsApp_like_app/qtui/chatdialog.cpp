@@ -14,6 +14,12 @@
 #include "conuseritem.h"
 #include "friendinfopage.h"
 #include "friendinfopage.h"
+#include <QFileInfo>
+#include "FileUploader.h"
+#include <QThread>
+#include <QFileDialog>
+#include <QStandardPaths>
+#include "filedownloader.h"
 
 ChatDialog::ChatDialog(QWidget *parent)
     : QDialog(parent)
@@ -78,37 +84,6 @@ ChatDialog::ChatDialog(QWidget *parent)
     qDebug() << "🔍 [QML 错误列表]:" << ui->chat_quickwid->errors();
     ui->stackedWidget->setCurrentIndex(0);
 
-    // connect(ui->chat_user_list, &QListWidget::itemClicked, this, [this, bridge](QListWidgetItem *item){
-    //     if (!item) return;
-    //     QWidget* widget = ui->chat_user_list->itemWidget(item);
-    //     if (!widget) return;
-    //     ChatUserWid* userWid = qobject_cast<ChatUserWid*>(widget);
-    //     QString clickedName = userWid ? userWid->GetUserName() : item->data(Qt::DisplayRole).toString();
-    //     if (clickedName.isEmpty()) clickedName = "Unknown User";
-
-    //     QString clickedIcon = item->data(Qt::UserRole).toString();
-    //     if (clickedIcon.isEmpty() && userWid) { clickedIcon = userWid->GetUserIcon(); }
-
-    //     if (clickedIcon.contains(QLatin1String("qrc://rc/"))) {
-    //         clickedIcon.replace(QLatin1String("qrc://rc/"), QLatin1String("qrc:/rc/"));
-    //     } else if (clickedIcon.startsWith(QLatin1String(":/rc/"))) {
-    //         clickedIcon.replace(QLatin1String(":/rc/"), QLatin1String("qrc:/rc/"));
-    //     }
-    //     if (clickedIcon.isEmpty() || !clickedIcon.startsWith(QLatin1String("qrc:/rc/"))) {
-    //         clickedIcon = QStringLiteral("qrc:/rc/chat_picture/search.png");
-    //     }
-
-    //     bool fakeOnline = (ui->chat_user_list->currentRow() % 2 == 0);
-    //     QVariantList fakeHistory; QVariantMap msg1, msg2;
-    //     msg1["sender"] = "other"; msg1["type"] = "text";
-    //     msg1["content"] = QString("Hello! I am %1. Welcome to QML world!").arg(clickedName);
-    //     msg1["timeStr"] = "10:00 AM"; fakeHistory.append(msg1);
-    //     msg2["sender"] = "me"; msg2["type"] = "text";
-    //     msg2["content"] = "Hi, glad to see you too.";
-    //     msg2["timeStr"] = "10:01 AM"; fakeHistory.append(msg2);
-
-    //     emit bridge->sig_user_switched(clickedName, fakeOnline, QStringLiteral("10 mins ago"), clickedIcon, fakeHistory);
-    // });
 
     ShowSearch(false);
     connect(ui->chat_user_list, &ChatUserList::sig_loading_user, this, &ChatDialog::slot_loading_user);
@@ -157,6 +132,10 @@ ChatDialog::ChatDialog(QWidget *parent)
     connect(TcpMgr::getInstance().get(),&TcpMgr::sig_load_history_finish,this,&ChatDialog::slot_load_history_finish);
     connect(_bridge,&ChatBridge::sig_send_msg,this,&ChatDialog::slot_send_msg);
     connect(TcpMgr::getInstance().get(),&TcpMgr::sig_text_chat_msg,this,&ChatDialog::slot_text_chat_msg);
+    connect(_bridge,&ChatBridge::sig_req_upload_file,this,&ChatDialog::slot_req_upload_file);
+    connect(TcpMgr::getInstance().get(),&TcpMgr::sig_upload_file,this,&ChatDialog::slot_upload_file);
+    connect(_bridge,&ChatBridge::sig_req_download_file,this,&ChatDialog::slot_req_download_file);
+    connect(TcpMgr::getInstance().get(), &TcpMgr::sig_download_file_rsp, this, &ChatDialog::slot_download_file);
 
 }
 
@@ -303,7 +282,7 @@ void ChatDialog::SetSelectedChatItem(int uid)
         if(!con_user){
             return;
         }
-        _curr_chat_uid=con_user->GetUserInfo()->_uid;
+        //_curr_chat_uid=con_user->GetUserInfo()->_uid;
     }
 
     for (int i = 0; i < ui->chat_user_list->count(); ++i) {
@@ -361,43 +340,6 @@ void ChatDialog::SwitchToUserChat(std::shared_ptr<UserInfo> user)
     ui->stackedWidget->setCurrentIndex(0);
 }
 
-// void ChatDialog::SwitchToUserChat(std::shared_ptr<UserInfo> user)
-// {
-//     if(!user)return;
-//     if (_curr_chat_uid == user->_uid) {
-//         return;
-//     }
-//     int uid=UserMgr::getInstance()->GetUid();
-//     _curr_chat_uid=user->_uid;
-
-//     QVariantList history;
-//     auto _history_cache=UserMgr::getInstance()->GetHistoryMsgs(_curr_chat_uid);
-//     if (!UserMgr::getInstance()->hasHistoryCache(_curr_chat_uid)) {
-//         // 首次打开：初始化分页游标并异步触发首次拉取（如最近 20 条）
-//         _user_history_cursor[_curr_chat_uid] = 0;
-
-//         // 🚀 发射信号查询本地 SQLite / 服务器历史记录
-//         // emit sig_load_user_history(_curr_chat_uid, 0, 20);
-//     } else {
-//         // 命中内存缓存：直接提取所有消息并格式化
-//         auto history_cache = UserMgr::getInstance()->GetHistoryMsgs(_curr_chat_uid);
-//         for (const auto& msg : history_cache) {
-//             history.append(msg.toVariantMap(uid));
-//         }
-//     }
-
-
-//         // 🚀 发射信号或调用数据库查询接口（拉取最近的 20 条消息）
-//         // 异步查询完成后会自动回调 slot_load_history_finish
-//         //emit sig_load_user_history(user->_uid, 0, 20);
-//     emit _bridge->sig_user_switched(user->_name,
-//                                     true,
-//                                     "today",
-//                                     user->_icon,
-//                                     history);
-
-//     ui->stackedWidget->setCurrentIndex(0);
-// }
 
 void ChatDialog::slot_loading_contact_user()
 {
@@ -656,8 +598,9 @@ void ChatDialog::slot_text_chat_msg(std::shared_ptr<ChatMsg> msg)
     }
 
     if (chat_user_wid) {
+        QString previewText=(msg->type=="file")?QString("File %1").arg(msg->filename.isEmpty()?msg->content:msg->filename):msg->content;
         // 更新最后一条消息预览
-        chat_user_wid->updateLastMsg(msg->content);
+        chat_user_wid->updateLastMsg(previewText);
 
         // 收到消息时将已有会话项置顶
         if (item) {
@@ -673,12 +616,283 @@ void ChatDialog::slot_text_chat_msg(std::shared_ptr<ChatMsg> msg)
     // 路由分发：如果在当前会话则推入气泡，否则点亮未读红点
     if (_curr_chat_uid == from_uid) {
         QString sender_name = chat_user_wid ? chat_user_wid->GetUserName() : "Friend";
-        emit _bridge->sig_new_message_received(sender_name, msg->content);
+        if(msg->type=="file"){
+            QString sizeStr = msg->fileszStr;
+            if (sizeStr.isEmpty()) {
+                double sizeMb = msg->filesz / (1024.0 * 1024.0);
+                sizeStr = (sizeMb >= 1.0)
+                              ? QString::number(sizeMb, 'f', 2) + " MB"
+                              : QString::number(msg->filesz / 1024.0, 'f', 1) + " KB";
+            }
+
+            QString filename=msg->filename.isEmpty()?msg->content:msg->filename;
+            //emit _bridge->sig_new_file_arrive(sender_name,filename,sizeStr,"",msg->timeStr);
+            emit _bridge->sig_new_file_arrive(
+                sender_name,
+                filename,
+                sizeStr,
+                "",          // 本地路径为空
+                msg->timeStr,
+                msg->token   // 👈 把消息里解析出的 msg->token 传给 QML！
+                );
+        }
+        else{
+            emit _bridge->sig_new_message_received(sender_name, msg->content);
+        }
     } else {
         if (chat_user_wid) {
-            //chat_user_wid->ShowRedPoint(true);
+            chat_user_wid->ShowRedPoint(true);
         }
     }
+}
+
+void ChatDialog::slot_req_upload_file(const QString &friendName, const QString &filePath)
+{
+    auto friend_ptr=UserMgr::getInstance()->getFriendByName(friendName);
+    if (!friend_ptr) {
+        qWarning() << "[ChatDialog] Cannot find about the friend: " << friendName;
+        return;
+    }
+
+    QFileInfo fileInfo(filePath);
+    if (!fileInfo.exists() || !fileInfo.isFile()) {
+        qWarning() << "[ChatDialog] File path is not existing or it is not a file:" << filePath;
+        return;
+    }
+    int touid=friend_ptr->_uid;
+    QString filename=fileInfo.fileName();
+    qint64 filesz=fileInfo.size();
+
+    _pending_upload_path=filePath;
+    auto md5=CalculateFileMD5(filePath);
+    QJsonObject obj;
+    obj["to_uid"]=touid;
+    obj["from_uid"]=UserMgr::getInstance()->GetUid();
+    obj["filename"]=filename;
+    obj["filesz"]=filesz;
+    obj["md5"]=md5;
+
+    QJsonDocument doc(obj);
+    QByteArray jsonStr = doc.toJson(QJsonDocument::Compact);
+
+    TcpMgr::getInstance()->sig_send_data(ReqId::ID_SNED_FILE_REQ,jsonStr);
+    qDebug() << "已向 ChatServer 申请上传凭据，目标 UID:" << friend_ptr->_uid
+             << "文件名:" << filename << "文件大小:" << filesz << "Bytes";
+}
+
+void ChatDialog::slot_upload_file(std::shared_ptr<FileToken>token)
+{
+    if (!token) {
+        qWarning() << "[ChatDialog] FileToken is null!";
+        return;
+    }
+    qDebug() << "[ChatDialog] Starting upload task for:" << token->filename
+             << "to" << token->host << ":" << token->port;
+
+    auto localFilePath=_pending_upload_path;
+    if(localFilePath.isEmpty()){
+        qDebug()<<"Error in getting the file";
+        return;
+    }
+
+    addInitialFileBubbleUi(token);
+    FileUploader *uploader=new FileUploader(*token , localFilePath);
+    QThread *thread=new QThread;
+    uploader->moveToThread(thread);
+    connect(thread,&QThread::started,uploader,&FileUploader::startUpload);
+    connect(uploader, &FileUploader::sig_finished, thread, &QThread::quit);
+    connect(thread, &QThread::finished, uploader, &QObject::deleteLater);
+    connect(thread, &QThread::finished, thread, &QObject::deleteLater);
+
+    connect(uploader, &FileUploader::sig_progress, this, [this,token](qint64 sent, qint64 total) {
+        int percent = (total > 0) ? static_cast<int>((sent * 100) / total) : 0;
+        // 更新 UI 进度条
+        updateFileProgressUI(percent,token->to_uid);
+        qDebug() << "[ChatDialog] Upload progress:" << percent << "% (" << sent << "/" << total << ")";
+    }, Qt::QueuedConnection);
+
+    connect(uploader, &FileUploader::sig_finished, this, [this, token](bool success, const QString& reason) {
+        auto fri_ptr = UserMgr::getInstance()->getFriend(token->to_uid);
+        QString friendName = fri_ptr ? fri_ptr->_name : "";
+
+        if (success) {
+            qDebug() << "[ChatDialog] File successfully uploaded:" << token->filename;
+
+            // ① 更新 UI 气泡为完成状态
+            emit _bridge->sig_file_upload_complete(friendName, true, token->token);
+
+            // ② 通知 ChatServer 转发给对端好友
+            sendFileMsgToChatServer(token);
+        } else {
+            qWarning() << "[ChatDialog] File upload failed:" << reason;
+
+            // 更新 UI 为失败状态
+            emit _bridge->sig_file_upload_complete(friendName, false, reason);
+        }
+    }, Qt::QueuedConnection);
+
+    // ──► 5. 启动子线程开始推流 ◄──
+    thread->start();
+}
+
+void ChatDialog::slot_req_download_file(const QString &fileToken, const QString &fileName)
+{
+    // 1. 让用户选择保存到本地哪一个文件
+    QString defaultDir = QStandardPaths::writableLocation(QStandardPaths::DownloadLocation);
+    QString defaultPath = defaultDir + "/" + fileName;
+
+    QString saveFilePath = QFileDialog::getSaveFileName(
+        this,
+        tr("Save File As"),
+        defaultPath,
+        tr("All Files (*.*)")
+        );
+
+    if (saveFilePath.isEmpty()) {
+        qDebug() << "[ChatDialog] Download canceled by user.";
+        return;
+    }
+
+    // 暂存本地路径，等待 ChatServer 告诉我们 FileServer 的 IP 和端口
+    _pending_download_save_path = saveFilePath;
+
+    // 2. 构造协议发给 ChatServer：申请下载该文件
+    QJsonObject req;
+    req["uid"] = UserMgr::getInstance()->GetUid();
+    req["token"] = fileToken;       // 文件的下载凭据/标识
+    req["filename"] = fileName;
+
+    QJsonDocument doc(req);
+    QByteArray sendData = doc.toJson(QJsonDocument::Compact);
+
+    // 发给常驻聊天服务器（假设定义为 ID_DOWNLOAD_FILE_REQ 或你的下载申请协议）
+    TcpMgr::getInstance()->sig_send_data(ReqId::ID_DOWNLOAD_FILE_REQ, sendData);
+    qDebug() << "[ChatDialog] Requesting download ticket from ChatServer for token:" << fileToken;
+}
+
+void ChatDialog::slot_download_file(std::shared_ptr<FileToken> token)
+{
+
+    if (!token) {
+        qWarning() << "[ChatDialog] Download FileToken is null!";
+        return;
+    }
+
+    QString saveFilePath = _pending_download_save_path;
+    if (saveFilePath.isEmpty()) {
+        qWarning() << "[ChatDialog] Save file path is empty!";
+        return;
+    }
+
+    qDebug() << "[ChatDialog] Starting download for:" << token->filename
+             << "from" << token->host << ":" << token->port
+             << "Total Size:" << token->filesz << "Bytes";
+
+    FileDownloader *downloader=new FileDownloader(token->host,token->port,token->token,token->filesz,saveFilePath);
+    QThread* thread = new QThread;
+    downloader->moveToThread(thread);
+
+    connect(thread, &QThread::started, downloader, &FileDownloader::StartDownloaded);
+    connect(downloader, &FileDownloader::sig_finished, thread, &QThread::quit);
+    connect(thread, &QThread::finished, downloader, &QObject::deleteLater);
+    connect(thread, &QThread::finished, thread, &QObject::deleteLater);
+
+    // 3. 下载进度回调 -> 刷新 QML 进度条
+    connect(downloader, &FileDownloader::sig_progress, this, [this](qint64 recv, qint64 total) {
+        int percent = (total > 0) ? static_cast<int>((recv * 100) / total) : 0;
+        auto fri_ptr = UserMgr::getInstance()->getFriend(_curr_chat_uid);
+        QString friendName = fri_ptr ? fri_ptr->_name : "";
+        emit _bridge->sig_file_upload_progress(friendName, percent);
+        qDebug() << "[ChatDialog] Download Progress:" << percent << "% (" << recv << "/" << total << ")";
+    }, Qt::QueuedConnection);
+
+    // 4. 下载完成/失败回调
+    connect(downloader, &FileDownloader::sig_finished, this, [this, saveFilePath](bool success, const QString& reason) {
+        auto fri_ptr = UserMgr::getInstance()->getFriend(_curr_chat_uid);
+        QString friendName = fri_ptr ? fri_ptr->_name : "";
+
+        emit _bridge->sig_file_upload_complete(friendName, success, saveFilePath);
+
+        if (success) {
+            qDebug() << "[ChatDialog] File successfully saved to:" << saveFilePath;
+        } else {
+            qWarning() << "[ChatDialog] File download failed:" << reason;
+        }
+    }, Qt::QueuedConnection);
+
+    // 5. 启动子线程开始拉流
+    thread->start();
+
+
+}
+
+void ChatDialog::sendFileMsgToChatServer(std::shared_ptr<FileToken> token)
+{
+    // 上传到 FileServer 成功后，给 ChatServer 发一条消息，让 ChatServer 转发给对方
+    QJsonObject fileDetail;
+    fileDetail["filename"] = token->filename;
+    fileDetail["filesz"]   = static_cast<qint64>(token->filesz);
+    fileDetail["md5"]      = token->md5;
+    fileDetail["token"]    = token->token;
+
+    // 转为字符串作为 content
+    QString contentStr = QString::fromUtf8(QJsonDocument(fileDetail).toJson(QJsonDocument::Compact));
+
+    // 2. 组装发往 ChatServer 的顶层消息包
+    int uuid = static_cast<int>(QDateTime::currentMSecsSinceEpoch() & 0x7FFFFFFF);
+    QJsonObject msg_json;
+    msg_json["from_uid"] = static_cast<qint64>(token->from_uid);
+    msg_json["to_uid"]   = static_cast<qint64>(token->to_uid);
+    msg_json["type"]     = "file";
+    msg_json["content"]  = contentStr; // 核心：包含文件详情的 JSON 字符串
+    msg_json["msg_id"]   = uuid;
+
+    QJsonDocument doc(msg_json);
+    TcpMgr::getInstance()->slot_send_data(ReqId::ID_TEXT_CHAT_MSG_REQ, doc.toJson(QJsonDocument::Compact));
+}
+
+void ChatDialog::updateFileProgressUI(int percent,int to_uid)
+{
+    auto fri_ptr=UserMgr::getInstance()->getFriend(to_uid);
+    emit _bridge->sig_file_upload_progress(fri_ptr->_name,percent);
+}
+
+void ChatDialog::addInitialFileBubbleUi(std::shared_ptr<FileToken> token)
+{
+    auto fri_ptr=UserMgr::getInstance()->getFriend(token->to_uid);
+    if(!fri_ptr)return;
+
+    double sizeMb=token->filesz/(1024.0*1024.0);
+    QString sizeStr = (sizeMb >= 1.0)
+                          ? QString::number(sizeMb, 'f', 2) + " MB"
+                          : QString::number(token->filesz / 1024.0, 'f', 1) + " KB";
+
+    int uuid = static_cast<int>(QDateTime::currentMSecsSinceEpoch() & 0x7FFFFFFF);
+    ChatMsg sent_msg;
+    sent_msg.msg_id   = uuid;
+    sent_msg.from_uid = UserMgr::getInstance()->GetUid();
+    sent_msg.to_uid   = token->to_uid;
+    sent_msg.type     = "file";
+    sent_msg.content  = QString("[File] %1").arg(token->filename);
+    sent_msg.timeStr  = QTime::currentTime().toString("hh:mm AP");
+    UserMgr::getInstance()->AppendHistoryMsg(token->to_uid,sent_msg);
+
+    auto iter=_chat_items_added.find(token->to_uid);
+    if (iter != _chat_items_added.end()) {
+        auto wid = qobject_cast<ChatUserWid*>(ui->chat_user_list->itemWidget(iter.value()));
+        if (wid) wid->updateLastMsg(sent_msg.content);
+    }
+
+    emit _bridge->sig_new_file_arrive(
+        fri_ptr->_name,
+        token->filename,
+        sizeStr,
+        _pending_upload_path,
+        sent_msg.timeStr,
+        nullptr
+        );
+
+
 }
 
 

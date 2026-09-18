@@ -107,7 +107,7 @@ void CSession::asyncReadBody(int total_len) {
 			memcpy(_recv_msg_node->_data, _data, byte_transfer);
 			_recv_msg_node->_total_len += byte_transfer;
 			_recv_msg_node->_data[_recv_msg_node->_total_len] = '\0';
-			LogicSystem::GetInstance()->PostMsgToQue(make_shared<LogicNode>(shared_from_this(), _recv_msg_node));
+			LogicSystem::GetInstance()->PostMsgtoQue(make_shared<LogicNode>(shared_from_this(), _recv_msg_node));
 				
 			async_read_head(HEAD_TOTAL_LEN);
 		}
@@ -197,4 +197,10 @@ void CSession::SetUserId(int id) {
 }
 int CSession::GetUserId() {
 	return _uid;
+}
+
+
+std::string LogicNode::GetSessionId()
+{
+	return _session->get_uuid();
 }

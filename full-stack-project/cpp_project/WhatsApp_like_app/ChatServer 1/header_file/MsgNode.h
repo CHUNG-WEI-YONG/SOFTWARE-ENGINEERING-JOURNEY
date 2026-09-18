@@ -40,13 +40,16 @@ public:
 
 class RecvNode :public MsgNode {
 	friend class LogicSystem;
+    friend class LogicWorker;
 public:
 	RecvNode(int len, short msg_id);
 	short _msg_id;
 };
 
 class SendNode :public MsgNode {
+    friend class LogicWorker;
 	friend class LogicSystem;
+
 public:
 	SendNode(const char* msg, short msg_len, short msg_id);
 	short _msg_id;

@@ -457,6 +457,67 @@ ChatService::Service::~Service() {
 }
 
 
+static const char* FileService_method_names[] = {
+  "/message.FileService/ApplyUploadTicket",
+};
+
+std::unique_ptr< FileService::Stub> FileService::NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options) {
+  (void)options;
+  std::unique_ptr< FileService::Stub> stub(new FileService::Stub(channel, options));
+  return stub;
+}
+
+FileService::Stub::Stub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options)
+  : channel_(channel), rpcmethod_ApplyUploadTicket_(FileService_method_names[0], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  {}
+
+::grpc::Status FileService::Stub::ApplyUploadTicket(::grpc::ClientContext* context, const ::message::ApplyUploadReq& request, ::message::ApplyUploadRsp* response) {
+  return ::grpc::internal::BlockingUnaryCall< ::message::ApplyUploadReq, ::message::ApplyUploadRsp, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_ApplyUploadTicket_, context, request, response);
+}
+
+void FileService::Stub::async::ApplyUploadTicket(::grpc::ClientContext* context, const ::message::ApplyUploadReq* request, ::message::ApplyUploadRsp* response, std::function<void(::grpc::Status)> f) {
+  ::grpc::internal::CallbackUnaryCall< ::message::ApplyUploadReq, ::message::ApplyUploadRsp, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_ApplyUploadTicket_, context, request, response, std::move(f));
+}
+
+void FileService::Stub::async::ApplyUploadTicket(::grpc::ClientContext* context, const ::message::ApplyUploadReq* request, ::message::ApplyUploadRsp* response, ::grpc::ClientUnaryReactor* reactor) {
+  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_ApplyUploadTicket_, context, request, response, reactor);
+}
+
+::grpc::ClientAsyncResponseReader< ::message::ApplyUploadRsp>* FileService::Stub::PrepareAsyncApplyUploadTicketRaw(::grpc::ClientContext* context, const ::message::ApplyUploadReq& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::message::ApplyUploadRsp, ::message::ApplyUploadReq, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_ApplyUploadTicket_, context, request);
+}
+
+::grpc::ClientAsyncResponseReader< ::message::ApplyUploadRsp>* FileService::Stub::AsyncApplyUploadTicketRaw(::grpc::ClientContext* context, const ::message::ApplyUploadReq& request, ::grpc::CompletionQueue* cq) {
+  auto* result =
+    this->PrepareAsyncApplyUploadTicketRaw(context, request, cq);
+  result->StartCall();
+  return result;
+}
+
+FileService::Service::Service() {
+  AddMethod(new ::grpc::internal::RpcServiceMethod(
+      FileService_method_names[0],
+      ::grpc::internal::RpcMethod::NORMAL_RPC,
+      new ::grpc::internal::RpcMethodHandler< FileService::Service, ::message::ApplyUploadReq, ::message::ApplyUploadRsp, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
+          [](FileService::Service* service,
+             ::grpc::ServerContext* ctx,
+             const ::message::ApplyUploadReq* req,
+             ::message::ApplyUploadRsp* resp) {
+               return service->ApplyUploadTicket(ctx, req, resp);
+             }, this)));
+}
+
+FileService::Service::~Service() {
+}
+
+::grpc::Status FileService::Service::ApplyUploadTicket(::grpc::ServerContext* context, const ::message::ApplyUploadReq* request, ::message::ApplyUploadRsp* response) {
+  (void) context;
+  (void) request;
+  (void) response;
+  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+}
+
+
 }  // namespace message
 #include <grpcpp/ports_undef.inc>
 

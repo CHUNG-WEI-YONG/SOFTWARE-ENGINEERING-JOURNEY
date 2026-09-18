@@ -57,9 +57,11 @@ private:
 };
 
 class LogicNode {
+	friend class LogicWorker;
 	friend class LogicSystem;
 public:
 	LogicNode(shared_ptr<CSession>session, shared_ptr<RecvNode> recvnode) :_session(session), _recvnode(recvnode) {};
+	std::string GetSessionId();
 private:
 	std::shared_ptr<CSession> _session;
 	std::shared_ptr<RecvNode> _recvnode;

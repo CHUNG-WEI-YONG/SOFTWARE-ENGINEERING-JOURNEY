@@ -35,18 +35,23 @@ using message::KickUserRsp;
 
 
 
+
+
 class Cserver;
+class LogicSystem;
 typedef  function<void(shared_ptr<CSession>, const short& msg_id, const string& msg_data)> FunCallBack;
-class LogicSystem :public Singleton<LogicSystem>
+class LogicWorker
 {
-	friend class Singleton<LogicSystem>;
+	friend class LogicSystem;
 public:
-	~LogicSystem();
+	void Start();
+	void End();
+	~LogicWorker();
 	void PostMsgToQue(shared_ptr < LogicNode> msg);
 	void SetServer(std::shared_ptr<Cserver> pserver);
 	bool GetBaseInfo(std::string base_key, int uid, std::shared_ptr<UserInfo>& user_info);
+	LogicWorker();
 private:
-	LogicSystem();
 	void DealMsg();
 	void RegisterCallBacks();
 	void LoginHandler(shared_ptr<CSession> session, const short& msg_id, const string& msg_data);
@@ -59,7 +64,9 @@ private:
 	bool isPureDigit(const std::string& word);
 	bool GetFriendApply(int to_uid, std::vector<std::shared_ptr<ApplyInfo>>& list);
 	bool GetFriendList(int uid, std::vector<std::shared_ptr<UserInfo>>& friend_list);
-
+	void UploadFile(shared_ptr<CSession> session, const short& msg_id, const string& msg_data);
+	void DealChatFileMsg(shared_ptr<CSession> session, const short& msg_id, const string& msg_data);
+	void DownloadFile(shared_ptr<CSession> session, const short& msg_id, const string& msg_data);
 	std::thread _worker_thread;
 	std::queue<shared_ptr<LogicNode>> _msg_que;
 	std::mutex _mutex;
@@ -67,4 +74,20 @@ private:
 	bool _b_stop;
 	std::map<short, FunCallBack> _fun_callbacks;
 	std::shared_ptr<Cserver> _p_server;
+};
+
+
+class LogicSystem :public Singleton<LogicSystem> {
+	friend class Singleton<LogicSystem>;
+public:
+	void PostMsgtoQue(shared_ptr<LogicNode> msg);
+	void SetServer(std::shared_ptr<Cserver> pserver);
+	bool GetBaseInfo(std::string base_key, int uid, std::shared_ptr<UserInfo>& user_info);
+	~LogicSystem();
+
+private:
+	LogicSystem();
+	std::vector<std::shared_ptr<LogicWorker>> _pool;
+	std::size_t sz;
+
 };

@@ -32,6 +32,9 @@ private:
     void AddLBGroup(StateWidget *lb);
     void LoadMoreChatItem();
     void LoadMoreContactUser();
+    void sendFileMsgToChatServer(std::shared_ptr<FileToken> token);
+    void updateFileProgressUI(int percent,int to_uid);
+    void addInitialFileBubbleUi(std::shared_ptr<FileToken> token);
     ChatUIMode _mode;
     ChatUIMode _state;
     bool _b_loading;
@@ -43,6 +46,9 @@ private:
     QWidget* _last_widget;
     QMap<int, int> _user_history_cursor;
     ChatBridge* _bridge{nullptr};
+    QString _pending_upload_path;
+    QString _pending_download_save_path;
+
     //QMap<int, QVariantList> _user_history_cache;
     //QMap<int,QList<ChatMsg>> _history_cache;
 
@@ -71,6 +77,10 @@ public slots:
     void slot_load_history_finish(int from_uid,QList<ChatMsg> historyList,int next_last_msg_id);
     void slot_send_msg(QString target ,QString text);
     void slot_text_chat_msg(std::shared_ptr<ChatMsg> msg);
+    void slot_req_upload_file(const QString& friendName,const QString& filePath);
+    void slot_upload_file(std::shared_ptr<FileToken>);
+    void slot_req_download_file(const QString& filetoken,const QString& filepath);
+    void slot_download_file(std::shared_ptr<FileToken> file);
 
 
 };

@@ -1,5 +1,6 @@
 import QtQuick 2.15
 import QtQuick.Controls 2.15
+import QtQuick.Dialogs 1.3
 
 Rectangle {
     id: chatPage
@@ -12,16 +13,16 @@ Rectangle {
     property string currentFriendName: ""
     property string currentFriendIcon: ""
 
-    // ──► 🎯 核心修正 1：引入触顶打捞状态锁，防止滚轮狂滚导致重复请求爆破 ◄──
+    // ──► 🎯 触顶打捞状态锁，防止滚轮狂滚导致重复请求爆破 ◄──
     property bool b_loading_history: false
 
-    // ──► 🛰️ 核心信号连接网（承接 C++ 实体序列化大盲包） ◄──
+    // ──► 🛰️ 核心信号连接网（承接 C++ 实体序列化数据） ◄──
     Connections {
         target: cppBridge
 
-        // 当 C++ 触发好友切换时，直接抛过来装满历史记录的 history 数组
+        // 当 C++ 触发好友切换时，加载历史记录
         onSig_user_switched: (name, isOnline, lastTime, iconPath, history) => {
-            console.log("🌟 [探针 6] QML 成功收到信号! 目标姓名:", name, "历史记录条数:", (history ? history.length : 0));
+            console.log("🌟 [QML] 切换会话! 目标姓名:", name, "历史记录条数:", (history ? history.length : 0));
             chatPage.currentFriendName = name
             chatPage.currentFriendIcon = iconPath
             title_lb.text = name
@@ -31,71 +32,109 @@ Rectangle {
             chatHistoryModel.clear()
 
             if (history !== undefined && history.length > 0) {
-                // 🚀 【防爆破核心安全修护】：遍历并清洗数据包
                 for (var i = 0; i < history.length; i++) {
                     var itemData = history[i];
-
-                    // 防御性安全隔离：强行将盲包拆解并本地重新拼装为标准的 JS 字典对象
-                    var secureObj = {
-                        "sender":  itemData.sender  !== undefined ? itemData.sender  : "other",
-                        "type":    itemData.type    !== undefined ? itemData.type    : "text",
-                        "content": itemData.content !== undefined ? itemData.content : "",
-                        "timeStr": itemData.timeStr !== undefined ? itemData.timeStr : ""
-                    };
-
-                    // 满足 Object 格式追加进数据仓库
-                    chatHistoryModel.append(secureObj);
+                    chatHistoryModel.append({
+                        "sender":   itemData.sender   !== undefined ? itemData.sender   : "other",
+                        "type":     itemData.type     !== undefined ? itemData.type     : "text",
+                        "content":  itemData.content  !== undefined ? itemData.content  : "",
+                        "fileSize": itemData.fileSize !== undefined ? itemData.fileSize : "",
+                        "timeStr":  itemData.timeStr  !== undefined ? itemData.timeStr  : "",
+                        "progress": 100,
+                        "isDone":   true
+                    });
                 }
             } else {
-                // 兜底 Demo 数据
-                chatHistoryModel.append({ "sender": "other", "type": "text", "content": "Hello! Welcome to QML!", "timeStr": "10:00 AM" })
-                chatHistoryModel.append({ "sender": "me",    "type": "text", "content": "Hi there! Let's test bubbles.", "timeStr": "10:01 AM" })
+                chatHistoryModel.append({ "sender": "other", "type": "text", "content": "Hello! Welcome to chat.", "timeStr": "10:00 AM", "progress": 100, "isDone": true })
             }
 
-            // 每次切换好友资产重置打捞锁
             chatPage.b_loading_history = false
             chatListView.positionViewAtEnd()
         }
 
+        // 收到好友普通文本消息
         onSig_new_message_received: (sender, message, timeStr) => {
-                // 仅当新消息属于当前正在聊天的会话时追加气泡
-                if (sender === chatPage.currentFriendName) {
-                    chatHistoryModel.append({
-                        "sender": "other",
-                        "type": "text",
-                        "content": message,
-                        "timeStr": timeStr || new Date().toLocaleTimeString(Qt.locale("en_US"), "hh:mm AP")
+            if (sender === chatPage.currentFriendName) {
+                chatHistoryModel.append({
+                    "sender": "other",
+                    "type": "text",
+                    "content": message,
+                    "timeStr": timeStr || new Date().toLocaleTimeString(Qt.locale("en_US"), "hh:mm AP"),
+                    "progress": 100,
+                    "isDone": true
+                });
+                chatListView.positionViewAtEnd();
+            }
+        }
+
+        // 下拉触顶加载旧历史记录
+        onSig_append_history_batch: (olderHistory) => {
+            if (olderHistory !== undefined && olderHistory.length > 0) {
+                var oldFirstIndex = chatListView.indexAt(chatListView.contentX, chatListView.contentY);
+
+                for (var i = olderHistory.length - 1; i >= 0; i--) {
+                    var itemData = olderHistory[i];
+                    chatHistoryModel.insert(0, {
+                        "sender":   itemData.sender   !== undefined ? itemData.sender   : "other",
+                        "type":     itemData.type     !== undefined ? itemData.type     : "text",
+                        "content":  itemData.content  !== undefined ? itemData.content  : "",
+                        "fileSize": itemData.fileSize !== undefined ? itemData.fileSize : "",
+                        "timeStr":  itemData.timeStr  !== undefined ? itemData.timeStr  : "",
+                        "progress": 100,
+                        "isDone":   true
                     });
-                    chatListView.positionViewAtEnd();
+                }
+
+                if (oldFirstIndex >= 0) {
+                    chatListView.positionViewAtIndex(oldFirstIndex + olderHistory.length, ListView.Beginning);
                 }
             }
+            chatPage.b_loading_history = false;
+        }
 
-        onSig_append_history_batch: (olderHistory) => {
-                    if (olderHistory !== undefined && olderHistory.length > 0) {
-                        // 1. 记录当前视图顶部的项索引，防止插入数据后视窗闪动跳跃
-                        var oldFirstIndex = chatListView.indexAt(chatListView.contentX, chatListView.contentY);
+        // ──► 📁 1. 新文件到达（本人发起上传或对端传来文件） ◄──
+        onSig_new_file_arrive: (friendName, fileName, fileSizeStr, filePath, timeStr, fileToken) => {
+            if (friendName === chatPage.currentFriendName) {
+                chatHistoryModel.append({
+                    "sender": (filePath !== "") ? "me" : "other",
+                    "type": "file",
+                    "content": fileName,
+                    "fileSize": fileSizeStr,
+                    "fileUrl": fileToken, // 👈 存入模型供点击事件使用！
+                    "timeStr": timeStr,
+                    "progress": 100,
+                    "isDone": true
+                });
+                chatListView.positionViewAtEnd();
+            }
+        }
 
-                        // 2. 将旧消息按时间正序从最上方（索引 0）依次插入
-                        // 注意：假设 olderHistory 传过来的是按时间升序 [更早 -> 较早]，所以逆向 insert(0)
-                        for (var i = olderHistory.length - 1; i >= 0; i--) {
-                            var itemData = olderHistory[i];
-                            chatHistoryModel.insert(0, {
-                                "sender":  itemData.sender  !== undefined ? itemData.sender  : "other",
-                                "type":    itemData.type    !== undefined ? itemData.type    : "text",
-                                "content": itemData.content !== undefined ? itemData.content : "",
-                                "timeStr": itemData.timeStr !== undefined ? itemData.timeStr : ""
-                            });
-                        }
-
-                        // 3. 恢复视窗相对位置，平滑停留在加载前看的位置
-                        if (oldFirstIndex >= 0) {
-                            chatListView.positionViewAtIndex(oldFirstIndex + olderHistory.length, ListView.Beginning);
-                        }
+        // ──► 📁 2. 刷新文件上传百分比 ◄──
+        onSig_file_upload_progress: (friendName, percent) => {
+            if (friendName === chatPage.currentFriendName) {
+                for (var i = chatHistoryModel.count - 1; i >= 0; --i) {
+                    var item = chatHistoryModel.get(i);
+                    if (item.type === "file" && item.sender === "me" && !item.isDone) {
+                        chatHistoryModel.setProperty(i, "progress", percent);
+                        break;
                     }
-
-                    // 4. 解除锁定，允许下一次下拉触顶打捞
-                    chatPage.b_loading_history = false;
                 }
+            }
+        }
+
+        // ──► 📁 3. 上传完毕 ◄──
+        onSig_file_upload_complete: (friendName, success, fileUrl) => {
+            if (friendName === chatPage.currentFriendName) {
+                for (var i = chatHistoryModel.count - 1; i >= 0; --i) {
+                    var item = chatHistoryModel.get(i);
+                    if (item.type === "file" && item.sender === "me" && !item.isDone) {
+                        chatHistoryModel.setProperty(i, "isDone", true);
+                        chatHistoryModel.setProperty(i, "progress", success ? 100 : 0);
+                        break;
+                    }
+                }
+            }
+        }
     }
 
     // 三态 ClickedLabel 图标组件封装
@@ -106,17 +145,60 @@ Rectangle {
         property string pressSrc: ""
         implicitWidth: 26
         implicitHeight: 26
+
+        signal clicked()
+
         Image {
-            id: img; anchors.fill: parent; source: customLabel.normalSrc; smooth: true
+            id: img
+            anchors.fill: parent
+            source: customLabel.normalSrc
+            smooth: true
             scale: mouseArea.pressed ? 0.9 : (mouseArea.containsMouse ? 1.05 : 1.0)
             Behavior on scale { NumberAnimation { duration: 100 } }
         }
-        MouseArea { id: mouseArea; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor }
+        MouseArea {
+            id: mouseArea
+            anchors.fill: parent
+            hoverEnabled: true
+            cursorShape: Qt.PointingHandCursor
+            onClicked: customLabel.clicked()
+        }
         states: [
             State { name: "hover"; when: mouseArea.containsMouse && !mouseArea.pressed; PropertyChanges { target: img; source: customLabel.hoverSrc } },
             State { name: "press"; when: mouseArea.pressed; PropertyChanges { target: img; source: customLabel.pressSrc } },
             State { name: "normal"; when: !mouseArea.containsMouse && !mouseArea.pressed; PropertyChanges { target: img; source: customLabel.normalSrc } }
         ]
+    }
+
+    // ──► 🎯 文件选择原生弹窗组件 ◄──
+    FileDialog {
+        id: fileDialog
+        title: "Please choose a file to send"
+        folder: shortcuts.home
+        selectMultiple: false
+
+        onAccepted: {
+            var rawPath = fileDialog.fileUrl.toString();
+            var cleanPath = rawPath.replace(/^(file:\/{3})/,"");
+            if (cleanPath === rawPath) {
+                cleanPath = rawPath.replace(/^(file:\/{2})/,"");
+            }
+
+            console.log("📁 [QML] 用户选择了文件:", cleanPath);
+
+            if (chatPage.currentFriendName === "") {
+                console.log("⚠️ 未选中好友，终止上传");
+                return;
+            }
+
+            if (typeof cppBridge !== 'undefined') {
+                cppBridge.uploadFileFromQml(chatPage.currentFriendName, cleanPath);
+            }
+        }
+
+        onRejected: {
+            console.log("❌ 用户取消了文件选择");
+        }
     }
 
     Column {
@@ -157,33 +239,25 @@ Rectangle {
                 clip: true
 
                 onContentYChanged: {
-                                if (chatListView.contentY < -30 && !chatPage.b_loading_history) {
-                                    if (chatPage.currentFriendName === "") return;
+                    if (chatListView.contentY < -30 && !chatPage.b_loading_history) {
+                        if (chatPage.currentFriendName === "") return;
+                        chatPage.b_loading_history = true;
+                        console.log("📥 [QML 触顶] 开始拉取好友历史:", chatPage.currentFriendName);
+                        if (typeof cppBridge !== 'undefined') {
+                            cppBridge.loadMoreHistoryFromQml(chatPage.currentFriendName);
+                        }
+                    }
+                }
 
-                                    // ① 立即上锁
-                                    chatPage.b_loading_history = true;
-                                    console.log("📥 [QML 触顶] 开始拉取好友历史:", chatPage.currentFriendName);
-
-                                    // ② 调用 C++ 接口
-                                    if (typeof cppBridge !== 'undefined') {
-                                        cppBridge.loadMoreHistoryFromQml(chatPage.currentFriendName);
-                                    }
-                                }
-                            }
-
-                // 原生现代化滚动条
                 ScrollBar.vertical: ScrollBar {
                     id: vScrollBar
                     width: 8
                     policy: ScrollBar.AsNeeded
-
                     contentItem: Rectangle {
                         implicitWidth: 8; radius: 4
                         color: vScrollBar.pressed ? "#7F8C8D" : (vScrollBar.hovered ? "#95A5A6" : "#BDC3C7")
                     }
                 }
-
-
 
                 delegate: Item {
                     id: chatItemRow
@@ -192,6 +266,7 @@ Rectangle {
 
                     readonly property bool isMe: model.sender === "me"
                     readonly property bool isText: model.type === "text"
+                    readonly property bool isFile: model.type === "file"
 
                     // 👤 A. 头像组件
                     Image {
@@ -220,11 +295,16 @@ Rectangle {
                         anchors.leftMargin: chatItemRow.isMe ? 0 : 12
                     }
 
-                    // C. 核心气泡复合框
+                    // ──► 💬 C. 核心气泡复合框 ◄──
                     Item {
                         id: bubbleContainer
-                        height: chatItemRow.isText ? textContent.implicitHeight + 20 : 160
-                        width: chatItemRow.isText ? Math.min(textContent.implicitWidth + 30, parent.width * 0.6) : 200
+
+                        // 尺寸动态调整：文件卡片固定高 80 宽 260
+                        height: chatItemRow.isFile ? 80 :
+                                (chatItemRow.isText ? textContent.implicitHeight + 20 : 160)
+
+                        width: chatItemRow.isFile ? 260 :
+                               (chatItemRow.isText ? Math.min(textContent.implicitWidth + 30, parent.width * 0.6) : 200)
 
                         anchors.top: nameLabel.bottom
                         anchors.topMargin: 4
@@ -267,7 +347,7 @@ Rectangle {
                             }
                         }
 
-                        // 多行文本
+                        // 1. 文本内容显示
                         Text {
                             id: textContent
                             visible: chatItemRow.isText
@@ -277,24 +357,97 @@ Rectangle {
                             wrapMode: Text.Wrap; verticalAlignment: Text.AlignVCenter
                         }
 
-                        // 图片裁剪
+                        // 2. 文件卡片显示
                         Item {
-                            id: imageWrapper
-                            visible: !chatItemRow.isText
+                            id: fileCardWrapper
+                            visible: chatItemRow.isFile
                             anchors.fill: parent
-                            anchors.margins: 4
+                            anchors.margins: 10
 
-                            layer.enabled: true
-                            layer.effect: Rectangle {
-                                width: imageWrapper.width; height: imageWrapper.height; radius: 6
+                            Row {
+                                id: fileMainRow
+                                anchors.top: parent.top
+                                anchors.left: parent.left
+                                anchors.right: parent.right
+                                spacing: 10
+
+                                Image {
+                                    id: fileIcon
+                                    width: 40; height: 40
+                                    source: "qrc:/rc/chat_picture/filedir.png"
+                                    fillMode: Image.PreserveAspectFit
+                                }
+
+                                Column {
+                                    width: parent.width - fileIcon.width - 10
+                                    spacing: 3
+
+                                    Label {
+                                        width: parent.width
+                                        text: model.content || "File"
+                                        font.family: "Microsoft YaHei"
+                                        font.pixelSize: 13
+                                        font.bold: true
+                                        color: "#2C3E50"
+                                        elide: Text.ElideMiddle
+                                    }
+
+                                    Row {
+                                        width: parent.width
+                                        Label {
+                                            text: model.fileSize || "File Transfer"
+                                            font.family: "Microsoft YaHei"
+                                            font.pixelSize: 11
+                                            color: "#7F8C8D"
+                                        }
+
+                                        Item { width: 10; height: 1 }
+
+                                        // 进度与状态文本
+                                        Label {
+                                            font.family: "Microsoft YaHei"
+                                            font.pixelSize: 11
+                                            color: model.isDone ? "#27AE60" : "#E67E22"
+                                            text: model.isDone ? "✓ Complete" : (model.progress + "%")
+                                        }
+                                    }
+                                }
                             }
 
-                            Image {
-                                id: imageContent
-                                source: !chatItemRow.isText ? (model.content || "") : ""
-                                fillMode: Image.PreserveAspectCrop
+                            // 传输中的细进度条
+                            ProgressBar {
+                                id: uploadProgressBar
+                                anchors.bottom: parent.bottom
+                                anchors.left: parent.left
+                                anchors.right: parent.right
+                                height: 4
+                                from: 0
+                                to: 100
+                                value: model.progress !== undefined ? model.progress : 0
+                                visible: !model.isDone
+
+                                background: Rectangle {
+                                    radius: 2
+                                    color: "#E0E0E0"
+                                }
+                                contentItem: Item {
+                                    Rectangle {
+                                        width: uploadProgressBar.visualPosition * parent.width
+                                        height: parent.height
+                                        radius: 2
+                                        color: "#2ECC71"
+                                    }
+                                }
+                            }
+
+                            MouseArea {
                                 anchors.fill: parent
-                                smooth: true
+                                cursorShape: Qt.PointingHandCursor
+                                onClicked: {
+                                    if (model.fileUrl && typeof cppBridge !== 'undefined') {
+                                        cppBridge.downloadFileFromQml(model.fileUrl, model.content);
+                                    }
+                                }
                             }
                         }
                     }
@@ -346,7 +499,19 @@ Rectangle {
                 Row {
                     anchors.left: parent.left; anchors.leftMargin: 24; anchors.verticalCenter: parent.verticalCenter; spacing: 18
                     ClickedLabel { id: emo_lb; normalSrc: "qrc:/rc/chat_picture/smile.png"; hoverSrc: "qrc:/rc/chat_picture/smile_hover.png"; pressSrc: "qrc:/rc/chat_picture/smile_press.png" }
-                    ClickedLabel { id: file_lb; normalSrc: "qrc:/rc/chat_picture/filedir.png"; hoverSrc: "qrc:/rc/chat_picture/filedir_hover.png"; pressSrc: "qrc:/rc/chat_picture/filedir_press.png" }
+                    ClickedLabel {
+                        id: file_lb
+                        normalSrc: "qrc:/rc/chat_picture/filedir.png"
+                        hoverSrc: "qrc:/rc/chat_picture/filedir_hover.png"
+                        pressSrc: "qrc:/rc/chat_picture/filedir_press.png"
+                        onClicked: {
+                            if (chatPage.currentFriendName === "") {
+                                console.log("⚠️ 请先在左侧选择要聊天的好友再发送文件！");
+                                return;
+                            }
+                            fileDialog.open();
+                        }
+                    }
                     ClickedLabel { id: voice_lb; normalSrc: "qrc:/rc/chat_picture/voice.png"; hoverSrc: "qrc:/rc/chat_picture/voice_hover.png"; pressSrc: "qrc:/rc/chat_picture/voice_press.png" }
                 }
 
@@ -371,12 +536,13 @@ Rectangle {
 
                         var currentTime = new Date().toLocaleTimeString(Qt.locale("en_US"), "hh:mm AP");
 
-                        // 本地仓库快速追加
                         chatHistoryModel.append({
                             "sender": "me",
                             "type": "text",
                             "content": chatedit.text,
-                            "timeStr": currentTime
+                            "timeStr": currentTime,
+                            "progress": 100,
+                            "isDone": true
                         });
 
                         if (typeof cppBridge !== 'undefined') {

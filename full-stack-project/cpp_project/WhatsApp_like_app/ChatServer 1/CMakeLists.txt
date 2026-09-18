@@ -55,7 +55,7 @@ add_executable(ChatServer
     ${ALL_HEADERS}
     ${GEN_PB_SRC}
     ${GEN_GRPC_SRC}
-)
+ "source_file/FileGrpcClient.cpp")
 
 # 5. 头文件搜索目录 (已彻底移除 Downloads 硬编码路径)
 target_include_directories(ChatServer PRIVATE

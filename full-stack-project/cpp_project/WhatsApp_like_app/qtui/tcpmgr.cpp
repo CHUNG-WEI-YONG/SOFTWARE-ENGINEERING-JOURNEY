@@ -364,6 +364,74 @@ void TcpMgr::initHandlers()
 
         emit sig_text_chat_msg(msg);
     });
+
+    _handlers.insert(ReqId::ID_SEND_FILE_RSP,[this](ReqId id,quint16 len,QByteArray message){
+        Q_UNUSED(len);
+        qDebug()<<"Handle id is "<<static_cast<int>(id)<<" and data is "<<message;
+        QJsonDocument jsonDoc=QJsonDocument::fromJson(message);
+        QJsonObject jsonObj=jsonDoc.object();
+        if(jsonDoc.isNull()){
+            qDebug()<<"Error in Reading Messsage";
+            emit sig_login_failed(ErrorCode::Err_JSON);
+            return;
+        }
+
+
+        if(!jsonObj.contains("error")){
+            ErrorCode error=ErrorCode::Err_JSON;
+            qDebug()<<"Nofity message failed. Error is "<<static_cast<int>(error);
+            emit sig_login_failed(error);
+            return ;
+        }
+        int error=jsonObj["error"].toInt();
+        if(static_cast<ErrorCode>(error)!=ErrorCode::SUCCESS){
+            qDebug()<<"Error message Get";
+            emit sig_login_failed(static_cast<ErrorCode>(error));
+            return;
+        }
+
+        int from_uid=jsonObj["from_uid"].toInt();
+        int to_uid=jsonObj["to_uid"].toInt();
+        auto file=FileToken::fromJson(jsonObj);
+        auto filemsg=std::make_shared<FileToken>(file);
+
+        emit sig_upload_file(filemsg);
+    });
+
+    _handlers.insert(ReqId::ID_DOWNLOAD_FILE_RSP,[this](ReqId id,quint16 len,QByteArray message){
+        Q_UNUSED(len);
+        qDebug()<<"Handle id is "<<static_cast<int>(id)<<" and data is "<<message;
+        QJsonDocument jsonDoc=QJsonDocument::fromJson(message);
+        QJsonObject jsonObj=jsonDoc.object();
+        if(jsonDoc.isNull()){
+            qDebug()<<"Error in Reading Messsage";
+            emit sig_login_failed(ErrorCode::Err_JSON);
+            return;
+        }
+
+
+        if(!jsonObj.contains("error")){
+            ErrorCode error=ErrorCode::Err_JSON;
+            qDebug()<<"Nofity message failed. Error is "<<static_cast<int>(error);
+            emit sig_login_failed(error);
+            return ;
+        }
+        int error=jsonObj["error"].toInt();
+        if(static_cast<ErrorCode>(error)!=ErrorCode::SUCCESS){
+            qDebug()<<"Error message Get";
+            emit sig_login_failed(static_cast<ErrorCode>(error));
+            return;
+        }
+
+
+        auto file=FileToken::fromJson(jsonObj);
+        auto filemsg=std::make_shared<FileToken>(file);
+
+        emit sig_download_file_rsp(filemsg);
+    });
+
+
+
 }
 
 void TcpMgr::HandleMessage(ReqId id, int len, QByteArray data)

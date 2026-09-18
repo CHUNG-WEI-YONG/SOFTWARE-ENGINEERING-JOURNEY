@@ -425,6 +425,71 @@ struct AuthFriendRspDefaultTypeInternal {
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 AuthFriendRspDefaultTypeInternal _AuthFriendRsp_default_instance_;
 
+inline constexpr ApplyUploadRsp::Impl_::Impl_(
+    ::_pbi::ConstantInitialized) noexcept
+      : _cached_size_{0},
+        ip_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        token_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        error_{0},
+        port_{0} {}
+
+template <typename>
+PROTOBUF_CONSTEXPR ApplyUploadRsp::ApplyUploadRsp(::_pbi::ConstantInitialized)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(ApplyUploadRsp_class_data_.base()),
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(),
+#endif  // PROTOBUF_CUSTOM_VTABLE
+      _impl_(::_pbi::ConstantInitialized()) {
+}
+struct ApplyUploadRspDefaultTypeInternal {
+  PROTOBUF_CONSTEXPR ApplyUploadRspDefaultTypeInternal() : _instance(::_pbi::ConstantInitialized{}) {}
+  ~ApplyUploadRspDefaultTypeInternal() {}
+  union {
+    ApplyUploadRsp _instance;
+  };
+};
+
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
+    PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 ApplyUploadRspDefaultTypeInternal _ApplyUploadRsp_default_instance_;
+
+inline constexpr ApplyUploadReq::Impl_::Impl_(
+    ::_pbi::ConstantInitialized) noexcept
+      : _cached_size_{0},
+        filename_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        md5_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        fromuid_{0},
+        touid_{0},
+        filesz_{::int64_t{0}} {}
+
+template <typename>
+PROTOBUF_CONSTEXPR ApplyUploadReq::ApplyUploadReq(::_pbi::ConstantInitialized)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(ApplyUploadReq_class_data_.base()),
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(),
+#endif  // PROTOBUF_CUSTOM_VTABLE
+      _impl_(::_pbi::ConstantInitialized()) {
+}
+struct ApplyUploadReqDefaultTypeInternal {
+  PROTOBUF_CONSTEXPR ApplyUploadReqDefaultTypeInternal() : _instance(::_pbi::ConstantInitialized{}) {}
+  ~ApplyUploadReqDefaultTypeInternal() {}
+  union {
+    ApplyUploadReq _instance;
+  };
+};
+
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
+    PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 ApplyUploadReqDefaultTypeInternal _ApplyUploadReq_default_instance_;
+
 inline constexpr AddFriendRsp::Impl_::Impl_(
     ::_pbi::ConstantInitialized) noexcept
       : _cached_size_{0},
@@ -806,6 +871,30 @@ const ::uint32_t
         PROTOBUF_FIELD_OFFSET(::message::KickUserRsp, _impl_.uid_),
         0,
         1,
+        0x081, // bitmap
+        PROTOBUF_FIELD_OFFSET(::message::ApplyUploadReq, _impl_._has_bits_),
+        8, // hasbit index offset
+        PROTOBUF_FIELD_OFFSET(::message::ApplyUploadReq, _impl_.fromuid_),
+        PROTOBUF_FIELD_OFFSET(::message::ApplyUploadReq, _impl_.touid_),
+        PROTOBUF_FIELD_OFFSET(::message::ApplyUploadReq, _impl_.filename_),
+        PROTOBUF_FIELD_OFFSET(::message::ApplyUploadReq, _impl_.filesz_),
+        PROTOBUF_FIELD_OFFSET(::message::ApplyUploadReq, _impl_.md5_),
+        2,
+        3,
+        0,
+        4,
+        1,
+        0x081, // bitmap
+        PROTOBUF_FIELD_OFFSET(::message::ApplyUploadRsp, _impl_._has_bits_),
+        7, // hasbit index offset
+        PROTOBUF_FIELD_OFFSET(::message::ApplyUploadRsp, _impl_.error_),
+        PROTOBUF_FIELD_OFFSET(::message::ApplyUploadRsp, _impl_.ip_),
+        PROTOBUF_FIELD_OFFSET(::message::ApplyUploadRsp, _impl_.port_),
+        PROTOBUF_FIELD_OFFSET(::message::ApplyUploadRsp, _impl_.token_),
+        2,
+        0,
+        3,
+        1,
 };
 
 static const ::_pbi::MigrationSchema
@@ -830,6 +919,8 @@ static const ::_pbi::MigrationSchema
         {165, sizeof(::message::TextChatMsgRsp)},
         {178, sizeof(::message::KickUserReq)},
         {183, sizeof(::message::KickUserRsp)},
+        {190, sizeof(::message::ApplyUploadReq)},
+        {203, sizeof(::message::ApplyUploadRsp)},
 };
 static const ::_pb::Message* PROTOBUF_NONNULL const file_default_instances[] = {
     &::message::_GetVarifyReq_default_instance_._instance,
@@ -852,6 +943,8 @@ static const ::_pb::Message* PROTOBUF_NONNULL const file_default_instances[] = {
     &::message::_TextChatMsgRsp_default_instance_._instance,
     &::message::_KickUserReq_default_instance_._instance,
     &::message::_KickUserRsp_default_instance_._instance,
+    &::message::_ApplyUploadReq_default_instance_._instance,
+    &::message::_ApplyUploadRsp_default_instance_._instance,
 };
 const char descriptor_table_protodef_message_2eproto[] ABSL_ATTRIBUTE_SECTION_VARIABLE(
     protodesc_cold) = {
@@ -891,35 +984,42 @@ const char descriptor_table_protodef_message_2eproto[] ABSL_ATTRIBUTE_SECTION_VA
     "\003 \001(\005\022\021\n\tthread_id\030\004 \001(\005\022\'\n\010textmsgs\030\005 \003"
     "(\0132\025.message.TextChatData\"\032\n\013KickUserReq"
     "\022\013\n\003uid\030\001 \001(\005\")\n\013KickUserRsp\022\r\n\005error\030\001 "
-    "\001(\005\022\013\n\003uid\030\002 \001(\0052P\n\rVarifyService\022\?\n\rGet"
-    "VarifyCode\022\025.message.GetVarifyReq\032\025.mess"
-    "age.GetVarifyRsp\"\0002\211\001\n\rStatusService\022G\n\r"
-    "GetChatServer\022\031.message.GetChatServerReq"
-    "\032\031.message.GetChatServerRsp\"\000\022/\n\005Login\022\021"
-    ".message.LoginReq\032\021.message.LoginRsp\"\0002\245"
-    "\003\n\013ChatService\022A\n\017NotifyAddFriend\022\025.mess"
-    "age.AddFriendReq\032\025.message.AddFriendRsp\""
-    "\000\022A\n\rRplyAddFriend\022\026.message.RplyFriendR"
-    "eq\032\026.message.RplyFriendRsp\"\000\022A\n\013SendChat"
-    "Msg\022\027.message.SendChatMsgReq\032\027.message.S"
-    "endChatMsgRsp\"\000\022D\n\020NotifyAuthFriend\022\026.me"
-    "ssage.AuthFriendReq\032\026.message.AuthFriend"
-    "Rsp\"\000\022G\n\021NotifyTextChatMsg\022\027.message.Tex"
-    "tChatMsgReq\032\027.message.TextChatMsgRsp\"\000\022>"
-    "\n\016NotifyKickUser\022\024.message.KickUserReq\032\024"
-    ".message.KickUserRsp\"\000b\006proto3"
+    "\001(\005\022\013\n\003uid\030\002 \001(\005\"_\n\016ApplyUploadReq\022\017\n\007fr"
+    "omuid\030\001 \001(\005\022\r\n\005touid\030\002 \001(\005\022\020\n\010filename\030\003"
+    " \001(\t\022\016\n\006filesz\030\004 \001(\003\022\013\n\003md5\030\005 \001(\t\"H\n\016App"
+    "lyUploadRsp\022\r\n\005error\030\001 \001(\005\022\n\n\002ip\030\002 \001(\t\022\014"
+    "\n\004port\030\003 \001(\005\022\r\n\005token\030\004 \001(\t2P\n\rVarifySer"
+    "vice\022\?\n\rGetVarifyCode\022\025.message.GetVarif"
+    "yReq\032\025.message.GetVarifyRsp\"\0002\211\001\n\rStatus"
+    "Service\022G\n\rGetChatServer\022\031.message.GetCh"
+    "atServerReq\032\031.message.GetChatServerRsp\"\000"
+    "\022/\n\005Login\022\021.message.LoginReq\032\021.message.L"
+    "oginRsp\"\0002\245\003\n\013ChatService\022A\n\017NotifyAddFr"
+    "iend\022\025.message.AddFriendReq\032\025.message.Ad"
+    "dFriendRsp\"\000\022A\n\rRplyAddFriend\022\026.message."
+    "RplyFriendReq\032\026.message.RplyFriendRsp\"\000\022"
+    "A\n\013SendChatMsg\022\027.message.SendChatMsgReq\032"
+    "\027.message.SendChatMsgRsp\"\000\022D\n\020NotifyAuth"
+    "Friend\022\026.message.AuthFriendReq\032\026.message"
+    ".AuthFriendRsp\"\000\022G\n\021NotifyTextChatMsg\022\027."
+    "message.TextChatMsgReq\032\027.message.TextCha"
+    "tMsgRsp\"\000\022>\n\016NotifyKickUser\022\024.message.Ki"
+    "ckUserReq\032\024.message.KickUserRsp\"\0002V\n\013Fil"
+    "eService\022G\n\021ApplyUploadTicket\022\027.message."
+    "ApplyUploadReq\032\027.message.ApplyUploadRsp\""
+    "\000b\006proto3"
 };
 static ::absl::once_flag descriptor_table_message_2eproto_once;
 PROTOBUF_CONSTINIT const ::_pbi::DescriptorTable descriptor_table_message_2eproto = {
     false,
     false,
-    2110,
+    2369,
     descriptor_table_protodef_message_2eproto,
     "message.proto",
     &descriptor_table_message_2eproto_once,
     nullptr,
     0,
-    20,
+    22,
     schemas,
     file_default_instances,
     TableStruct_message_2eproto::offsets,
@@ -7932,6 +8032,832 @@ void KickUserRsp::InternalSwap(KickUserRsp* PROTOBUF_RESTRICT PROTOBUF_NONNULL o
 }
 
 ::google::protobuf::Metadata KickUserRsp::GetMetadata() const {
+  return ::google::protobuf::Message::GetMetadataImpl(GetClassData()->full());
+}
+// ===================================================================
+
+class ApplyUploadReq::_Internal {
+ public:
+  using HasBits =
+      decltype(::std::declval<ApplyUploadReq>()._impl_._has_bits_);
+  static constexpr ::int32_t kHasBitsOffset =
+      8 * PROTOBUF_FIELD_OFFSET(ApplyUploadReq, _impl_._has_bits_);
+};
+
+ApplyUploadReq::ApplyUploadReq(::google::protobuf::Arena* PROTOBUF_NULLABLE arena)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(arena, ApplyUploadReq_class_data_.base()) {
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(arena) {
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  SharedCtor(arena);
+  // @@protoc_insertion_point(arena_constructor:message.ApplyUploadReq)
+}
+PROTOBUF_NDEBUG_INLINE ApplyUploadReq::Impl_::Impl_(
+    [[maybe_unused]] ::google::protobuf::internal::InternalVisibility visibility,
+    [[maybe_unused]] ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const Impl_& from,
+    [[maybe_unused]] const ::message::ApplyUploadReq& from_msg)
+      : _has_bits_{from._has_bits_},
+        _cached_size_{0},
+        filename_(arena, from.filename_),
+        md5_(arena, from.md5_) {}
+
+ApplyUploadReq::ApplyUploadReq(
+    ::google::protobuf::Arena* PROTOBUF_NULLABLE arena,
+    const ApplyUploadReq& from)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(arena, ApplyUploadReq_class_data_.base()) {
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(arena) {
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  ApplyUploadReq* const _this = this;
+  (void)_this;
+  _internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
+      from._internal_metadata_);
+  new (&_impl_) Impl_(internal_visibility(), arena, from._impl_, from);
+  ::memcpy(reinterpret_cast<char*>(&_impl_) +
+               offsetof(Impl_, fromuid_),
+           reinterpret_cast<const char*>(&from._impl_) +
+               offsetof(Impl_, fromuid_),
+           offsetof(Impl_, filesz_) -
+               offsetof(Impl_, fromuid_) +
+               sizeof(Impl_::filesz_));
+
+  // @@protoc_insertion_point(copy_constructor:message.ApplyUploadReq)
+}
+PROTOBUF_NDEBUG_INLINE ApplyUploadReq::Impl_::Impl_(
+    [[maybe_unused]] ::google::protobuf::internal::InternalVisibility visibility,
+    [[maybe_unused]] ::google::protobuf::Arena* PROTOBUF_NULLABLE arena)
+      : _cached_size_{0},
+        filename_(arena),
+        md5_(arena) {}
+
+inline void ApplyUploadReq::SharedCtor(::_pb::Arena* PROTOBUF_NULLABLE arena) {
+  new (&_impl_) Impl_(internal_visibility(), arena);
+  ::memset(reinterpret_cast<char*>(&_impl_) +
+               offsetof(Impl_, fromuid_),
+           0,
+           offsetof(Impl_, filesz_) -
+               offsetof(Impl_, fromuid_) +
+               sizeof(Impl_::filesz_));
+}
+ApplyUploadReq::~ApplyUploadReq() {
+  // @@protoc_insertion_point(destructor:message.ApplyUploadReq)
+  SharedDtor(*this);
+}
+inline void ApplyUploadReq::SharedDtor(MessageLite& self) {
+  ApplyUploadReq& this_ = static_cast<ApplyUploadReq&>(self);
+  if constexpr (::_pbi::DebugHardenCheckHasBitConsistency()) {
+    this_.CheckHasBitConsistency();
+  }
+  this_._internal_metadata_.Delete<::google::protobuf::UnknownFieldSet>();
+  ABSL_DCHECK(this_.GetArena() == nullptr);
+  this_._impl_.filename_.Destroy();
+  this_._impl_.md5_.Destroy();
+  this_._impl_.~Impl_();
+}
+
+inline void* PROTOBUF_NONNULL ApplyUploadReq::PlacementNew_(
+    const void* PROTOBUF_NONNULL, void* PROTOBUF_NONNULL mem,
+    ::google::protobuf::Arena* PROTOBUF_NULLABLE arena) {
+  return ::new (mem) ApplyUploadReq(arena);
+}
+constexpr auto ApplyUploadReq::InternalNewImpl_() {
+  return ::google::protobuf::internal::MessageCreator::CopyInit(sizeof(ApplyUploadReq),
+                                            alignof(ApplyUploadReq));
+}
+constexpr auto ApplyUploadReq::InternalGenerateClassData_() {
+  return ::google::protobuf::internal::ClassDataFull{
+      ::google::protobuf::internal::ClassData{
+          &_ApplyUploadReq_default_instance_._instance,
+          &_table_.header,
+          nullptr,  // OnDemandRegisterArenaDtor
+          nullptr,  // IsInitialized
+          &ApplyUploadReq::MergeImpl,
+          ::google::protobuf::Message::GetNewImpl<ApplyUploadReq>(),
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+          &ApplyUploadReq::SharedDtor,
+          ::google::protobuf::Message::GetClearImpl<ApplyUploadReq>(), &ApplyUploadReq::ByteSizeLong,
+              &ApplyUploadReq::_InternalSerialize,
+#endif  // PROTOBUF_CUSTOM_VTABLE
+          PROTOBUF_FIELD_OFFSET(ApplyUploadReq, _impl_._cached_size_),
+          false,
+      },
+      &ApplyUploadReq::kDescriptorMethods,
+      &descriptor_table_message_2eproto,
+      nullptr,  // tracker
+  };
+}
+
+PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 const
+    ::google::protobuf::internal::ClassDataFull ApplyUploadReq_class_data_ =
+        ApplyUploadReq::InternalGenerateClassData_();
+
+PROTOBUF_ATTRIBUTE_WEAK const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL
+ApplyUploadReq::GetClassData() const {
+  ::google::protobuf::internal::PrefetchToLocalCache(&ApplyUploadReq_class_data_);
+  ::google::protobuf::internal::PrefetchToLocalCache(ApplyUploadReq_class_data_.tc_table);
+  return ApplyUploadReq_class_data_.base();
+}
+PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
+const ::_pbi::TcParseTable<3, 5, 0, 42, 2>
+ApplyUploadReq::_table_ = {
+  {
+    PROTOBUF_FIELD_OFFSET(ApplyUploadReq, _impl_._has_bits_),
+    0, // no _extensions_
+    5, 56,  // max_field_number, fast_idx_mask
+    offsetof(decltype(_table_), field_lookup_table),
+    4294967264,  // skipmap
+    offsetof(decltype(_table_), field_entries),
+    5,  // num_field_entries
+    0,  // num_aux_entries
+    offsetof(decltype(_table_), field_names),  // no aux_entries
+    ApplyUploadReq_class_data_.base(),
+    nullptr,  // post_loop_handler
+    ::_pbi::TcParser::GenericFallback,  // fallback
+    #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
+    ::_pbi::TcParser::GetTable<::message::ApplyUploadReq>(),  // to_prefetch
+    #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
+  }, {{
+    {::_pbi::TcParser::MiniParse, {}},
+    // int32 fromuid = 1;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(ApplyUploadReq, _impl_.fromuid_), 2>(),
+     {8, 2, 0,
+      PROTOBUF_FIELD_OFFSET(ApplyUploadReq, _impl_.fromuid_)}},
+    // int32 touid = 2;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(ApplyUploadReq, _impl_.touid_), 3>(),
+     {16, 3, 0,
+      PROTOBUF_FIELD_OFFSET(ApplyUploadReq, _impl_.touid_)}},
+    // string filename = 3;
+    {::_pbi::TcParser::FastUS1,
+     {26, 0, 0,
+      PROTOBUF_FIELD_OFFSET(ApplyUploadReq, _impl_.filename_)}},
+    // int64 filesz = 4;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint64_t, offsetof(ApplyUploadReq, _impl_.filesz_), 4>(),
+     {32, 4, 0,
+      PROTOBUF_FIELD_OFFSET(ApplyUploadReq, _impl_.filesz_)}},
+    // string md5 = 5;
+    {::_pbi::TcParser::FastUS1,
+     {42, 1, 0,
+      PROTOBUF_FIELD_OFFSET(ApplyUploadReq, _impl_.md5_)}},
+    {::_pbi::TcParser::MiniParse, {}},
+    {::_pbi::TcParser::MiniParse, {}},
+  }}, {{
+    65535, 65535
+  }}, {{
+    // int32 fromuid = 1;
+    {PROTOBUF_FIELD_OFFSET(ApplyUploadReq, _impl_.fromuid_), _Internal::kHasBitsOffset + 2, 0, (0 | ::_fl::kFcOptional | ::_fl::kInt32)},
+    // int32 touid = 2;
+    {PROTOBUF_FIELD_OFFSET(ApplyUploadReq, _impl_.touid_), _Internal::kHasBitsOffset + 3, 0, (0 | ::_fl::kFcOptional | ::_fl::kInt32)},
+    // string filename = 3;
+    {PROTOBUF_FIELD_OFFSET(ApplyUploadReq, _impl_.filename_), _Internal::kHasBitsOffset + 0, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+    // int64 filesz = 4;
+    {PROTOBUF_FIELD_OFFSET(ApplyUploadReq, _impl_.filesz_), _Internal::kHasBitsOffset + 4, 0, (0 | ::_fl::kFcOptional | ::_fl::kInt64)},
+    // string md5 = 5;
+    {PROTOBUF_FIELD_OFFSET(ApplyUploadReq, _impl_.md5_), _Internal::kHasBitsOffset + 1, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+  }},
+  // no aux_entries
+  {{
+    "\26\0\0\10\0\3\0\0"
+    "message.ApplyUploadReq"
+    "filename"
+    "md5"
+  }},
+};
+PROTOBUF_NOINLINE void ApplyUploadReq::Clear() {
+// @@protoc_insertion_point(message_clear_start:message.ApplyUploadReq)
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  ::uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  cached_has_bits = _impl_._has_bits_[0];
+  if (BatchCheckHasBit(cached_has_bits, 0x00000003U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000001U)) {
+      _impl_.filename_.ClearNonDefaultToEmpty();
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000002U)) {
+      _impl_.md5_.ClearNonDefaultToEmpty();
+    }
+  }
+  if (BatchCheckHasBit(cached_has_bits, 0x0000001cU)) {
+    ::memset(&_impl_.fromuid_, 0, static_cast<::size_t>(
+        reinterpret_cast<char*>(&_impl_.filesz_) -
+        reinterpret_cast<char*>(&_impl_.fromuid_)) + sizeof(_impl_.filesz_));
+  }
+  _impl_._has_bits_.Clear();
+  _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
+}
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+::uint8_t* PROTOBUF_NONNULL ApplyUploadReq::_InternalSerialize(
+    const ::google::protobuf::MessageLite& base, ::uint8_t* PROTOBUF_NONNULL target,
+    ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) {
+  const ApplyUploadReq& this_ = static_cast<const ApplyUploadReq&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+::uint8_t* PROTOBUF_NONNULL ApplyUploadReq::_InternalSerialize(
+    ::uint8_t* PROTOBUF_NONNULL target,
+    ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const {
+  const ApplyUploadReq& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  if constexpr (::_pbi::DebugHardenCheckHasBitConsistency()) {
+    this_.CheckHasBitConsistency();
+  }
+  // @@protoc_insertion_point(serialize_to_array_start:message.ApplyUploadReq)
+  ::uint32_t cached_has_bits = 0;
+  (void)cached_has_bits;
+
+  cached_has_bits = this_._impl_._has_bits_[0];
+  // int32 fromuid = 1;
+  if (CheckHasBit(cached_has_bits, 0x00000004U)) {
+    if (this_._internal_fromuid() != 0) {
+      target =
+          ::google::protobuf::internal::WireFormatLite::WriteInt32ToArrayWithField<1>(
+              stream, this_._internal_fromuid(), target);
+    }
+  }
+
+  // int32 touid = 2;
+  if (CheckHasBit(cached_has_bits, 0x00000008U)) {
+    if (this_._internal_touid() != 0) {
+      target =
+          ::google::protobuf::internal::WireFormatLite::WriteInt32ToArrayWithField<2>(
+              stream, this_._internal_touid(), target);
+    }
+  }
+
+  // string filename = 3;
+  if (CheckHasBit(cached_has_bits, 0x00000001U)) {
+    if (!this_._internal_filename().empty()) {
+      const ::std::string& _s = this_._internal_filename();
+      ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+          _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "message.ApplyUploadReq.filename");
+      target = stream->WriteStringMaybeAliased(3, _s, target);
+    }
+  }
+
+  // int64 filesz = 4;
+  if (CheckHasBit(cached_has_bits, 0x00000010U)) {
+    if (this_._internal_filesz() != 0) {
+      target =
+          ::google::protobuf::internal::WireFormatLite::WriteInt64ToArrayWithField<4>(
+              stream, this_._internal_filesz(), target);
+    }
+  }
+
+  // string md5 = 5;
+  if (CheckHasBit(cached_has_bits, 0x00000002U)) {
+    if (!this_._internal_md5().empty()) {
+      const ::std::string& _s = this_._internal_md5();
+      ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+          _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "message.ApplyUploadReq.md5");
+      target = stream->WriteStringMaybeAliased(5, _s, target);
+    }
+  }
+
+  if (ABSL_PREDICT_FALSE(this_._internal_metadata_.have_unknown_fields())) {
+    target =
+        ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+            this_._internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance), target, stream);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:message.ApplyUploadReq)
+  return target;
+}
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+::size_t ApplyUploadReq::ByteSizeLong(const MessageLite& base) {
+  const ApplyUploadReq& this_ = static_cast<const ApplyUploadReq&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+::size_t ApplyUploadReq::ByteSizeLong() const {
+  const ApplyUploadReq& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  // @@protoc_insertion_point(message_byte_size_start:message.ApplyUploadReq)
+  ::size_t total_size = 0;
+
+  ::uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void)cached_has_bits;
+
+  ::_pbi::Prefetch5LinesFrom7Lines(&this_);
+  cached_has_bits = this_._impl_._has_bits_[0];
+  if (BatchCheckHasBit(cached_has_bits, 0x0000001fU)) {
+    // string filename = 3;
+    if (CheckHasBit(cached_has_bits, 0x00000001U)) {
+      if (!this_._internal_filename().empty()) {
+        total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                        this_._internal_filename());
+      }
+    }
+    // string md5 = 5;
+    if (CheckHasBit(cached_has_bits, 0x00000002U)) {
+      if (!this_._internal_md5().empty()) {
+        total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                        this_._internal_md5());
+      }
+    }
+    // int32 fromuid = 1;
+    if (CheckHasBit(cached_has_bits, 0x00000004U)) {
+      if (this_._internal_fromuid() != 0) {
+        total_size += ::_pbi::WireFormatLite::Int32SizePlusOne(
+            this_._internal_fromuid());
+      }
+    }
+    // int32 touid = 2;
+    if (CheckHasBit(cached_has_bits, 0x00000008U)) {
+      if (this_._internal_touid() != 0) {
+        total_size += ::_pbi::WireFormatLite::Int32SizePlusOne(
+            this_._internal_touid());
+      }
+    }
+    // int64 filesz = 4;
+    if (CheckHasBit(cached_has_bits, 0x00000010U)) {
+      if (this_._internal_filesz() != 0) {
+        total_size += ::_pbi::WireFormatLite::Int64SizePlusOne(
+            this_._internal_filesz());
+      }
+    }
+  }
+  return this_.MaybeComputeUnknownFieldsSize(total_size,
+                                             &this_._impl_._cached_size_);
+}
+
+void ApplyUploadReq::MergeImpl(::google::protobuf::MessageLite& to_msg,
+                            const ::google::protobuf::MessageLite& from_msg) {
+   auto* const _this =
+      static_cast<ApplyUploadReq*>(&to_msg);
+  auto& from = static_cast<const ApplyUploadReq&>(from_msg);
+  if constexpr (::_pbi::DebugHardenCheckHasBitConsistency()) {
+    from.CheckHasBitConsistency();
+  }
+  // @@protoc_insertion_point(class_specific_merge_from_start:message.ApplyUploadReq)
+  ABSL_DCHECK_NE(&from, _this);
+  ::uint32_t cached_has_bits = 0;
+  (void)cached_has_bits;
+
+  cached_has_bits = from._impl_._has_bits_[0];
+  if (BatchCheckHasBit(cached_has_bits, 0x0000001fU)) {
+    if (CheckHasBit(cached_has_bits, 0x00000001U)) {
+      if (!from._internal_filename().empty()) {
+        _this->_internal_set_filename(from._internal_filename());
+      } else {
+        if (_this->_impl_.filename_.IsDefault()) {
+          _this->_internal_set_filename("");
+        }
+      }
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000002U)) {
+      if (!from._internal_md5().empty()) {
+        _this->_internal_set_md5(from._internal_md5());
+      } else {
+        if (_this->_impl_.md5_.IsDefault()) {
+          _this->_internal_set_md5("");
+        }
+      }
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000004U)) {
+      if (from._internal_fromuid() != 0) {
+        _this->_impl_.fromuid_ = from._impl_.fromuid_;
+      }
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000008U)) {
+      if (from._internal_touid() != 0) {
+        _this->_impl_.touid_ = from._impl_.touid_;
+      }
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000010U)) {
+      if (from._internal_filesz() != 0) {
+        _this->_impl_.filesz_ = from._impl_.filesz_;
+      }
+    }
+  }
+  _this->_impl_._has_bits_[0] |= cached_has_bits;
+  _this->_internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
+      from._internal_metadata_);
+}
+
+void ApplyUploadReq::CopyFrom(const ApplyUploadReq& from) {
+  // @@protoc_insertion_point(class_specific_copy_from_start:message.ApplyUploadReq)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+
+void ApplyUploadReq::InternalSwap(ApplyUploadReq* PROTOBUF_RESTRICT PROTOBUF_NONNULL other) {
+  using ::std::swap;
+  auto* arena = GetArena();
+  ABSL_DCHECK_EQ(arena, other->GetArena());
+  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.filename_, &other->_impl_.filename_, arena);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.md5_, &other->_impl_.md5_, arena);
+  ::google::protobuf::internal::memswap<
+      PROTOBUF_FIELD_OFFSET(ApplyUploadReq, _impl_.filesz_)
+      + sizeof(ApplyUploadReq::_impl_.filesz_)
+      - PROTOBUF_FIELD_OFFSET(ApplyUploadReq, _impl_.fromuid_)>(
+          reinterpret_cast<char*>(&_impl_.fromuid_),
+          reinterpret_cast<char*>(&other->_impl_.fromuid_));
+}
+
+::google::protobuf::Metadata ApplyUploadReq::GetMetadata() const {
+  return ::google::protobuf::Message::GetMetadataImpl(GetClassData()->full());
+}
+// ===================================================================
+
+class ApplyUploadRsp::_Internal {
+ public:
+  using HasBits =
+      decltype(::std::declval<ApplyUploadRsp>()._impl_._has_bits_);
+  static constexpr ::int32_t kHasBitsOffset =
+      8 * PROTOBUF_FIELD_OFFSET(ApplyUploadRsp, _impl_._has_bits_);
+};
+
+ApplyUploadRsp::ApplyUploadRsp(::google::protobuf::Arena* PROTOBUF_NULLABLE arena)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(arena, ApplyUploadRsp_class_data_.base()) {
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(arena) {
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  SharedCtor(arena);
+  // @@protoc_insertion_point(arena_constructor:message.ApplyUploadRsp)
+}
+PROTOBUF_NDEBUG_INLINE ApplyUploadRsp::Impl_::Impl_(
+    [[maybe_unused]] ::google::protobuf::internal::InternalVisibility visibility,
+    [[maybe_unused]] ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const Impl_& from,
+    [[maybe_unused]] const ::message::ApplyUploadRsp& from_msg)
+      : _has_bits_{from._has_bits_},
+        _cached_size_{0},
+        ip_(arena, from.ip_),
+        token_(arena, from.token_) {}
+
+ApplyUploadRsp::ApplyUploadRsp(
+    ::google::protobuf::Arena* PROTOBUF_NULLABLE arena,
+    const ApplyUploadRsp& from)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(arena, ApplyUploadRsp_class_data_.base()) {
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(arena) {
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  ApplyUploadRsp* const _this = this;
+  (void)_this;
+  _internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
+      from._internal_metadata_);
+  new (&_impl_) Impl_(internal_visibility(), arena, from._impl_, from);
+  ::memcpy(reinterpret_cast<char*>(&_impl_) +
+               offsetof(Impl_, error_),
+           reinterpret_cast<const char*>(&from._impl_) +
+               offsetof(Impl_, error_),
+           offsetof(Impl_, port_) -
+               offsetof(Impl_, error_) +
+               sizeof(Impl_::port_));
+
+  // @@protoc_insertion_point(copy_constructor:message.ApplyUploadRsp)
+}
+PROTOBUF_NDEBUG_INLINE ApplyUploadRsp::Impl_::Impl_(
+    [[maybe_unused]] ::google::protobuf::internal::InternalVisibility visibility,
+    [[maybe_unused]] ::google::protobuf::Arena* PROTOBUF_NULLABLE arena)
+      : _cached_size_{0},
+        ip_(arena),
+        token_(arena) {}
+
+inline void ApplyUploadRsp::SharedCtor(::_pb::Arena* PROTOBUF_NULLABLE arena) {
+  new (&_impl_) Impl_(internal_visibility(), arena);
+  ::memset(reinterpret_cast<char*>(&_impl_) +
+               offsetof(Impl_, error_),
+           0,
+           offsetof(Impl_, port_) -
+               offsetof(Impl_, error_) +
+               sizeof(Impl_::port_));
+}
+ApplyUploadRsp::~ApplyUploadRsp() {
+  // @@protoc_insertion_point(destructor:message.ApplyUploadRsp)
+  SharedDtor(*this);
+}
+inline void ApplyUploadRsp::SharedDtor(MessageLite& self) {
+  ApplyUploadRsp& this_ = static_cast<ApplyUploadRsp&>(self);
+  if constexpr (::_pbi::DebugHardenCheckHasBitConsistency()) {
+    this_.CheckHasBitConsistency();
+  }
+  this_._internal_metadata_.Delete<::google::protobuf::UnknownFieldSet>();
+  ABSL_DCHECK(this_.GetArena() == nullptr);
+  this_._impl_.ip_.Destroy();
+  this_._impl_.token_.Destroy();
+  this_._impl_.~Impl_();
+}
+
+inline void* PROTOBUF_NONNULL ApplyUploadRsp::PlacementNew_(
+    const void* PROTOBUF_NONNULL, void* PROTOBUF_NONNULL mem,
+    ::google::protobuf::Arena* PROTOBUF_NULLABLE arena) {
+  return ::new (mem) ApplyUploadRsp(arena);
+}
+constexpr auto ApplyUploadRsp::InternalNewImpl_() {
+  return ::google::protobuf::internal::MessageCreator::CopyInit(sizeof(ApplyUploadRsp),
+                                            alignof(ApplyUploadRsp));
+}
+constexpr auto ApplyUploadRsp::InternalGenerateClassData_() {
+  return ::google::protobuf::internal::ClassDataFull{
+      ::google::protobuf::internal::ClassData{
+          &_ApplyUploadRsp_default_instance_._instance,
+          &_table_.header,
+          nullptr,  // OnDemandRegisterArenaDtor
+          nullptr,  // IsInitialized
+          &ApplyUploadRsp::MergeImpl,
+          ::google::protobuf::Message::GetNewImpl<ApplyUploadRsp>(),
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+          &ApplyUploadRsp::SharedDtor,
+          ::google::protobuf::Message::GetClearImpl<ApplyUploadRsp>(), &ApplyUploadRsp::ByteSizeLong,
+              &ApplyUploadRsp::_InternalSerialize,
+#endif  // PROTOBUF_CUSTOM_VTABLE
+          PROTOBUF_FIELD_OFFSET(ApplyUploadRsp, _impl_._cached_size_),
+          false,
+      },
+      &ApplyUploadRsp::kDescriptorMethods,
+      &descriptor_table_message_2eproto,
+      nullptr,  // tracker
+  };
+}
+
+PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 const
+    ::google::protobuf::internal::ClassDataFull ApplyUploadRsp_class_data_ =
+        ApplyUploadRsp::InternalGenerateClassData_();
+
+PROTOBUF_ATTRIBUTE_WEAK const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL
+ApplyUploadRsp::GetClassData() const {
+  ::google::protobuf::internal::PrefetchToLocalCache(&ApplyUploadRsp_class_data_);
+  ::google::protobuf::internal::PrefetchToLocalCache(ApplyUploadRsp_class_data_.tc_table);
+  return ApplyUploadRsp_class_data_.base();
+}
+PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
+const ::_pbi::TcParseTable<2, 4, 0, 38, 2>
+ApplyUploadRsp::_table_ = {
+  {
+    PROTOBUF_FIELD_OFFSET(ApplyUploadRsp, _impl_._has_bits_),
+    0, // no _extensions_
+    4, 24,  // max_field_number, fast_idx_mask
+    offsetof(decltype(_table_), field_lookup_table),
+    4294967280,  // skipmap
+    offsetof(decltype(_table_), field_entries),
+    4,  // num_field_entries
+    0,  // num_aux_entries
+    offsetof(decltype(_table_), field_names),  // no aux_entries
+    ApplyUploadRsp_class_data_.base(),
+    nullptr,  // post_loop_handler
+    ::_pbi::TcParser::GenericFallback,  // fallback
+    #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
+    ::_pbi::TcParser::GetTable<::message::ApplyUploadRsp>(),  // to_prefetch
+    #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
+  }, {{
+    // string token = 4;
+    {::_pbi::TcParser::FastUS1,
+     {34, 1, 0,
+      PROTOBUF_FIELD_OFFSET(ApplyUploadRsp, _impl_.token_)}},
+    // int32 error = 1;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(ApplyUploadRsp, _impl_.error_), 2>(),
+     {8, 2, 0,
+      PROTOBUF_FIELD_OFFSET(ApplyUploadRsp, _impl_.error_)}},
+    // string ip = 2;
+    {::_pbi::TcParser::FastUS1,
+     {18, 0, 0,
+      PROTOBUF_FIELD_OFFSET(ApplyUploadRsp, _impl_.ip_)}},
+    // int32 port = 3;
+    {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(ApplyUploadRsp, _impl_.port_), 3>(),
+     {24, 3, 0,
+      PROTOBUF_FIELD_OFFSET(ApplyUploadRsp, _impl_.port_)}},
+  }}, {{
+    65535, 65535
+  }}, {{
+    // int32 error = 1;
+    {PROTOBUF_FIELD_OFFSET(ApplyUploadRsp, _impl_.error_), _Internal::kHasBitsOffset + 2, 0, (0 | ::_fl::kFcOptional | ::_fl::kInt32)},
+    // string ip = 2;
+    {PROTOBUF_FIELD_OFFSET(ApplyUploadRsp, _impl_.ip_), _Internal::kHasBitsOffset + 0, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+    // int32 port = 3;
+    {PROTOBUF_FIELD_OFFSET(ApplyUploadRsp, _impl_.port_), _Internal::kHasBitsOffset + 3, 0, (0 | ::_fl::kFcOptional | ::_fl::kInt32)},
+    // string token = 4;
+    {PROTOBUF_FIELD_OFFSET(ApplyUploadRsp, _impl_.token_), _Internal::kHasBitsOffset + 1, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+  }},
+  // no aux_entries
+  {{
+    "\26\0\2\0\5\0\0\0"
+    "message.ApplyUploadRsp"
+    "ip"
+    "token"
+  }},
+};
+PROTOBUF_NOINLINE void ApplyUploadRsp::Clear() {
+// @@protoc_insertion_point(message_clear_start:message.ApplyUploadRsp)
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  ::uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  cached_has_bits = _impl_._has_bits_[0];
+  if (BatchCheckHasBit(cached_has_bits, 0x00000003U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000001U)) {
+      _impl_.ip_.ClearNonDefaultToEmpty();
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000002U)) {
+      _impl_.token_.ClearNonDefaultToEmpty();
+    }
+  }
+  if (BatchCheckHasBit(cached_has_bits, 0x0000000cU)) {
+    ::memset(&_impl_.error_, 0, static_cast<::size_t>(
+        reinterpret_cast<char*>(&_impl_.port_) -
+        reinterpret_cast<char*>(&_impl_.error_)) + sizeof(_impl_.port_));
+  }
+  _impl_._has_bits_.Clear();
+  _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
+}
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+::uint8_t* PROTOBUF_NONNULL ApplyUploadRsp::_InternalSerialize(
+    const ::google::protobuf::MessageLite& base, ::uint8_t* PROTOBUF_NONNULL target,
+    ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) {
+  const ApplyUploadRsp& this_ = static_cast<const ApplyUploadRsp&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+::uint8_t* PROTOBUF_NONNULL ApplyUploadRsp::_InternalSerialize(
+    ::uint8_t* PROTOBUF_NONNULL target,
+    ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const {
+  const ApplyUploadRsp& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  if constexpr (::_pbi::DebugHardenCheckHasBitConsistency()) {
+    this_.CheckHasBitConsistency();
+  }
+  // @@protoc_insertion_point(serialize_to_array_start:message.ApplyUploadRsp)
+  ::uint32_t cached_has_bits = 0;
+  (void)cached_has_bits;
+
+  cached_has_bits = this_._impl_._has_bits_[0];
+  // int32 error = 1;
+  if (CheckHasBit(cached_has_bits, 0x00000004U)) {
+    if (this_._internal_error() != 0) {
+      target =
+          ::google::protobuf::internal::WireFormatLite::WriteInt32ToArrayWithField<1>(
+              stream, this_._internal_error(), target);
+    }
+  }
+
+  // string ip = 2;
+  if (CheckHasBit(cached_has_bits, 0x00000001U)) {
+    if (!this_._internal_ip().empty()) {
+      const ::std::string& _s = this_._internal_ip();
+      ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+          _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "message.ApplyUploadRsp.ip");
+      target = stream->WriteStringMaybeAliased(2, _s, target);
+    }
+  }
+
+  // int32 port = 3;
+  if (CheckHasBit(cached_has_bits, 0x00000008U)) {
+    if (this_._internal_port() != 0) {
+      target =
+          ::google::protobuf::internal::WireFormatLite::WriteInt32ToArrayWithField<3>(
+              stream, this_._internal_port(), target);
+    }
+  }
+
+  // string token = 4;
+  if (CheckHasBit(cached_has_bits, 0x00000002U)) {
+    if (!this_._internal_token().empty()) {
+      const ::std::string& _s = this_._internal_token();
+      ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+          _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "message.ApplyUploadRsp.token");
+      target = stream->WriteStringMaybeAliased(4, _s, target);
+    }
+  }
+
+  if (ABSL_PREDICT_FALSE(this_._internal_metadata_.have_unknown_fields())) {
+    target =
+        ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+            this_._internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance), target, stream);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:message.ApplyUploadRsp)
+  return target;
+}
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+::size_t ApplyUploadRsp::ByteSizeLong(const MessageLite& base) {
+  const ApplyUploadRsp& this_ = static_cast<const ApplyUploadRsp&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+::size_t ApplyUploadRsp::ByteSizeLong() const {
+  const ApplyUploadRsp& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  // @@protoc_insertion_point(message_byte_size_start:message.ApplyUploadRsp)
+  ::size_t total_size = 0;
+
+  ::uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void)cached_has_bits;
+
+  ::_pbi::Prefetch5LinesFrom7Lines(&this_);
+  cached_has_bits = this_._impl_._has_bits_[0];
+  if (BatchCheckHasBit(cached_has_bits, 0x0000000fU)) {
+    // string ip = 2;
+    if (CheckHasBit(cached_has_bits, 0x00000001U)) {
+      if (!this_._internal_ip().empty()) {
+        total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                        this_._internal_ip());
+      }
+    }
+    // string token = 4;
+    if (CheckHasBit(cached_has_bits, 0x00000002U)) {
+      if (!this_._internal_token().empty()) {
+        total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                        this_._internal_token());
+      }
+    }
+    // int32 error = 1;
+    if (CheckHasBit(cached_has_bits, 0x00000004U)) {
+      if (this_._internal_error() != 0) {
+        total_size += ::_pbi::WireFormatLite::Int32SizePlusOne(
+            this_._internal_error());
+      }
+    }
+    // int32 port = 3;
+    if (CheckHasBit(cached_has_bits, 0x00000008U)) {
+      if (this_._internal_port() != 0) {
+        total_size += ::_pbi::WireFormatLite::Int32SizePlusOne(
+            this_._internal_port());
+      }
+    }
+  }
+  return this_.MaybeComputeUnknownFieldsSize(total_size,
+                                             &this_._impl_._cached_size_);
+}
+
+void ApplyUploadRsp::MergeImpl(::google::protobuf::MessageLite& to_msg,
+                            const ::google::protobuf::MessageLite& from_msg) {
+   auto* const _this =
+      static_cast<ApplyUploadRsp*>(&to_msg);
+  auto& from = static_cast<const ApplyUploadRsp&>(from_msg);
+  if constexpr (::_pbi::DebugHardenCheckHasBitConsistency()) {
+    from.CheckHasBitConsistency();
+  }
+  // @@protoc_insertion_point(class_specific_merge_from_start:message.ApplyUploadRsp)
+  ABSL_DCHECK_NE(&from, _this);
+  ::uint32_t cached_has_bits = 0;
+  (void)cached_has_bits;
+
+  cached_has_bits = from._impl_._has_bits_[0];
+  if (BatchCheckHasBit(cached_has_bits, 0x0000000fU)) {
+    if (CheckHasBit(cached_has_bits, 0x00000001U)) {
+      if (!from._internal_ip().empty()) {
+        _this->_internal_set_ip(from._internal_ip());
+      } else {
+        if (_this->_impl_.ip_.IsDefault()) {
+          _this->_internal_set_ip("");
+        }
+      }
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000002U)) {
+      if (!from._internal_token().empty()) {
+        _this->_internal_set_token(from._internal_token());
+      } else {
+        if (_this->_impl_.token_.IsDefault()) {
+          _this->_internal_set_token("");
+        }
+      }
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000004U)) {
+      if (from._internal_error() != 0) {
+        _this->_impl_.error_ = from._impl_.error_;
+      }
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000008U)) {
+      if (from._internal_port() != 0) {
+        _this->_impl_.port_ = from._impl_.port_;
+      }
+    }
+  }
+  _this->_impl_._has_bits_[0] |= cached_has_bits;
+  _this->_internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
+      from._internal_metadata_);
+}
+
+void ApplyUploadRsp::CopyFrom(const ApplyUploadRsp& from) {
+  // @@protoc_insertion_point(class_specific_copy_from_start:message.ApplyUploadRsp)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+
+void ApplyUploadRsp::InternalSwap(ApplyUploadRsp* PROTOBUF_RESTRICT PROTOBUF_NONNULL other) {
+  using ::std::swap;
+  auto* arena = GetArena();
+  ABSL_DCHECK_EQ(arena, other->GetArena());
+  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.ip_, &other->_impl_.ip_, arena);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.token_, &other->_impl_.token_, arena);
+  ::google::protobuf::internal::memswap<
+      PROTOBUF_FIELD_OFFSET(ApplyUploadRsp, _impl_.port_)
+      + sizeof(ApplyUploadRsp::_impl_.port_)
+      - PROTOBUF_FIELD_OFFSET(ApplyUploadRsp, _impl_.error_)>(
+          reinterpret_cast<char*>(&_impl_.error_),
+          reinterpret_cast<char*>(&other->_impl_.error_));
+}
+
+::google::protobuf::Metadata ApplyUploadRsp::GetMetadata() const {
   return ::google::protobuf::Message::GetMetadataImpl(GetClassData()->full());
 }
 // @@protoc_insertion_point(namespace_scope)

@@ -79,8 +79,10 @@ Status ChatServiceImpl::NotifyTextChatMsg(ServerContext* context, const TextChat
 	int from_uid = req->fromuid();
 	auto session = UserMgr::GetInstance()->GetSession(to_uid);
 	if (session == nullptr) {
+		// 目标用户不在这台服务器上（可能刚下线）
 		return Status::OK;
 	}
+
 	rsp->set_error(ErrorCodes::Success);
 	rsp->set_fromuid(from_uid);
 	rsp->set_touid(to_uid);
@@ -89,17 +91,37 @@ Status ChatServiceImpl::NotifyTextChatMsg(ServerContext* context, const TextChat
 	rt["from_uid"] = from_uid;
 	rt["to_uid"] = to_uid;
 	rt["error"] = ErrorCodes::Success;
-	Json::Value text;
+
+	Json::Value text_array;
 	for (auto& msg : req->textmsgs()) {
 		Json::Value element;
 		element["content"] = msg.msgcontent();
 		element["msg_id"] = msg.msg_id();
 		element["unique_id"] = msg.unique_id();
-		text.append(element);
+
+		// 尝试判断 content 是否是包含文件信息的 JSON
+		Json::Value content_json;
+		Json::Reader reader;
+		if (reader.parse(msg.msgcontent(), content_json) && content_json.isObject() && content_json.isMember("token")) {
+			element["type"] = "file";
+			element["filename"] = content_json["filename"];
+			element["filesz"] = content_json["filesz"];
+			element["token"] = content_json["token"];
+			element["md5"] = content_json["md5"];
+		}
+		else {
+			element["type"] = "text";
+		}
+
+		text_array.append(element);
 	}
-	rt["text"] = text;
+
+	rt["text"] = text_array;
+
 	std::string rt_str = rt.toStyledString();
-	session->Send(rt_str,ID_NOTIFY_TEXT_CHAT_MSG_REQ);
+	// 统一用 ID_NOTIFY_TEXT_CHAT_MSG_REQ 下发，客户端解析 text 数组即可
+	session->Send(rt_str, ID_NOTIFY_TEXT_CHAT_MSG_REQ);
+
 	return Status::OK;
 }
 

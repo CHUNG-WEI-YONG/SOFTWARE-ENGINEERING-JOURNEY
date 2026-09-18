@@ -30,12 +30,14 @@
 #define LOCK_PREFIX "lock_"
 #define USER_SESSION_PREFIX "usession_"
 #define LOCK_COUNT "lockcount"
+#define FILE_UPLOAD "file_upload_"
 
 //分布式锁的持有时间
 #define LOCK_TIME_OUT 10
 //分布式锁的重试时间
 #define ACQUIRE_TIME_OUT 5
 
+#define MAX_LOGICWORKER 4
 
 enum ErrorCodes {
 	Success = 0,
@@ -51,7 +53,9 @@ enum ErrorCodes {
 	TokenInvalid = 1010,   //Token失效
 	UidInvalid = 1011,  //uid无效
 	CREATE_CHAT_FAILED = 1012, //创建聊天失败
-	LOAD_CHAT_FAILED = 1013, //加载聊天失败
+	LOAD_CHAT_FAILED = 1013, //加载聊天失败	
+	FILE_NOT_EXIST=1014
+
 };
 
 
@@ -81,6 +85,7 @@ private:
 #define MAX_SENDQUE 1000
 
 
+
 enum MSG_IDS {
 	MSG_CHAT_LOGIN = 1005, //用户登陆
 	MSG_CHAT_LOGIN_RSP = 1006, //用户登陆回包
@@ -105,6 +110,12 @@ enum MSG_IDS {
 
 	ID_LOAD_CHAT_MSG_REQ = 1029,      //加载聊天消息
 	ID_LOAD_CHAT_MSG_RSP = 1030,      //加载聊天消息
+	ID_SNED_FILE_REQ = 1031,
+	ID_SEND_FILE_RSP = 1032,
+	ID_FILE_CHAT_MSG = 1033,
+	ID_NOTIFY_FILE_CHAT_MSG_REQ=1034,
+	ID_DOWNLOAD_FILE_REQ = 1035,
+	ID_DOWNLOAD_FILE_RSP=1036,
 };
 
 //struct UserInfo {

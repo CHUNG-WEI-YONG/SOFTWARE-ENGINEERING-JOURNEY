@@ -43,7 +43,13 @@ enum class ReqId{
     ID_CREATE_PRIVATE_CHAT_REQ = 1027, //创建私聊请求
     ID_CREATE_PRIVATE_CHAT_RSP = 1028, //创建私聊回复
     ID_LOAD_CHAT_MSG_REQ = 1029,      //加载聊天消息
-    ID_LOAD_CHAT_MSG_RSP = 1030,      //加载聊天消息
+    ID_LOAD_CHAT_MSG_RSP = 1030,    //加载聊天消息
+    ID_SNED_FILE_REQ=1031,
+    ID_SEND_FILE_RSP=1032,
+    ID_FILE_CHAT_MSG=1033,
+    ID_NOTIFY_FILE_CHAT_MSG_REQ=1034,
+    ID_DOWNLOAD_FILE_REQ=1035,
+    ID_DOWNLOAD_FILE_RSP=1036
 };
 enum class Modules{
     REGISTERMOD=0,
@@ -55,6 +61,7 @@ enum class ErrorCode{
     SUCCESS=0,
     Err_JSON=1,
     Err_NETWORK=2,
+    FILE_NOT_EXIST=1014
 };
 
 enum TipErr{
@@ -125,6 +132,22 @@ const int  tip_offset = 5;
 
 const int MAX_COUNT_PER_PAGE=12;
 
+
+inline QString CalculateFileMD5(const QString &filePath)
+{
+    QFile file(filePath);
+    if (!file.open(QIODevice::ReadOnly)) {
+        return "";
+    }
+
+    QCryptographicHash hash(QCryptographicHash::Md5);
+    // 分块读取，即便几个 G 的文件也只占几百 KB 内存
+    while (!file.atEnd()) {
+        QByteArray buffer = file.read(512 * 1024); // 512KB 一块
+        hash.addData(buffer);
+    }
+    return hash.result().toHex();
+}
 
 const std::vector<QString>  strs ={"hello world !",
                                    "nice to meet u",

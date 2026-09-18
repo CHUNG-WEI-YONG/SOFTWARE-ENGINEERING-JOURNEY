@@ -45,6 +45,8 @@ signals:
     void sig_friend_apply(std::shared_ptr<AddFriendApply>);
     void sig_load_history_finish(int from_uid,QList<ChatMsg> historyList,int next_last_msg_id);
     void sig_text_chat_msg(std::shared_ptr<ChatMsg>);
+    void sig_upload_file(std::shared_ptr<FileToken>);
+    void sig_download_file_rsp(std::shared_ptr<FileToken>);
 
 
 };

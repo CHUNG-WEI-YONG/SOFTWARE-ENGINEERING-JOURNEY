@@ -8,6 +8,7 @@
 #include "ConfigMgr.h"
 #include "UserMgr.h"
 #include "ChatGrpcClient.h"
+#include "FileGrpcClient.h"
 
 using grpc::Server;
 using grpc::ServerBuilder;
@@ -28,18 +29,40 @@ using message::KickUserRsp;
 
 
 
-LogicSystem::LogicSystem():_b_stop(false),_p_server(nullptr) {
+LogicWorker::LogicWorker():_b_stop(false),_p_server(nullptr) {
 	RegisterCallBacks();
-	_worker_thread = std::thread(&LogicSystem::DealMsg, this);
+	Start();
 }
 
-LogicSystem::~LogicSystem() {
+void LogicWorker::Start()
+{
+	if (!_worker_thread.joinable()) {
+		_worker_thread = std::thread(&LogicWorker::DealMsg, this);
+	}
+}
+
+void LogicWorker::End()
+{
+	if (_b_stop==true) {
+		return;
+	}
 	_b_stop = true;
+
+	// 1. 唤醒可能正在等待条件变量的工作线程
 	_consume.notify_all();
-	_worker_thread.join();
+
+	// 2. 等待工作线程安全退出
+	if (_worker_thread.joinable()) {
+		_worker_thread.join();
+	}
 }
 
-void LogicSystem::RegisterCallBacks() {
+LogicWorker::~LogicWorker()
+{
+	End();
+}
+
+void LogicWorker::RegisterCallBacks() {
 	_fun_callbacks[MSG_CHAT_LOGIN]= [this](shared_ptr<CSession> session, const short& msg_id, const string& msg_data) {
 		this->LoginHandler(session, msg_id, msg_data);
 		};
@@ -58,9 +81,21 @@ void LogicSystem::RegisterCallBacks() {
 	_fun_callbacks[ID_TEXT_CHAT_MSG_REQ] = [this](shared_ptr<CSession > session, const short& msg_id, const string& msg_data) {
 		this->DealChatTextMsg(session, msg_id, msg_data);
 		};
+
+	_fun_callbacks[ID_SNED_FILE_REQ] = [this](shared_ptr<CSession> session, const short& msg_id, const string& msg_data) {
+		this->UploadFile(session, msg_id, msg_data);
+		};
+
+	_fun_callbacks[ID_FILE_CHAT_MSG] = [this](shared_ptr<CSession> session, const short& msg_id, const string& msg_data) {
+		this->DealChatFileMsg(session, msg_id, msg_data);
+		};
+
+	_fun_callbacks[ID_DOWNLOAD_FILE_REQ]= [this](shared_ptr<CSession> session, const short& msg_id, const string& msg_data) {
+		this->DownloadFile(session, msg_id, msg_data);
+		};
 }
 
-void LogicSystem::LoginHandler(shared_ptr<CSession> session, const short& msg_id, const string& msg_data) {
+void LogicWorker::LoginHandler(shared_ptr<CSession> session, const short& msg_id, const string& msg_data) {
 	Json::Reader reader;
 	Json::Value root;
 	if (!reader.parse(msg_data, root)) {
@@ -187,7 +222,7 @@ void LogicSystem::LoginHandler(shared_ptr<CSession> session, const short& msg_id
 
 }
 
-void LogicSystem::PostMsgToQue(shared_ptr < LogicNode> msg) {
+void LogicWorker::PostMsgToQue(shared_ptr < LogicNode> msg) {
 	std::unique_lock<std::mutex> lock(_mutex);
 	_msg_que.push(msg);
 	if (_msg_que.size() == 1) {
@@ -196,11 +231,11 @@ void LogicSystem::PostMsgToQue(shared_ptr < LogicNode> msg) {
 	}
 }
 
-void LogicSystem::SetServer(std::shared_ptr<Cserver> pserver) {
+void LogicWorker::SetServer(std::shared_ptr<Cserver> pserver) {
 	_p_server = pserver;
 }
 
-void LogicSystem::DealMsg() {
+void LogicWorker::DealMsg() {
 	for (;;) {
 		std::unique_lock<std::mutex> lock(_mutex);
 		while (_msg_que.empty()&&!_b_stop) {
@@ -240,7 +275,7 @@ void LogicSystem::DealMsg() {
 	}
 }
 
-bool LogicSystem::GetBaseInfo(std::string base_key, int uid, std::shared_ptr<UserInfo>& userInfo) {
+bool LogicWorker::GetBaseInfo(std::string base_key, int uid, std::shared_ptr<UserInfo>& userInfo) {
 	std::string info_Str = "";
 	bool success = RedisMjr::GetInstance()->Get(base_key, info_Str);
 	if (success) {
@@ -280,7 +315,7 @@ bool LogicSystem::GetBaseInfo(std::string base_key, int uid, std::shared_ptr<Use
 	return true;
 }
 
-void LogicSystem::SearchUser(shared_ptr<CSession> session, const short& msg_id, const string& msg_data) {
+void LogicWorker::SearchUser(shared_ptr<CSession> session, const short& msg_id, const string& msg_data) {
 	Json::Reader reader;
 	Json::Value root;
 	reader.parse(msg_data,root);
@@ -303,7 +338,7 @@ void LogicSystem::SearchUser(shared_ptr<CSession> session, const short& msg_id, 
 
 }
 
-void LogicSystem::AddFriendApply(shared_ptr<CSession> session, const short& msg_id, const string & msg_data) {
+void LogicWorker::AddFriendApply(shared_ptr<CSession> session, const short& msg_id, const string & msg_data) {
 	Json::Reader reader;
 	Json::Value value;
 	reader.parse(msg_data, value);
@@ -368,7 +403,7 @@ void LogicSystem::AddFriendApply(shared_ptr<CSession> session, const short& msg_
 	
 }
 
-void LogicSystem::AuthFriendApply(shared_ptr<CSession> session, const short& msg_id, const string& msg_data)
+void LogicWorker::AuthFriendApply(shared_ptr<CSession> session, const short& msg_id, const string& msg_data)
 {
 	Json::Reader reader;
 	Json::Value value;
@@ -451,7 +486,7 @@ void LogicSystem::AuthFriendApply(shared_ptr<CSession> session, const short& msg
 
 }
 
-void LogicSystem::DealChatTextMsg(shared_ptr<CSession> session, const short& msg_id, const string& msg_data)
+void LogicWorker::DealChatTextMsg(shared_ptr<CSession> session, const short& msg_id, const string& msg_data)
 {
 	Json::Value value;
 	Json::Reader reader;
@@ -503,12 +538,12 @@ void LogicSystem::DealChatTextMsg(shared_ptr<CSession> session, const short& msg
 	std::cout << "Receive msg_id is " << chat_msg_id<<std::endl;
 	std::cout << "Content is " << content << std::endl;
 
-	ChatGrpcClient::GetInstance()->NotifyTextChatMsg(server_ip, msgReq,rt);
+	ChatGrpcClient::GetInstance()->NotifyTextChatMsg(server_ip, msgReq);
 
 
 }
 
-bool LogicSystem::isPureDigit(const std::string& word) {
+bool LogicWorker::isPureDigit(const std::string& word) {
 	for (char c : word) {
 		if(!isdigit(c)){
 			return false;
@@ -517,13 +552,13 @@ bool LogicSystem::isPureDigit(const std::string& word) {
 	return true;
 }
 
-bool LogicSystem::GetFriendApply(int to_uid, std::vector<std::shared_ptr<ApplyInfo>>& list)
+bool LogicWorker::GetFriendApply(int to_uid, std::vector<std::shared_ptr<ApplyInfo>>& list)
 {
 
 	return MysqlMgr::GetInstance()->GetApplyList(to_uid, list, 0, 10);
 }
 
-void LogicSystem::SearchUserByUid(const std::string& uid, Json::Value& rtvalue) {
+void LogicWorker::SearchUserByUid(const std::string& uid, Json::Value& rtvalue) {
 	rtvalue["error"] = ErrorCodes::Success;
 	auto uid_str = USER_BASE_INFO + uid;
 	std::string user_Info_str="";
@@ -586,7 +621,7 @@ void LogicSystem::SearchUserByUid(const std::string& uid, Json::Value& rtvalue) 
 
 
 }
-void LogicSystem::SearchUserByName(const std::string& name, Json::Value& rtvalue) {
+void LogicWorker::SearchUserByName(const std::string& name, Json::Value& rtvalue) {
 	rtvalue["error"] = ErrorCodes::Success;
 
 	std::string base_key = NAME_INFO + name;
@@ -653,6 +688,267 @@ void LogicSystem::SearchUserByName(const std::string& name, Json::Value& rtvalue
 	rtvalue["icon"] = user_info->icon;
 }
 
-bool LogicSystem::GetFriendList(int uid, std::vector<std::shared_ptr<UserInfo>>& friend_list) {
+bool LogicWorker::GetFriendList(int uid, std::vector<std::shared_ptr<UserInfo>>& friend_list) {
 	return MysqlMgr::GetInstance()->GetFriendList(uid, friend_list);
+}
+
+void LogicWorker::UploadFile(shared_ptr<CSession> session, const short& msg_id, const string& msg_data)
+{
+	Json::Value root;
+	Json::Reader reader;
+	reader.parse(msg_data, root);
+
+	int from_uid = root["from_uid"].asInt();
+	int to_uid = root["to_uid"].asInt();
+	auto filename = root["filename"].asString();
+	auto filesz = root["filesz"].asInt64();
+	auto md5 = root["md5"].asString();
+
+	Json::Value rt;
+	rt["error"] = ErrorCodes::Success;
+	rt["from_uid"] = from_uid;
+	rt["to_uid"] = to_uid;
+	rt["filename"] = filename;
+
+	Defer defer([&rt, session]() {
+		auto rtstr = rt.toStyledString();
+		session->Send(rtstr, ID_SEND_FILE_RSP);
+	});
+
+	auto rsp=FileGrpcClient::GetInstance()->ApplyUploadTicket(from_uid, to_uid, filename, filesz,md5);
+	if (rsp.error() != 0) {
+		rt["error"] = rsp.error();
+		return;
+	}
+
+
+	rt["fileserver_ip"] = rsp.ip();
+	rt["fileserver_port"] = rsp.port();
+	rt["token"] = rsp.token();
+
+}
+
+void LogicWorker::DealChatFileMsg(shared_ptr<CSession> session, const short& msg_id, const string& msg_data)
+{
+	Json::Value value;
+	Json::Reader reader;
+	if (!reader.parse(msg_data, value)) {
+		std::cerr << "Failed to parse DealChatFileMsg json!" << std::endl;
+		return;
+	}
+
+	auto from_uid = value["from_uid"].asInt();
+	auto to_uid = value["to_uid"].asInt();
+	auto chat_msg_id = value["msg_id"].asInt();
+	std::string content = value["content"].asString(); // 如果客户端直接传了详细字段，这里取详细字段
+
+	// 1. 回包给发送者 ACK
+	Json::Value rt;
+	rt["error"] = ErrorCodes::Success;
+	rt["from_uid"] = from_uid;
+	rt["to_uid"] = to_uid;
+	rt["msg_id"] = chat_msg_id;
+	rt["type"] = "file";
+
+	Defer defer([&rt, &session]() {
+		std::string rt_str = rt.toStyledString();
+		session->Send(rt_str, ID_TEXT_CHAT_MSG_RSP);
+		});
+
+	// 2. 检查接收方所在服务器
+	auto key = USERIPPREFIX + std::to_string(to_uid);
+	std::string server_ip = "";
+	bool success = RedisMjr::GetInstance()->Get(key, server_ip);
+	if (!success) {
+		// 对方离线，可落库存储为离线消息
+		return;
+	}
+
+	// 3. 构造用于发给接收方的统一消息格式
+	Json::Value notify_json;
+	notify_json["from_uid"] = from_uid;
+	notify_json["to_uid"] = to_uid;
+	notify_json["error"] = ErrorCodes::Success;
+
+	Json::Value msg_item;
+	msg_item["msg_id"] = chat_msg_id;
+	msg_item["type"] = "file";
+	msg_item["filename"] = value["filename"];
+	msg_item["filesz"] = value["filesz"];
+	msg_item["token"] = value["token"];
+	msg_item["md5"] = value["md5"];
+	msg_item["content"] = content.empty() ? value["filename"].asString() : content;
+
+	Json::Value text_array;
+	text_array.append(msg_item);
+	notify_json["text"] = text_array;
+
+	auto& cfg = ConfigMgr::Inst();
+	std::string selfserver = cfg["SelfServer"]["Name"];
+
+	// ──► 情况 A：对端在同一台服务器上 ◄──
+	if (server_ip == selfserver) {
+		auto to_session = UserMgr::GetInstance()->GetSession(to_uid);
+		if (to_session) {
+			std::string notify_str = notify_json.toStyledString();
+			to_session->Send(notify_str, ID_NOTIFY_TEXT_CHAT_MSG_REQ);
+		}
+		return;
+	}
+
+	// ──► 情况 B：对端在另一台服务器上，走 gRPC 跨服调用 ◄──
+	TextChatMsgReq msgReq;
+	msgReq.set_fromuid(from_uid);
+	msgReq.set_touid(to_uid);
+
+	TextChatData* data = msgReq.add_textmsgs();
+	data->set_msg_id(chat_msg_id);
+
+	// 如果 content 本身不是 json，将详细属性打包成 json 字符串塞入 msgcontent
+	if (content.empty() || content[0] != '{') {
+		Json::Value pack;
+		pack["filename"] = value["filename"];
+		pack["filesz"] = value["filesz"];
+		pack["token"] = value["token"];
+		pack["md5"] = value["md5"];
+		data->set_msgcontent(pack.toStyledString());
+	}
+	else {
+		data->set_msgcontent(content);
+	}
+
+	ChatGrpcClient::GetInstance()->NotifyTextChatMsg(server_ip, msgReq);
+}
+
+void LogicWorker::DownloadFile(shared_ptr<CSession> session, const short& msg_id, const string& msg_data)
+{
+	Json::Value root;
+	Json::Reader reader;
+	if (!reader.parse(msg_data, root)) {
+		std::cerr << "[LogicWorker] Failed to parse DownloadFile JSON!" << std::endl;
+		return;
+	}
+
+	int uid = root["uid"].asInt();
+	std::string token = root["token"].asString();
+	std::string filename = root["filename"].asString();
+
+	std::string key = FILE_UPLOAD + token;
+	std::string file_info;
+
+	Json::Value rt;
+
+	// 1. 查询 Redis 任务是否存在
+	bool success = RedisMjr::GetInstance()->Get(key, file_info);
+	if (!success) {
+		std::cout << "[LogicWorker] Download task not found for token: " << token << std::endl;
+		rt["error"] = ErrorCodes::FILE_NOT_EXIST;
+		session->Send(rt.toStyledString(), ID_DOWNLOAD_FILE_RSP);
+		return; // ✅ 必须加 return，拦截后续逻辑
+	}
+
+	// 2. 解析存储在 Redis 里的文件元数据
+	Json::Value file;
+	if (!reader.parse(file_info, file)) {
+		std::cerr << "[LogicWorker] Failed to parse file_info JSON from Redis!" << std::endl;
+		rt["error"] = ErrorCodes::Error_Json;
+		session->Send(rt.toStyledString(), ID_DOWNLOAD_FILE_RSP);
+		return; // ✅ 必须加 return
+	}
+
+	// 3. 读取 FileServer 配置
+	auto& cfg = ConfigMgr::Inst();
+	std::string host = cfg["FileServer"]["Host"];
+	int port = std::stoi(cfg["FileServer"]["Port"]);
+
+	// 4. 组装响应（注意统一小写键名，并补充 filesz）
+	rt["error"] = ErrorCodes::Success;
+	rt["host"] = host;
+	rt["port"] = port;
+	rt["token"] = token;
+	rt["filename"] = file.isMember("filename") ? file["filename"].asString() : filename;
+	rt["filesz"] = file["filesz"].asInt64(); // ✅ 关键：提供真实文件大小供客户端计算进度和终止边界
+
+	std::string rt_str = rt.toStyledString();
+	session->Send(rt_str, ID_DOWNLOAD_FILE_RSP);
+
+	std::cout << "[LogicWorker] Issued download ticket for UID: " << uid
+		<< " Token: " << token << " File: " << rt["filename"].asString()
+		<< " Size: " << rt["filesz"].asInt64() << " Bytes"
+		<< " Target FileServer: " << host << ":" << port << std::endl;
+}
+
+void LogicSystem::PostMsgtoQue(shared_ptr<LogicNode> msg)
+{
+	if (!msg)return;
+
+	std::size_t hash_val= std::hash<std::string>{}(msg->_session->GetSessionId());
+	int index = hash_val % MAX_LOGICWORKER;
+	_pool[index]->PostMsgToQue(msg);
+}
+
+void LogicSystem::SetServer(std::shared_ptr<Cserver> pserver)
+{
+	for (auto& work : _pool) {
+		work->SetServer(pserver);
+	}
+}
+
+bool LogicSystem::GetBaseInfo(std::string base_key, int uid, std::shared_ptr<UserInfo>& userInfo)
+{
+	std::string info_Str = "";
+	bool success = RedisMjr::GetInstance()->Get(base_key, info_Str);
+	if (success) {
+		Json::Reader reader;
+		Json::Value value;
+		reader.parse(info_Str, value);
+		userInfo->name = value["name"].asString();
+		userInfo->email = value["email"].asString();
+		userInfo->uid = value["uid"].asInt();
+		userInfo->passwd = value["passwd"].asString();
+		userInfo->nick = value["nick"].asString();
+		userInfo->icon = value["icon"].asString();
+		userInfo->desc = value["desc"].asString();
+		userInfo->sex = value["sex"].asInt();
+		std::cout << "GetBaseInfo get :User uid is " << userInfo->uid << " , email is " << userInfo->email << " , password is " << userInfo->passwd << " , name is " << userInfo->name;
+	}
+	else {
+		std::shared_ptr<UserInfo> user_info = nullptr;
+		user_info = MysqlMgr::GetInstance()->GetUser(uid);
+		if (user_info == nullptr) {
+			return false;
+		}
+		userInfo = user_info;
+
+		Json::Value user_json;
+		user_json["uid"] = userInfo->uid;
+		user_json["name"] = userInfo->name;
+		user_json["email"] = userInfo->email;
+		user_json["passwd"] = userInfo->passwd;
+		user_json["nick"] = userInfo->nick;
+		user_json["icon"] = userInfo->icon;
+		user_json["desc"] = userInfo->desc;
+		user_json["sex"] = userInfo->sex;
+
+		RedisMjr::GetInstance()->Set(base_key, user_json.toStyledString());
+	}
+	return true;
+}
+
+
+LogicSystem::LogicSystem():sz(MAX_LOGICWORKER)
+{
+	for (int i = 0;i < sz;i++) {
+		auto workptr=std::make_shared<LogicWorker>();
+		//workptr->Start();
+		_pool.push_back(workptr);
+	}
+}
+
+
+LogicSystem::~LogicSystem() {
+	for (auto& work : _pool) {
+		work->End();
+	}
+	_pool.clear();
 }

@@ -73,6 +73,8 @@ qt_add_executable(qtui
     handler_func.h handler_func.cpp
     authfriend.h authfriend.cpp authfriend.ui
     friendinfopage.h friendinfopage.cpp friendinfopage.ui
+    fileuploader.h fileuploader.cpp
+    filedownloader.h filedownloader.cpp
 
 
 
