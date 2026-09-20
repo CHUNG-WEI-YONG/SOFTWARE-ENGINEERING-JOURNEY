@@ -167,6 +167,7 @@ TextChatMsgRsp ChatGrpcClient::NotifyTextChatMsg(std::string server_ip, const Te
 
     auto iter = _pools.find(server_ip);
     if (iter == _pools.end()) {
+        rsp.set_error(ErrorCodes::RPCFailed);
         cout << "Grpc Cannot find server_ip: " << server_ip;
         return rsp;
     }
@@ -186,4 +187,51 @@ TextChatMsgRsp ChatGrpcClient::NotifyTextChatMsg(std::string server_ip, const Te
 
     return rsp;
 
+}
+
+KickUserRsp ChatGrpcClient::NotifyKickUser(std::string server_name, const KickUserReq& req)
+{
+    KickUserRsp rsp;
+
+    // 1. 查找目标服务器连接池
+    auto iter = _pools.find(server_name);
+    if (iter == _pools.end()) {
+        std::cerr << "[ChatGrpcClient] Cannot find connection pool for server: " << server_name << std::endl;
+        rsp.set_error(ErrorCodes::RPCFailed);
+        return rsp;
+    }
+
+    auto& pool = iter->second;
+    auto stub = pool->GetConn();
+    if (!stub) {
+        std::cerr << "[ChatGrpcClient] Connection pool exhausted for server: " << server_name << std::endl;
+        rsp.set_error(ErrorCodes::RPCFailed);
+        return rsp;
+    }
+
+    // 2. 保证 stub 离开作用域时安全归还连接池
+    Defer defer([&pool, &stub]() {
+        pool->returnConn(std::move(stub));
+        });
+
+
+    ClientContext context;
+    auto deadline = std::chrono::system_clock::now() + std::chrono::seconds(3);
+    context.set_deadline(deadline);
+
+    Status status = stub->NotifyKickUser(&context, req, &rsp);
+    if (!status.ok()) {
+        std::cerr << "[ChatGrpcClient] Failed to kick user on server: " << server_name
+            << " | Code: " << status.error_code()
+            << " | Message: " << status.error_message() << std::endl;
+        rsp.set_error(ErrorCodes::RPCFailed);
+        return rsp;
+    }
+
+
+    if (rsp.error() == 0) {
+        rsp.set_error(ErrorCodes::Success);
+    }
+
+    return rsp;
 }

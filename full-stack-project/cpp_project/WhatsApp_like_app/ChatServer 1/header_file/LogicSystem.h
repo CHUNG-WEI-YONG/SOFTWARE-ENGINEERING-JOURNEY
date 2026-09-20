@@ -89,5 +89,6 @@ private:
 	LogicSystem();
 	std::vector<std::shared_ptr<LogicWorker>> _pool;
 	std::size_t sz;
+	std::shared_ptr<Cserver> _p_server;
 
 };

@@ -20,6 +20,7 @@ class Cserver;
 
 class CSession :public std::enable_shared_from_this<CSession> {
 public:
+	~CSession();
 	CSession(boost::asio::io_context&, Cserver*);
 	std::string GetSessionId();
 	void SetUserId(int id);
@@ -34,13 +35,14 @@ public:
 	void Close();
 	void Send(std::string msg, short msg_id);
 	void HandleWrite(const boost::system::error_code& ec, std::shared_ptr<CSession> self);
+	void NotifyOffline();
 	boost::asio::ip::tcp::socket& GetIoContext();
+	Cserver* _server;
 
 private:
 	boost::asio::ip::tcp::socket _socket;
 	std::atomic<bool> _b_Stop;
 	std::atomic<bool> _head_is_parsed;
-	Cserver* _server;
 	std::shared_ptr<CSession>Sharedself();
 
 	char _data[MAX_LENGTH];

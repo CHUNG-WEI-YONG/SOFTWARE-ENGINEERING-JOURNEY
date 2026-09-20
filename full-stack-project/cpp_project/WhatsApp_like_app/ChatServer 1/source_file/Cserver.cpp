@@ -2,6 +2,7 @@
 #include "AsioIOServerPool.h"
 #include "CSession.h"
 #include "UserMgr.h"
+#include "LogicSystem.h"
 
 Cserver::Cserver(boost::asio::io_context& ioc, uint16_t port):_port(port),_ioc(ioc),_acceptor(ioc,tcp::endpoint(tcp::v4(),port)) {
 	std::cout << "Server start at port: " << port << std::endl;
@@ -10,6 +11,7 @@ Cserver::Cserver(boost::asio::io_context& ioc, uint16_t port):_port(port),_ioc(i
 }
 
 void Cserver::StartAccept() {
+
 	auto& ioc = AsioIOServerPool::GetInstance()->get_io_context();
 	shared_ptr<CSession> session = make_shared<CSession>(ioc, this);
 	_acceptor.async_accept(session->GetSocket(), [this, session](const boost::system::error_code& ec) {
@@ -20,7 +22,6 @@ void Cserver::StartAccept() {
 		else {
 			std::cout << "Accept failed, error: " << ec.message() << std::endl;
 		}
-
 		// 3. 🎯 核心回环：无论这次成功还是失败，都必须继续拉起下一次异步监听，接力响应后续客户端！
 		this->StartAccept();
 		});
@@ -28,6 +29,7 @@ void Cserver::StartAccept() {
 }
 
 void Cserver::HandleAccept(std::shared_ptr<CSession> new_session, const boost::system::error_code& error) {
+	std::cout << "✅ [Cserver] Accepted new connection, session id: " << new_session->GetSessionId() << std::endl;
 	if (!error) {
 		new_session->Start();
 		lock_guard<mutex> lock(_mutex);
@@ -40,6 +42,7 @@ void Cserver::HandleAccept(std::shared_ptr<CSession> new_session, const boost::s
 }
 
 void Cserver::ClearSession(std::string session_id) {
+	lock_guard<mutex> lock(_mutex);
 	if (_sessions.find(session_id) != _sessions.end()) {
 		UserMgr::GetInstance()->RmvUserSession(_sessions[session_id]->GetUserId(), session_id);
 	}
@@ -48,6 +51,15 @@ void Cserver::ClearSession(std::string session_id) {
 		_sessions.erase(session_id);
 	}
 
+}
+
+bool Cserver::CheckSessionId(std::string session_id)
+{
+	auto iter = _sessions.find(session_id);
+	if (iter != _sessions.end()) {
+		return true;
+	}
+	return false;
 }
 
 Cserver::~Cserver() {

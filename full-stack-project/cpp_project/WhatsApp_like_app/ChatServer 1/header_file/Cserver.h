@@ -4,14 +4,16 @@
 #include <mutex>
 #include <map>
 #include <memory.h>
+#include <string>
 
 class CSession;
 using boost::asio::ip::tcp;
-class Cserver {
+class Cserver:public std::enable_shared_from_this<Cserver> {
 public:
 	Cserver(boost::asio::io_context& ioc, uint16_t port);
 	~Cserver();
 	void ClearSession(std::string);
+	bool CheckSessionId(std::string session_id);
 private:
 	void HandleAccept(std::shared_ptr<CSession>, const boost::system::error_code& error);
 	void StartAccept();

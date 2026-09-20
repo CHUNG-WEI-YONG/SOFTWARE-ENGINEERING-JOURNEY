@@ -32,6 +32,7 @@ public:
 	Status NotifyAddFriend(ServerContext* context, const AddFriendReq* req, AddFriendRsp* rsp) override;
 	Status NotifyAuthFriend(ServerContext* context, const AuthFriendReq* req, AuthFriendRsp* rsp)override;
 	Status NotifyTextChatMsg(ServerContext* context, const TextChatMsgReq* req, TextChatMsgRsp* rsp)override;
+	Status NotifyKickUser(ServerContext* context, const KickUserReq* req, KickUserRsp* rsp)override;
 
 	bool GetBaseInfo(std::string base_key, int uid, std::shared_ptr<UserInfo> userinfo);
 

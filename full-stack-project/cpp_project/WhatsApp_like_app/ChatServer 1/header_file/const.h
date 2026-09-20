@@ -31,11 +31,9 @@
 #define USER_SESSION_PREFIX "usession_"
 #define LOCK_COUNT "lockcount"
 #define FILE_UPLOAD "file_upload_"
+#define LOCK_TIME_OUT 5
+#define ACQUIRE_TIME_OUT 1
 
-//分布式锁的持有时间
-#define LOCK_TIME_OUT 10
-//分布式锁的重试时间
-#define ACQUIRE_TIME_OUT 5
 
 #define MAX_LOGICWORKER 4
 
@@ -54,7 +52,8 @@ enum ErrorCodes {
 	UidInvalid = 1011,  //uid无效
 	CREATE_CHAT_FAILED = 1012, //创建聊天失败
 	LOAD_CHAT_FAILED = 1013, //加载聊天失败	
-	FILE_NOT_EXIST=1014
+	FILE_NOT_EXIST=1014,
+	SERVER_BUSY=1015
 
 };
 
@@ -116,7 +115,10 @@ enum MSG_IDS {
 	ID_NOTIFY_FILE_CHAT_MSG_REQ=1034,
 	ID_DOWNLOAD_FILE_REQ = 1035,
 	ID_DOWNLOAD_FILE_RSP=1036,
+
+	
 };
+
 
 //struct UserInfo {
 //	int uid;            // 用户唯一标识 ID

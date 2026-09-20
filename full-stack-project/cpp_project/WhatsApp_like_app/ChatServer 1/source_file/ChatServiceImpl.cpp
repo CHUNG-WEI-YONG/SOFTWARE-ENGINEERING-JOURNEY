@@ -125,6 +125,31 @@ Status ChatServiceImpl::NotifyTextChatMsg(ServerContext* context, const TextChat
 	return Status::OK;
 }
 
+Status ChatServiceImpl::NotifyKickUser(ServerContext* context, const KickUserReq* req, KickUserRsp* rsp)
+{
+	auto uid = req->uid();
+	rsp->set_uid(uid);
+
+	auto session = UserMgr::GetInstance()->GetSession(uid);
+	if (!session) {
+		// 用户在本节点并不存在（可能已经提前掉线），对踢人操作而言直接判定为成功完成
+		rsp->set_error(ErrorCodes::Success);
+		return Status::OK;
+	}
+
+	std::cout << "[ChatServer] Received gRPC NotifyKickUser for UID: " << uid << std::endl;
+
+	// 1. 发送被顶号下线通知包（内部包含 200ms 定时器延时 Close 和 ClearSession）
+	session->NotifyOffline();
+
+	// 2. 立即从本地内存管理器的在线表中解绑该用户
+	UserMgr::GetInstance()->RmvUserSession(uid,session->get_uuid());
+
+	// 3. 明确应答主叫端执行成功
+	rsp->set_error(ErrorCodes::Success);
+	return Status::OK;
+}
+
 bool ChatServiceImpl::GetBaseInfo(std::string base_key, int uid, std::shared_ptr<UserInfo> userinfo) {
 	std::string info_str = "";
 	bool success=RedisMjr::GetInstance()->Get(base_key, info_str);

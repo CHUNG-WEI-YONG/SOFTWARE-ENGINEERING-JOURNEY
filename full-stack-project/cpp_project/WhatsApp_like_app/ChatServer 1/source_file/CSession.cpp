@@ -6,8 +6,17 @@
 #include "const.h"
 #include "MsgNode.h"
 #include "LogicSystem.h"
+#include "RedisMjr.h"
+#include "ConfigMgr.h"
 
-CSession::CSession(boost::asio::io_context& ioc, Cserver* server):_server(server),_socket(ioc),_b_Stop(false),_head_is_parsed(false) {
+CSession::~CSession()
+{
+	auto& cfg = ConfigMgr::Inst();
+	auto server_name = cfg["SelfServer"]["Name"];
+	RedisMjr::GetInstance()->DelCount(server_name);
+}
+
+CSession::CSession(boost::asio::io_context& ioc, Cserver* server):_server(server),_socket(ioc),_b_Stop(false),_head_is_parsed(false),_uid(0) {
 	boost::uuids::uuid u = boost::uuids::random_generator()();
 	_session_id = boost::uuids::to_string(u);	
 	_recv_head_node = std::make_shared<MsgNode>(HEAD_TOTAL_LEN);
@@ -93,15 +102,53 @@ void CSession::asyncReadBody(int total_len) {
 	asyncReadFull(total_len, [self, this, total_len](const boost::system::error_code& ec, std::size_t byte_transfer) {
 		try{
 			if (ec) {
+				int uid = this->GetUserId();
+				if (uid <= 0) {
+					_server->ClearSession(_session_id);
+					return;
+				}
 				std::cout << "Handle read failed, error code is " << ec.message() << std::endl;
 				Close();
-				_server->ClearSession(_session_id);
+
+				auto uid_str = std::to_string(uid);
+				auto identifier = RedisMjr::GetInstance()->acquireLock(uid_str, ACQUIRE_TIME_OUT, LOCK_TIME_OUT);
+				Defer defer([self, this,uid_str,identifier]() {
+					_server->ClearSession(_session_id);
+					RedisMjr::GetInstance()->releaseLock(uid_str, identifier);
+				});
+
+				if (identifier.empty()) {
+					return;
 				}
+
+				std::string redissession_id = "";
+				auto bsuccess = RedisMjr::GetInstance()->Get(USER_SESSION_PREFIX + uid_str, redissession_id);
+				if (!bsuccess) {
+					return;
+				}
+
+				if (redissession_id != _session_id) {
+					return;
+				}
+
+				RedisMjr::GetInstance()->Del(USER_SESSION_PREFIX + uid_str);
+				RedisMjr::GetInstance()->Del(USERIPPREFIX + uid_str);
+				UserMgr::GetInstance()->RmvUserSession(uid,_session_id);
+				return;
+				
+	
+			}
+
 			if (byte_transfer < total_len) {
 				std::cout << "read length not match, read [" << byte_transfer << "] , total ["
 					<< total_len << "]" << endl;
 				Close();
 				_server->ClearSession(_session_id);
+				return;
+			}
+
+			if (!_server->CheckSessionId(_session_id)) {
+				Close();
 				return;
 			}
 			memcpy(_recv_msg_node->_data, _data, byte_transfer);
@@ -165,6 +212,30 @@ void CSession::HandleWrite(const boost::system::error_code& ec, std::shared_ptr<
 	}
 }
 
+void CSession::NotifyOffline() {
+	Json::Value rt;
+	rt["error"] = ErrorCodes::Success;
+	rt["uid"] = _uid;
+	rt["content"] = "Log in at other place";
+
+	std::string msg = rt.toStyledString();
+	Send(msg, ID_NOTIFY_OFF_LINE_REQ);
+
+	auto self = shared_from_this();
+	auto timer = std::make_shared<boost::asio::steady_timer>(_socket.get_executor());
+	timer->expires_after(std::chrono::milliseconds(200));
+	timer->async_wait([self, timer](const boost::system::error_code& ec) {
+		if (!ec) {
+			std::cout << "[CSession] Gracefully closing session after NotifyOffline: "
+				<< self->GetSessionId() << std::endl;
+			self->Close();
+			if (self->_server) {
+				self->_server->ClearSession(self->GetSessionId());
+			}
+		}
+		});
+}
+
 tcp::socket& CSession::GetIoContext() {
 	return _socket;
 }
@@ -194,6 +265,7 @@ std::string CSession::get_uuid() {
 
 void CSession::SetUserId(int id) {
 	_uid = id;
+
 }
 int CSession::GetUserId() {
 	return _uid;

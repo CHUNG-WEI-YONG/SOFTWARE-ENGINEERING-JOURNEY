@@ -14,6 +14,12 @@ std::condition_variable cv_quit;
 
 void InitServerStatus() {
 	std::string server_name = ConfigMgr::Inst()["SelfServer"]["Name"];
+	auto key = LOCK_COUNT;
+	auto identifier = RedisMjr::GetInstance()->acquireLock(key, LOCK_TIME_OUT, ACQUIRE_TIME_OUT);
+
+	Defer defer([&key, &identifier]() {
+		RedisMjr::GetInstance()->releaseLock(key, identifier);
+	});
 
 	bool res = RedisMjr::GetInstance()->HSet(LOGIN_COUNT, server_name, "0");
 	if (res) {
@@ -24,11 +30,14 @@ void InitServerStatus() {
 	}
 }
 
+
+
 int main() {
 	try {
 		auto cfg = ConfigMgr::Inst();
 		auto pool = AsioIOServerPool::GetInstance();
 		std::cout << "This is Chatserver " << cfg["SelfServer"]["Name"] << std::endl;
+
 
 		std::string redishost = cfg["RedisServer"]["Host"];
 		std::string redisport = cfg["RedisServer"]["Port"];
@@ -86,15 +95,17 @@ int main() {
 
 		auto port_str = cfg["SelfServer"]["Port"];
 		uint16_t port = static_cast<uint16_t>(std::stoul(port_str));
+		auto server_ptr = std::make_shared<Cserver>(ioc, port);
 
-		Cserver s(ioc, port);
+		LogicSystem::GetInstance()->SetServer(server_ptr);
 
 		// 4. Block on Asio Event Loop
 		ioc.run();
 
 		// 5. Cleanup AFTER ioc.run() stops (When server shuts down)
-		RedisMjr::GetInstance()->HDel(LOGIN_COUNT, server_name);
+		RedisMjr::GetInstance()->DelCount(server_name);
 		RedisMjr::GetInstance()->Close();
+		
 
 		std::cout << "ChatServer shut down cleanly." << std::endl;
 	}

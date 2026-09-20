@@ -1,7 +1,12 @@
 #include "const.h"
+#include <hiredis/hiredis.h>
+
+#include <string>
+
 
 class RedisConPool {
 public:
+
 	RedisConPool(size_t poolSize, const char* host, int port, const char* pwd)
 		: poolSize_(poolSize), host_(host), port_(port), b_stop_(false), pwd_(pwd), counter_(0), fail_count_(0) {
 		for (size_t i = 0; i < poolSize_; ++i) {
@@ -44,6 +49,7 @@ public:
 	~RedisConPool() {
 
 	}
+
 
 	void ClearConnections() {
 		std::lock_guard<std::mutex> lock(mutex_);
@@ -263,6 +269,9 @@ class RedisMjr :public Singleton<RedisMjr> {
 	friend class Singleton<RedisMjr>;
 public:
     ~RedisMjr();
+	std::string acquireLock(const std::string& lock_name, int acquireTime, int locktime);
+	bool releaseLock(const std::string& lock_name, const std::string& identifier);
+
 
     // 🔑 连通大闸：所有输入参数，一律 const 焊死
     bool Connect(const std::string& host, int port, const std::string& password,int size);
@@ -288,14 +297,30 @@ public:
     bool Exists(const std::string& key);
 
     bool HDel(const std::string& key1, const std::string& key2);
-    void Close() {
+
+	void DelCount(std::string server_name);
+
+	void Close() {
 		_pool->Close();
 		_pool->ClearConnections();
-    }
+	};
+
 
 private:
 	RedisMjr();
 	std::unique_ptr<sw::redis::Redis> _redis_client;
 	std::unique_ptr<RedisConPool> _pool;
 
+};
+
+
+class DistLock {
+public:
+	~DistLock();
+	static DistLock& Inst();
+	std::string acquired_lock(redisContext* context, const std::string& lockname, int lock_timeout, int acquire_timeout);
+	bool release_lock(redisContext* context, const std::string& lockname, const string& identifier);
+
+private:
+	DistLock() = default;
 };

@@ -106,8 +106,7 @@ void LogicWorker::LoginHandler(shared_ptr<CSession> session, const short& msg_id
 	auto uid = root["uid"].asInt();
 	auto token = root["token"].asString();
 
-	auto rsp = StatusGrpcClient::GetInstance()->Login(uid, token);
-
+	//auto rsp = StatusGrpcClient::GetInstance()->Login(uid, token);
 
 
 	Defer defer([this,&rtvalue,session]() {
@@ -115,6 +114,8 @@ void LogicWorker::LoginHandler(shared_ptr<CSession> session, const short& msg_id
 		session->Send(return_val, MSG_CHAT_LOGIN_RSP);
 
 		});
+
+
 
 	std::string uid_str = std::to_string(uid);
 	std::string token_key = USERTOKENPREFIX + uid_str;
@@ -125,7 +126,7 @@ void LogicWorker::LoginHandler(shared_ptr<CSession> session, const short& msg_id
 		return;
 	}
 	if (token_value != token) {
-		rtvalue["value"] = ErrorCodes::TokenInvalid;
+		rtvalue["error"] = ErrorCodes::TokenInvalid;
 		return;
 	}
 	rtvalue["error"] = ErrorCodes::Success;
@@ -138,7 +139,7 @@ void LogicWorker::LoginHandler(shared_ptr<CSession> session, const short& msg_id
 		return;
 	}
 	rtvalue["uid"] = uid;
-	rtvalue["passwd"] = userInfo->passwd;
+	//rtvalue["passwd"] = userInfo->passwd;
 	rtvalue["email"] = userInfo->email;
 	rtvalue["desc"] = userInfo->desc;
 	rtvalue["nick"] = userInfo->nick;
@@ -150,7 +151,7 @@ void LogicWorker::LoginHandler(shared_ptr<CSession> session, const short& msg_id
 	//do for mysql to do the search for friend list and user list
 
 	std::vector<std::shared_ptr<ApplyInfo>> list;
-	bool gsuccess=GetFriendApply(uid, list);
+	bool gsuccess = GetFriendApply(uid, list);
 	if (gsuccess) {
 		for (auto& apply : list) {
 			Json::Value obj;
@@ -181,6 +182,46 @@ void LogicWorker::LoginHandler(shared_ptr<CSession> session, const short& msg_id
 		}
 	}
 
+	//
+	auto lock = uid_str;
+	std::string identifier = RedisMjr::GetInstance()->acquireLock(lock, ACQUIRE_TIME_OUT, LOCK_TIME_OUT);
+	if (identifier.empty()) {
+		rtvalue["error"] = ErrorCodes::SERVER_BUSY; // 或者特定的抢锁失败错误码
+		return;
+	}
+	Defer defer2([this, &identifier,&lock ]{
+		RedisMjr::GetInstance()->releaseLock(lock, identifier);
+		});
+
+	std::string user_server_key = USERIPPREFIX + uid_str;
+	std::string ip = "";
+	bool success = RedisMjr::GetInstance()->Get(user_server_key, ip);
+	if (success) {
+		if (!ip.empty()) {
+			auto& cfg = ConfigMgr::Inst();
+			std::string server_curr = cfg["SelfServer"]["Name"];
+			if (server_curr == ip) {
+				auto old_session=UserMgr::GetInstance()->GetSession(uid);
+				if (old_session) {
+					old_session->NotifyOffline();
+					_p_server->ClearSession(old_session->GetSessionId());
+				}
+			}
+			else {
+				KickUserReq req;
+				req.set_uid(uid);
+				ChatGrpcClient::GetInstance()->NotifyKickUser(ip, req);
+			}
+
+		}
+
+	}
+
+
+
+
+	
+
 	//Log in server logic
 	auto config = ConfigMgr::Inst();
 	auto server_name = config["SelfServer"]["Name"];
@@ -201,20 +242,11 @@ void LogicWorker::LoginHandler(shared_ptr<CSession> session, const short& msg_id
 	session->SetUserId(uid);
 
 	std::string user_uuid = USERIPPREFIX + uid_str;
+	std::string user_session = USER_SESSION_PREFIX + uid_str;
 	RedisMjr::GetInstance()->Set(user_uuid, server_name);
 	UserMgr::GetInstance()->SetUserSession(uid, session);
+	RedisMjr::GetInstance()->Set(user_session, session->GetSessionId());
 
-	if (_p_server) {
-	//	auto old_session = _p_server->getsess(uuid);
-
-	//	if (old_session && old_session->GetSessionId() != session->GetSessionId()) {
-	//		// 2. 如果找到了旧连接，且旧连接不是当前这个新连接
-	//		old_session->NotifyOffline(uuid); // 给旧连接发一个“你被顶号了”的通知包
-	//		_p_server->ClearSession(old_session->GetSessionId()); // 🎯 物理清除【旧连接】，而不是清除当前新连接！
-	//	}
-	//}
-	//	_p_server->ClearSession(session->GetSessionId());
-	}
 	std::cout << "User " << uid << " logged in successfully on pure memory mode." << std::endl;
 	return;
 
@@ -694,6 +726,7 @@ bool LogicWorker::GetFriendList(int uid, std::vector<std::shared_ptr<UserInfo>>&
 
 void LogicWorker::UploadFile(shared_ptr<CSession> session, const short& msg_id, const string& msg_data)
 {
+	std::cout << "Upload file in logic system succesfully done";
 	Json::Value root;
 	Json::Reader reader;
 	reader.parse(msg_data, root);
@@ -725,6 +758,7 @@ void LogicWorker::UploadFile(shared_ptr<CSession> session, const short& msg_id, 
 	rt["fileserver_ip"] = rsp.ip();
 	rt["fileserver_port"] = rsp.port();
 	rt["token"] = rsp.token();
+
 
 }
 
