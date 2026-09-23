@@ -7,34 +7,46 @@ Httpmgr::Httpmgr() {
 
 }
 
-void Httpmgr::PostHttp(QUrl url,QJsonObject json ,ReqId id,Modules mod ){
-    QByteArray data=QJsonDocument(json).toJson();
+void Httpmgr::PostHttp(QUrl url, QJsonObject json, ReqId id, Modules mod) {
+    QByteArray data = QJsonDocument(json).toJson(QJsonDocument::Compact);
     QNetworkRequest request(url);
-    request.setHeader(QNetworkRequest::ContentTypeHeader,"application/json");
-    request.setHeader(QNetworkRequest::ContentLengthHeader,QByteArray::number(data.length()));
-    //auto self=shared_from_this();
-    QNetworkReply * reply=_manager.post(request,data);
-    QObject::connect(reply,&QNetworkReply::finished,[this,reply,id,mod](){
-        if(reply->error()!=QNetworkReply::NoError){
-            qDebug()<<reply->errorString();
-            emit this->sig_http_finish(id,"",ErrorCode::Err_NETWORK,mod);
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+    request.setHeader(QNetworkRequest::ContentLengthHeader, QByteArray::number(data.length()));
+
+    QNetworkReply* reply = _manager.post(request, data);
+
+    // 监听网络底层异常，方便定位是否为对端切断
+    QObject::connect(reply, &QNetworkReply::errorOccurred, this, [](QNetworkReply::NetworkError err) {
+        qDebug() << "⚠️ [Qt 网络错误发生]:" << err;
+    });
+
+    QObject::connect(reply, &QNetworkReply::finished, [this, reply, id, mod]() {
+        // 保证在任何 return 路径下，reply 都会被安全销毁
+        auto cleanup = [reply]() {
             reply->deleteLater();
+        };
+
+        if (reply->error() != QNetworkReply::NoError) {
+            qDebug() << "❌ [Http 请求失败]:" << reply->errorString();
+            emit this->sig_http_finish(id, "", ErrorCode::Err_NETWORK, mod);
+            cleanup();
             return;
         }
-        //no error
-        QByteArray res=reply->readAll();
-        qDebug()<<"response: "<<res;
+
+        QByteArray res = reply->readAll();
+        qDebug() << "✅ [Http 收到回包]:" << res;
+
         QJsonParseError parseError;
         QJsonDocument resDoc = QJsonDocument::fromJson(res, &parseError);
-        QJsonObject resObj = resDoc.object();
         if (parseError.error != QJsonParseError::NoError) {
-            qDebug() << "JSON Parse Error:" << parseError.errorString();
+            qDebug() << "❌ [JSON 解析错误]:" << parseError.errorString();
             emit sig_http_finish(id, "", ErrorCode::Err_JSON, mod);
+            cleanup(); // ✅ 确保释放
             return;
         }
-        emit this->sig_http_finish(id,res,ErrorCode::SUCCESS,mod);
-        reply->deleteLater();
-        return;
+
+        emit this->sig_http_finish(id, res, ErrorCode::SUCCESS, mod);
+        cleanup();
     });
 }
 

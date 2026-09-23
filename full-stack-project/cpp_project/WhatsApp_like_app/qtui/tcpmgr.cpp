@@ -38,7 +38,7 @@ TcpMgr::TcpMgr() {
 
     QObject::connect(&_socket, QOverload<QAbstractSocket::SocketError>::of(&QTcpSocket::errorOccurred), [&](QAbstractSocket::SocketError socketError) {
            Q_UNUSED(socketError)
-          qDebug() << "Error:" << _socket.errorString();
+          qDebug() << "Socket Error:" << _socket.errorString();
         });
 
     connect(&_socket , &QTcpSocket::disconnected,[this](){
@@ -95,6 +95,40 @@ void TcpMgr::initHandlers()
         }
 
         emit sig_switch_chat_dlg();
+    });
+
+    _handlers.insert(ReqId::ID_NOTIFY_OFF_LINE_REQ,[this](ReqId id,quint16 len,QByteArray message){
+        Q_UNUSED(len);
+        qDebug()<<"Handle id is "<<static_cast<int>(id)<<" and data is "<<message;
+        QJsonDocument jsonDoc=QJsonDocument::fromJson(message);
+        QJsonObject jsonObj=jsonDoc.object();
+        if(jsonDoc.isNull()){
+            qDebug()<<"Error in Reading Messsage";
+            emit sig_login_failed(ErrorCode::Err_JSON);
+            return;
+        }
+
+
+        if(!jsonObj.contains("error")){
+            ErrorCode error=ErrorCode::Err_JSON;
+            qDebug()<<"Nofity message failed. Error is "<<static_cast<int>(error);
+            emit sig_login_failed(error);
+            return ;
+        }
+        int error=jsonObj["error"].toInt();
+        if(static_cast<ErrorCode>(error)!=ErrorCode::SUCCESS){
+            qDebug()<<"Error message Get";
+            emit sig_login_failed(static_cast<ErrorCode>(error));
+            return;
+        }
+
+
+        auto uid=jsonObj["uid"];
+        auto content=jsonObj["content"];
+        QString reason = jsonObj.value("reason").toString(
+            tr("Your account was logged in from another device.")
+            );
+        emit sig_offline(reason);
     });
 
     _handlers.insert(ReqId::ID_SEARCH_USER_RSP, [this](ReqId id, quint16 len, QByteArray message) {
@@ -430,6 +464,35 @@ void TcpMgr::initHandlers()
         emit sig_download_file_rsp(filemsg);
     });
 
+    _handlers.insert(ReqId::ID_CHAT_LOGIN_RSP,[this](ReqId id,quint16 len,QByteArray message){
+        Q_UNUSED(len);
+        qDebug()<<"Handle id is "<<static_cast<int>(id)<<" and data is "<<message;
+        QJsonDocument jsonDoc=QJsonDocument::fromJson(message);
+        QJsonObject jsonObj=jsonDoc.object();
+        if(jsonDoc.isNull()){
+            qDebug()<<"Error in Reading Messsage";
+            emit sig_login_failed(ErrorCode::Err_JSON);
+            return;
+        }
+
+
+        if(!jsonObj.contains("error")){
+            ErrorCode error=ErrorCode::Err_JSON;
+            qDebug()<<"Login failed. Error is "<<static_cast<int>(error);
+            emit sig_login_failed(error);
+            return ;
+        }
+        int error=jsonObj["error"].toInt();
+        if(static_cast<ErrorCode>(error)!=ErrorCode::SUCCESS){
+            qDebug()<<"Error message Get In HeartBeat";
+            return;
+        }
+
+
+
+        cout<<"Receive heartbeat message response";
+    });
+
 
 
 }
@@ -442,6 +505,12 @@ void TcpMgr::HandleMessage(ReqId id, int len, QByteArray data)
         return;
     }
     find_iter.value()(id,len,data);
+
+}
+
+void TcpMgr::CloseConnection()
+{
+    _socket.disconnectFromHost();
 
 }
 

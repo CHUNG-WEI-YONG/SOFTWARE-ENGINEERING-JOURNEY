@@ -20,6 +20,9 @@
 #include <QFileDialog>
 #include <QStandardPaths>
 #include "filedownloader.h"
+#include <QMessageBox>
+#include "logindialog.h"
+#include <QTimer>
 
 ChatDialog::ChatDialog(QWidget *parent)
     : QDialog(parent)
@@ -98,11 +101,16 @@ ChatDialog::ChatDialog(QWidget *parent)
     ui->side_chat_lb->SetState("normal","hover","pressed","selected_normal","selected_hover","selected_pressed");
     ui->side_contact_lb->SetState("normal","hover","pressed","selected_normal","selected_hover","selected_pressed");
 
+    ui->side_setting->setProperty("state","normal");
+    ui->side_setting->SetState("normal","hover","pressed","selected_normal","selected_hover","selected_pressed");
+
     AddLBGroup(ui->side_chat_lb);
     AddLBGroup(ui->side_contact_lb);
+    AddLBGroup(ui->side_setting);
 
     connect(ui->side_chat_lb,&StateWidget::clicked,this,&ChatDialog::slot_side_chat);
     connect(ui->side_contact_lb,&StateWidget::clicked,this,&ChatDialog::slot_side_contact);
+    connect(ui->side_setting,&StateWidget::clicked,this,&ChatDialog::slot_side_setting);
     ShowSearch(false);
 
     QTimer::singleShot(0, this, [this](){
@@ -141,6 +149,7 @@ ChatDialog::ChatDialog(QWidget *parent)
 
 ChatDialog::~ChatDialog()
 {
+    _timer->start(10000);
     delete ui;
 }
 
@@ -203,6 +212,18 @@ void ChatDialog::AddUserlist()
         ui->chat_user_list->addItem(item);
         ui->chat_user_list->setItemWidget(item, chat_user_wid);
     }
+
+    _timer=new QTimer(this);
+    connect(_timer,&QTimer::timeout,this,[this](){
+        auto user=UserMgr::getInstance()->GetUserInfo();
+        QJsonObject obj;
+        obj["from_uid"]=user->_uid;
+        QJsonDocument doc(obj);
+        QByteArray send=doc.toJson(QJsonDocument::Compact);
+        emit TcpMgr::getInstance()->sig_send_data(ReqId::ID_HEART_BEAT_REQ,send);
+    });
+
+    _timer->start(10000);
 }
 
 void ChatDialog::ClearState(StateWidget *lb)
@@ -826,6 +847,7 @@ void ChatDialog::slot_download_file(std::shared_ptr<FileToken> token)
 
 }
 
+
 void ChatDialog::sendFileMsgToChatServer(std::shared_ptr<FileToken> token)
 {
     // 上传到 FileServer 成功后，给 ChatServer 发一条消息，让 ChatServer 转发给对方
@@ -889,7 +911,7 @@ void ChatDialog::addInitialFileBubbleUi(std::shared_ptr<FileToken> token)
         sizeStr,
         _pending_upload_path,
         sent_msg.timeStr,
-        nullptr
+        token->token
         );
 
 
@@ -1049,6 +1071,14 @@ void ChatDialog::slot_side_chat()
 
     // 4. 重置视图：安全隐藏或展现对应的搜索框与好友列表
     ShowSearch(false);
+}
+
+void ChatDialog::slot_side_setting()
+{
+    qDebug()<<"Change to side setting";
+    ClearState(ui->side_setting);
+    ui->stackedWidget->setCurrentWidget(ui->user_info_page);
+
 }
 
 void ChatDialog::slot_text_changed(const QString &str)

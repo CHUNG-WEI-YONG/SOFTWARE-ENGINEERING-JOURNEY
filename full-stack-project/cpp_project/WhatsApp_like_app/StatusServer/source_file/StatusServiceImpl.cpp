@@ -34,6 +34,9 @@ std::string GenerateStringUUID() {
 
 ChatServer StatusServiceImpl::getChatServer() {
     std::lock_guard<std::mutex> lock(_ChatServerLock);
+    auto minServer = _servers.begin()->second;
+    std::string count_lock = LOCK_COUNT;
+
 
     ChatServer minServer;
     int conn_max = INT_MAX;
@@ -59,34 +62,6 @@ ChatServer StatusServiceImpl::getChatServer() {
 
     }
     return minServer;
-   // auto Minserver = _servers.begin()->second;
-   // std::string count_str;
-   //bool found = RedisMjr::GetInstance()->HGet(LOGIN_COUNT, Minserver.name,count_str);
-   //if (!found) {
-   //    Minserver.conn_count = INT_MAX;
-   //}
-   //else {
-   //    Minserver.conn_count = std::stoi(count_str);
-   //}
-
-
-   // for (const auto& server : _servers) {
-   //     if (server.second.name == Minserver.name) {
-   //         continue;
-   //     }
-   //     std::string count_str;
-   //     bool found = RedisMjr::GetInstance()->HGet(LOGIN_COUNT, Minserver.name, count_str);
-   //     if (!found) {
-   //         Minserver.conn_count = INT_MAX;
-   //     }
-   //     else {
-   //         Minserver.conn_count = std::stoi(count_str);
-   //     }
-   //     if (server.second.conn_count < Minserver.conn_count) {
-   //         Minserver = server.second;
-   //     }
-   // }
-   // return Minserver;
 
 }
 

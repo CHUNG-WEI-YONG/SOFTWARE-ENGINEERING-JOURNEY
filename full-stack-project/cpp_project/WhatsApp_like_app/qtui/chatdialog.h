@@ -48,6 +48,7 @@ private:
     ChatBridge* _bridge{nullptr};
     QString _pending_upload_path;
     QString _pending_download_save_path;
+    QTimer* _timer;
 
     //QMap<int, QVariantList> _user_history_cache;
     //QMap<int,QList<ChatMsg>> _history_cache;
@@ -63,6 +64,7 @@ public slots:
     void slot_loading_user();
     void slot_side_contact();
     void slot_side_chat();
+    void slot_side_setting();
     void slot_text_changed(const QString& str="Find");
     void slot_friend_apply(std::shared_ptr<AddFriendApply>);
     void slot_auth_rsp(std::shared_ptr<AuthRsp>);

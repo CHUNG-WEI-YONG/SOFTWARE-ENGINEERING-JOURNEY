@@ -7,6 +7,28 @@ UserMgr::~UserMgr()
 
 }
 
+void UserMgr::Reset()
+{
+    _uid = 0;
+    _token.clear();
+    _logoPath.clear();
+    _user_info.reset(); // 释放 shared_ptr<UserInfo>
+
+    // 2. 清空申请列表与好友列表容器
+    _applications.clear();
+    _friend_map.clear();
+    _friend_list.clear();
+
+    // 3. 重置分页加载游标
+    _chat_loaded = 0;
+    _contact_loaded = 0;
+
+    // 4. 清空内存中暂存的历史聊天记录缓存
+    _history_cache.clear();
+
+    qDebug() << "[UserMgr] Successfully reset all user state and caches.";
+}
+
 // void UserMgr::SetName(QString name)
 // {
 //     _name = name;
@@ -20,6 +42,12 @@ void UserMgr::SetUid(int uid)
 void UserMgr::SetToken(QString token)
 {
     _token = token;
+}
+
+std::shared_ptr<UserInfo> UserMgr::GetUserInfo()
+{
+
+    return _user_info;
 }
 
 QString UserMgr::returnName()

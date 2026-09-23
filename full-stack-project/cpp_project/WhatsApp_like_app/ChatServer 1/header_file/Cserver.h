@@ -14,6 +14,7 @@ public:
 	~Cserver();
 	void ClearSession(std::string);
 	bool CheckSessionId(std::string session_id);
+	void on_timer(const boost::system::error_code& ec);
 private:
 	void HandleAccept(std::shared_ptr<CSession>, const boost::system::error_code& error);
 	void StartAccept();
@@ -22,6 +23,7 @@ private:
 	uint16_t _port;
 	boost::asio::io_context& _ioc;
 	tcp::acceptor _acceptor;
+	boost::asio::steady_timer _timer;
 
 
 };

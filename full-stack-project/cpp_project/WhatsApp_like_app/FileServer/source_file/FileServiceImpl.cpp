@@ -50,5 +50,7 @@ Status FileServiceImpl::ApplyUploadTicket(ServerContext* context, const ApplyUpl
     rsp->set_token(token);
     rsp->set_port(std::stoi(cfg["FileServer"]["Port"]));
 
+    return Status::OK;
+
 
 }

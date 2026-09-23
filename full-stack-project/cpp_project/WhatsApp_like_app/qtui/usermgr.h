@@ -9,10 +9,12 @@ class UserMgr:public QObject ,public Singleton<UserMgr>,public std::enable_share
 public:
     UserMgr();
     ~UserMgr();
+    void Reset();
     friend Singleton<UserMgr>;
     //void SetName(QString name);
     void SetUid(int uid);
     void SetToken(QString token);
+    std::shared_ptr<UserInfo> GetUserInfo();
     QString returnName();
     void Setlogo(QString path);
     QString returnLogo();

@@ -75,6 +75,9 @@ qt_add_executable(qtui
     friendinfopage.h friendinfopage.cpp friendinfopage.ui
     fileuploader.h fileuploader.cpp
     filedownloader.h filedownloader.cpp
+    userinfopage.h userinfopage.cpp userinfopage.ui
+    imagecropperdialog.h imagecropperdialog.cpp
+    imagecropperlabel.h imagecropperlabel.cpp
 
 
 

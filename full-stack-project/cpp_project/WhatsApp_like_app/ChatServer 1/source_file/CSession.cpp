@@ -11,9 +11,6 @@
 
 CSession::~CSession()
 {
-	auto& cfg = ConfigMgr::Inst();
-	auto server_name = cfg["SelfServer"]["Name"];
-	RedisMjr::GetInstance()->DelCount(server_name);
 }
 
 CSession::CSession(boost::asio::io_context& ioc, Cserver* server):_server(server),_socket(ioc),_b_Stop(false),_head_is_parsed(false),_uid(0) {
@@ -147,6 +144,7 @@ void CSession::asyncReadBody(int total_len) {
 				return;
 			}
 
+
 			if (!_server->CheckSessionId(_session_id)) {
 				Close();
 				return;
@@ -157,6 +155,7 @@ void CSession::asyncReadBody(int total_len) {
 			LogicSystem::GetInstance()->PostMsgtoQue(make_shared<LogicNode>(shared_from_this(), _recv_msg_node));
 				
 			async_read_head(HEAD_TOTAL_LEN);
+			UpdateHeartBeat();
 		}
 		catch (std::exception& e) {
 			std::cout << "Exception code is " << e.what() << endl;
@@ -205,6 +204,11 @@ void CSession::HandleWrite(const boost::system::error_code& ec, std::shared_ptr<
 			}
 
 		}
+		else {
+			std::cout << "Writing handle in csession failed\n";
+			Close();
+			DealExceptionSession();
+		}
 
 	}
 	catch (std::exception& e) {
@@ -236,6 +240,51 @@ void CSession::NotifyOffline() {
 		});
 }
 
+bool CSession::isHeartBeatExpired(time_t now)
+{
+	double diff = difftime(now, lastHeartBeat);
+	if (diff >= MAX_HEART_BEAT) {
+		return true;
+	}
+	return false;
+}
+
+void CSession::UpdateHeartBeat()
+{
+	auto now = time(nullptr);
+	lastHeartBeat = now;
+}
+
+void CSession::DealExceptionSession()
+{
+	auto self = shared_from_this(); 
+	int uid = this->GetUserId();
+	auto uid_str = std::to_string(uid);
+	auto identifier = RedisMjr::GetInstance()->acquireLock(uid_str, ACQUIRE_TIME_OUT, LOCK_TIME_OUT);
+	Defer defer([self, this, uid_str, identifier]() {
+		_server->ClearSession(_session_id);
+		RedisMjr::GetInstance()->releaseLock(uid_str, identifier);
+		});
+
+	if (identifier.empty()) {
+		return;
+	}
+
+	std::string redissession_id = "";
+	auto bsuccess = RedisMjr::GetInstance()->Get(USER_SESSION_PREFIX + uid_str, redissession_id);
+	if (!bsuccess) {
+		return;
+	}
+
+	if (redissession_id != _session_id) {
+		return;
+	}
+
+	RedisMjr::GetInstance()->Del(USER_SESSION_PREFIX + uid_str);
+	RedisMjr::GetInstance()->Del(USERIPPREFIX + uid_str);
+	UserMgr::GetInstance()->RmvUserSession(uid, _session_id);
+}
+
 tcp::socket& CSession::GetIoContext() {
 	return _socket;
 }
@@ -250,10 +299,6 @@ void CSession::Close() {
 	_socket.close();
 }
 
-//LogicNode::LogicNode(shared_ptr<CSession>  session,
-//	shared_ptr<RecvNode> recvnode) :_session(session), _recvnode(recvnode) {
-//
-//}
 
 boost::asio::ip::tcp::socket& CSession::GetSocket() {
 	return _socket;

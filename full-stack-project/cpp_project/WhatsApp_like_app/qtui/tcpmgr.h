@@ -14,6 +14,7 @@ class TcpMgr:public QObject , public Singleton<TcpMgr>, public std::enable_share
 public:
     ~TcpMgr();
     std::vector<std::shared_ptr<ApplyInfo>> GetApplyList();
+    void CloseConnection();
 private:
     TcpMgr();
     friend Singleton<TcpMgr>;
@@ -47,6 +48,7 @@ signals:
     void sig_text_chat_msg(std::shared_ptr<ChatMsg>);
     void sig_upload_file(std::shared_ptr<FileToken>);
     void sig_download_file_rsp(std::shared_ptr<FileToken>);
+    void sig_offline(const QString& content);
 
 
 };

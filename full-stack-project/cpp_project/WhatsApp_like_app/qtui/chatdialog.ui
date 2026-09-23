@@ -138,6 +138,22 @@
           </widget>
          </item>
          <item>
+          <widget class="StateWidget" name="side_setting" native="true">
+           <property name="minimumSize">
+            <size>
+             <width>30</width>
+             <height>30</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>30</width>
+             <height>30</height>
+            </size>
+           </property>
+          </widget>
+         </item>
+         <item>
           <spacer name="verticalSpacer">
            <property name="orientation">
             <enum>Qt::Orientation::Vertical</enum>
@@ -332,6 +348,7 @@
        </item>
       </layout>
      </widget>
+     <widget class="UserInfoPage" name="user_info_page"/>
      <widget class="FriendInfoPage" name="chat_info_page"/>
      <widget class="ApplyFriendPage" name="friend_apply_page"/>
     </widget>
@@ -385,6 +402,12 @@
    <class>FriendInfoPage</class>
    <extends>QWidget</extends>
    <header location="global">friendinfopage.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>UserInfoPage</class>
+   <extends>QWidget</extends>
+   <header>userinfopage.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

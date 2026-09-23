@@ -179,10 +179,14 @@ void CSession::handleDownloadRequest()
 		return;
 	}
 
-	std::string filename = root["filename"].toStyledString();
+	std::string filename = root["filename"].asString();
 	_file_total_bytes = root["filesz"].asInt64();
 	_file_sent_bytes = 0;
-	std::string filepath = "./upload_files/" + filename;
+	std::string dir = "./upload_files";
+	if (!std::filesystem::exists(dir)) {
+		std::filesystem::create_directories(dir);
+	}
+	std::string filepath = dir + "/" + filename;
 	_read_file_stream.open(filepath, std::ios::binary | std::ios::in);
 	if (!_read_file_stream.is_open()) {
 		std::cerr << "Cannot open file" << std::endl;

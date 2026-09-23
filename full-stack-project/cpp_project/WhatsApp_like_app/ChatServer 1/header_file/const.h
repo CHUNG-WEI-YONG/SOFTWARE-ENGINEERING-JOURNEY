@@ -33,7 +33,7 @@
 #define FILE_UPLOAD "file_upload_"
 #define LOCK_TIME_OUT 5
 #define ACQUIRE_TIME_OUT 1
-
+#define MAX_HEART_BEAT 60
 
 #define MAX_LOGICWORKER 4
 

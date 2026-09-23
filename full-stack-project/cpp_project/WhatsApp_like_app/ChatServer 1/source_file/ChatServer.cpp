@@ -7,10 +7,37 @@
 #include <thread>
 #include "RedisMjr.h"
 #include "ChatServiceImpl.h"
+#include <functional>
+#include <iostream>
+#ifdef _WIN32
+#include <windows.h>
+#endif
 
 bool b_stop = false;
 std::mutex mutex_quit;
 std::condition_variable cv_quit;
+// Global shutdown hook called by OS console control handler
+std::function<void()> g_shutdown_hook;
+
+#ifdef _WIN32
+// Windows console control handler to perform graceful shutdown
+static BOOL WINAPI ConsoleCtrlHandler(DWORD ctrlType) {
+	switch (ctrlType) {
+	case CTRL_C_EVENT:
+	case CTRL_BREAK_EVENT:
+	case CTRL_CLOSE_EVENT:
+	case CTRL_LOGOFF_EVENT:
+	case CTRL_SHUTDOWN_EVENT:
+		std::cout << "Console control event received, initiating shutdown..." << std::endl;
+		if (g_shutdown_hook) {
+			try { g_shutdown_hook(); } catch (...) {}
+		}
+		return TRUE; // indicate we handled the event
+	default:
+		return FALSE;
+	}
+}
+#endif
 
 void InitServerStatus() {
 	std::string server_name = ConfigMgr::Inst()["SelfServer"]["Name"];
@@ -47,12 +74,13 @@ int main() {
 
 		if (RedisMjr::GetInstance()->Connect(redishost, redis_int, password, 5)) {
 			std::cout << "Redis connected correctly at " << redishost << ":" << redisport << std::endl;
+			InitServerStatus();
 		}
 		else {
 			std::cout << "Redis cannot connect" << std::endl;
 		}
 
-		InitServerStatus();
+		
 
 		// 1. Start gRPC Server
 		std::string server_address(cfg["SelfServer"]["Host"] + ":" + cfg["SelfServer"]["RPCPort"]);
@@ -96,6 +124,17 @@ int main() {
 		auto port_str = cfg["SelfServer"]["Port"];
 		uint16_t port = static_cast<uint16_t>(std::stoul(port_str));
 		auto server_ptr = std::make_shared<Cserver>(ioc, port);
+
+#ifdef _WIN32
+		// Register the Windows console control handler and set the shutdown hook
+		SetConsoleCtrlHandler(ConsoleCtrlHandler, TRUE);
+		g_shutdown_hook = [&ioc, pool, serverPtr = server.get()]() {
+			std::cout << "Shutdown initiated by console handler" << std::endl;
+			try { ioc.stop(); } catch (...) {}
+			try { if (pool) pool->close(); } catch (...) {}
+			try { if (serverPtr) serverPtr->Shutdown(); } catch (...) {}
+		};
+#endif
 
 		LogicSystem::GetInstance()->SetServer(server_ptr);
 

@@ -1,4 +1,23 @@
 #include "RedisMjr.h"
+#include "ConfigMgr.h"
+#include <string>
+#include <chrono>
+#include <thread>
+#include <cstdlib>
+#include <boost/uuid/uuid.hpp>
+#include <boost/uuid/uuid_generators.hpp>
+#include <boost/uuid/uuid_io.hpp>
+#include <chrono>
+#include <thread>
+#include <string>
+#include <random>
+#include <hiredis/hiredis.h>
+
+
+std::string generateUUID() {
+    boost::uuids::uuid uuid = boost::uuids::random_generator()();
+    return to_string(uuid);
+}
 
 bool RedisMjr::Connect(const std::string& host, int port, const std::string& password,int size) {
     try {
@@ -161,6 +180,11 @@ RedisMjr::~RedisMjr() {
 // 🚀 复活构造函数：把单例初期的初始化逻辑安排上
 RedisMjr::RedisMjr() : _redis_client(nullptr) {
     // 可以在这里做一些基础的成员变量初始化
+    auto& gCfgMgr = ConfigMgr::Inst();
+    auto host = gCfgMgr["RedisServer"]["Host"];
+    auto port = gCfgMgr["RedisServer"]["Port"];
+    auto pwd = gCfgMgr["RedisServer"]["Passwd"];
+    _pool.reset(new RedisConPool(10, host.c_str(), atoi(port.c_str()), pwd.c_str()));
 }
 
 bool RedisMjr::Exists(const std::string& key) {
@@ -174,3 +198,126 @@ bool RedisMjr::Exists(const std::string& key) {
 		return false;
 	}
 }
+
+bool RedisMjr::HDel(const std::string& key1, const std::string& key2) {
+    auto conn = _pool->getConnection();
+    if (conn == nullptr) {
+        return false;
+    }
+    Defer defer([&conn, this]() {
+        _pool->returnConnection(conn);
+        });
+    redisReply* reply = (redisReply*)redisCommand(conn, "HDEL %s %s", key1.c_str(), key2.c_str());
+    if (reply == nullptr) {
+        std::cout << "HDEL command wrong" << std::endl;
+        return false;
+    }
+    bool success = false;
+    if (reply->type == REDIS_REPLY_INTEGER) {
+        success = reply->integer > 0;
+    }
+    freeReplyObject(reply);
+    return success;
+}
+
+
+std::string RedisMjr::acquireLock(const std::string& lock_name, int acquireTime, int locktime)
+{
+    auto conn = _pool->getConnection();
+    if (conn == nullptr) {
+        return "";
+
+    }
+
+    Defer defer([this, &conn] {
+        _pool->returnConnection(std::move(conn));
+        });
+
+    return DistLock::Inst().acquired_lock(conn, lock_name, acquireTime, locktime);
+}
+
+bool RedisMjr::releaseLock(const std::string& lock_name, const std::string& identifier)
+{
+    
+    if (identifier.empty()) {
+        return true;
+    }
+
+    auto conn = _pool->getConnection();
+    if (conn == nullptr) {
+        return false;
+
+    }
+    Defer defer([this, &conn] {
+        _pool->returnConnection(std::move(conn));
+        });
+
+    return DistLock::Inst().release_lock(conn, lock_name, identifier);
+}
+
+DistLock& DistLock::Inst()
+{
+    static DistLock lock;
+    return lock;
+    // TODO: insert return statement here
+}
+
+DistLock::~DistLock() {
+
+}
+
+std::string DistLock::acquired_lock(redisContext* context, const std::string& lockname, int lock_timeout, int acquire_timeout)
+{
+    if (!context) {
+        return "";
+    }
+    std::string identifier = generateUUID();
+    std::string key =LOCK_PREFIX + lockname;
+    auto endTime = std::chrono::steady_clock::now() + std::chrono::seconds(acquire_timeout);
+    
+    while (std::chrono::steady_clock::now() < endTime) {
+        redisReply* reply = (redisReply*)redisCommand(context, "SET %s %s NX EX %d", key.c_str(), identifier.c_str(), lock_timeout);
+        if (reply!=nullptr) {
+            bool success = (reply->type == REDIS_REPLY_STATUS) && (std::string(reply->str) == "OK");
+            freeReplyObject(reply);
+            if(success) return identifier;
+        }
+        else {
+            if (context->err) {
+                return "";
+            }
+        }
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+    }
+    return "";
+}
+
+bool DistLock::release_lock(redisContext* context, const std::string& lockname, const string& identifier)
+{
+    if (!context || context->err || identifier.empty())return false;
+    auto key = LOCK_PREFIX + lockname;
+    const char* luaScript = R"(
+        if redis.call('get', KEYS[1]) == ARGV[1] then
+            return redis.call('del', KEYS[1])
+        else
+            return 0
+        end
+    )";
+    redisReply* reply = (redisReply*)redisCommand(context, "EVAL %s 1 %s %s",
+        luaScript, key.c_str(), identifier.c_str());
+
+    bool success = false;
+    if (reply != nullptr) {
+        if (reply->type == REDIS_REPLY_STATUS && reply->integer==1) {
+            success = true;
+        }
+        freeReplyObject(reply);
+        
+    }
+
+
+    return success;
+}
+
+

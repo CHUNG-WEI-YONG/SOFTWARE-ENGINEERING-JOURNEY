@@ -1,6 +1,6 @@
 import QtQuick 2.15
 import QtQuick.Controls 2.15
-import QtQuick.Dialogs 1.3
+import QtQuick.Dialogs
 
 Rectangle {
     id: chatPage
@@ -8,19 +8,18 @@ Rectangle {
     height: 847
     color: "#F8F9FA"
 
-    // 内存自治缓存，用于未拉取 SQL 时的快速切换
     property var chatStorage: ({})
     property string currentFriendName: ""
     property string currentFriendIcon: ""
-
-    // ──► 🎯 触顶打捞状态锁，防止滚轮狂滚导致重复请求爆破 ◄──
     property bool b_loading_history: false
 
-    // ──► 🛰️ 核心信号连接网（承接 C++ 实体序列化数据） ◄──
+    // ──► 🎯 新增：待发送文件暂存状态 ◄──
+    property string pendingFilePath: ""
+    property string pendingFileName: ""
+
     Connections {
         target: cppBridge
 
-        // 当 C++ 触发好友切换时，加载历史记录
         onSig_user_switched: (name, isOnline, lastTime, iconPath, history) => {
             console.log("🌟 [QML] 切换会话! 目标姓名:", name, "历史记录条数:", (history ? history.length : 0));
             chatPage.currentFriendName = name
@@ -28,6 +27,10 @@ Rectangle {
             title_lb.text = name
             title_wid.isOnline = isOnline
             online_time_lb.text = isOnline ? "online" : "last online: " + lastTime
+
+            // 切换好友时清空草稿文件
+            chatPage.pendingFilePath = ""
+            chatPage.pendingFileName = ""
 
             chatHistoryModel.clear()
 
@@ -39,6 +42,7 @@ Rectangle {
                         "type":     itemData.type     !== undefined ? itemData.type     : "text",
                         "content":  itemData.content  !== undefined ? itemData.content  : "",
                         "fileSize": itemData.fileSize !== undefined ? itemData.fileSize : "",
+                        "fileUrl":  itemData.fileUrl  !== undefined ? itemData.fileUrl  : "",
                         "timeStr":  itemData.timeStr  !== undefined ? itemData.timeStr  : "",
                         "progress": 100,
                         "isDone":   true
@@ -52,7 +56,6 @@ Rectangle {
             chatListView.positionViewAtEnd()
         }
 
-        // 收到好友普通文本消息
         onSig_new_message_received: (sender, message, timeStr) => {
             if (sender === chatPage.currentFriendName) {
                 chatHistoryModel.append({
@@ -67,7 +70,6 @@ Rectangle {
             }
         }
 
-        // 下拉触顶加载旧历史记录
         onSig_append_history_batch: (olderHistory) => {
             if (olderHistory !== undefined && olderHistory.length > 0) {
                 var oldFirstIndex = chatListView.indexAt(chatListView.contentX, chatListView.contentY);
@@ -79,6 +81,7 @@ Rectangle {
                         "type":     itemData.type     !== undefined ? itemData.type     : "text",
                         "content":  itemData.content  !== undefined ? itemData.content  : "",
                         "fileSize": itemData.fileSize !== undefined ? itemData.fileSize : "",
+                        "fileUrl":  itemData.fileUrl  !== undefined ? itemData.fileUrl  : "",
                         "timeStr":  itemData.timeStr  !== undefined ? itemData.timeStr  : "",
                         "progress": 100,
                         "isDone":   true
@@ -92,24 +95,37 @@ Rectangle {
             chatPage.b_loading_history = false;
         }
 
-        // ──► 📁 1. 新文件到达（本人发起上传或对端传来文件） ◄──
         onSig_new_file_arrive: (friendName, fileName, fileSizeStr, filePath, timeStr, fileToken) => {
             if (friendName === chatPage.currentFriendName) {
-                chatHistoryModel.append({
-                    "sender": (filePath !== "") ? "me" : "other",
-                    "type": "file",
-                    "content": fileName,
-                    "fileSize": fileSizeStr,
-                    "fileUrl": fileToken, // 👈 存入模型供点击事件使用！
-                    "timeStr": timeStr,
-                    "progress": 100,
-                    "isDone": true
-                });
-                chatListView.positionViewAtEnd();
+                var existed = false;
+                for (var i = chatHistoryModel.count - 1; i >= 0; --i) {
+                    var it = chatHistoryModel.get(i);
+                    if (it.type === "file" && it.sender === "me" && it.content === fileName && it.fileUrl === "") {
+                        chatHistoryModel.setProperty(i, "fileUrl", fileToken);
+                        if (fileSizeStr !== "") {
+                            chatHistoryModel.setProperty(i, "fileSize", fileSizeStr);
+                        }
+                        existed = true;
+                        break;
+                    }
+                }
+
+                if (!existed) {
+                    chatHistoryModel.append({
+                        "sender": (filePath !== "") ? "me" : "other",
+                        "type": "file",
+                        "content": fileName,
+                        "fileSize": fileSizeStr,
+                        "fileUrl": fileToken,
+                        "timeStr": timeStr,
+                        "progress": 100,
+                        "isDone": true
+                    });
+                    chatListView.positionViewAtEnd();
+                }
             }
         }
 
-        // ──► 📁 2. 刷新文件上传百分比 ◄──
         onSig_file_upload_progress: (friendName, percent) => {
             if (friendName === chatPage.currentFriendName) {
                 for (var i = chatHistoryModel.count - 1; i >= 0; --i) {
@@ -122,7 +138,6 @@ Rectangle {
             }
         }
 
-        // ──► 📁 3. 上传完毕 ◄──
         onSig_file_upload_complete: (friendName, success, fileUrl) => {
             if (friendName === chatPage.currentFriendName) {
                 for (var i = chatHistoryModel.count - 1; i >= 0; --i) {
@@ -130,6 +145,9 @@ Rectangle {
                     if (item.type === "file" && item.sender === "me" && !item.isDone) {
                         chatHistoryModel.setProperty(i, "isDone", true);
                         chatHistoryModel.setProperty(i, "progress", success ? 100 : 0);
+                        if (success && fileUrl !== "") {
+                            chatHistoryModel.setProperty(i, "fileUrl", fileUrl);
+                        }
                         break;
                     }
                 }
@@ -137,7 +155,6 @@ Rectangle {
         }
     }
 
-    // 三态 ClickedLabel 图标组件封装
     component ClickedLabel : Item {
         id: customLabel
         property string normalSrc: ""
@@ -170,34 +187,33 @@ Rectangle {
         ]
     }
 
-    // ──► 🎯 文件选择原生弹窗组件 ◄──
+    // ──► 🎯 原生文件选择弹窗 ◄──
     FileDialog {
         id: fileDialog
         title: "Please choose a file to send"
-        folder: shortcuts.home
-        selectMultiple: false
+        fileMode: FileDialog.OpenFile
 
         onAccepted: {
-            var rawPath = fileDialog.fileUrl.toString();
-            var cleanPath = rawPath.replace(/^(file:\/{3})/,"");
-            if (cleanPath === rawPath) {
-                cleanPath = rawPath.replace(/^(file:\/{2})/,"");
+            var rawPath = (typeof fileDialog.selectedFile !== 'undefined' && fileDialog.selectedFile.toString() !== "")
+                          ? fileDialog.selectedFile.toString()
+                          : fileDialog.fileUrl.toString();
+
+            var cleanPath = rawPath.replace(/^(file:\/{2,3})/i, "");
+            if (/^\/[a-zA-Z]:/.test(cleanPath)) {
+                cleanPath = cleanPath.substring(1);
             }
 
-            console.log("📁 [QML] 用户选择了文件:", cleanPath);
+            if (chatPage.currentFriendName === "") return;
 
-            if (chatPage.currentFriendName === "") {
-                console.log("⚠️ 未选中好友，终止上传");
-                return;
+            var fileName = cleanPath.substring(cleanPath.lastIndexOf('/') + 1);
+            if (fileName === "") {
+                fileName = cleanPath.substring(cleanPath.lastIndexOf('\\') + 1);
             }
 
-            if (typeof cppBridge !== 'undefined') {
-                cppBridge.uploadFileFromQml(chatPage.currentFriendName, cleanPath);
-            }
-        }
-
-        onRejected: {
-            console.log("❌ 用户取消了文件选择");
+            // 🎯 仅暂存选择状态，不在此处发送或挂气泡
+            chatPage.pendingFilePath = cleanPath;
+            chatPage.pendingFileName = fileName;
+            console.log("📎 [QML] 文件已就绪待发送:", fileName, "路径:", cleanPath);
         }
     }
 
@@ -206,7 +222,7 @@ Rectangle {
         anchors.fill: parent
         spacing: 0
 
-        // 顶部状态栏
+        // 顶部好友信息状态栏
         Rectangle {
             id: title_wid
             width: parent.width; height: 65; color: "#FFFFFF"
@@ -220,7 +236,7 @@ Rectangle {
             }
         }
 
-        // 中间聊天核心气泡列表框架
+        // 中间聊天记录列表
         Item {
             id: conversation_box
             width: parent.width
@@ -268,7 +284,6 @@ Rectangle {
                     readonly property bool isText: model.type === "text"
                     readonly property bool isFile: model.type === "file"
 
-                    // 👤 A. 头像组件
                     Image {
                         id: avatar
                         width: 42; height: 42
@@ -282,7 +297,6 @@ Rectangle {
                         smooth: true
                     }
 
-                    // 📛 B. 用户名组件
                     Label {
                         id: nameLabel
                         text: chatItemRow.isMe ? (typeof currentChatUserName !== 'undefined' ? currentChatUserName : "Me")
@@ -295,11 +309,9 @@ Rectangle {
                         anchors.leftMargin: chatItemRow.isMe ? 0 : 12
                     }
 
-                    // ──► 💬 C. 核心气泡复合框 ◄──
                     Item {
                         id: bubbleContainer
 
-                        // 尺寸动态调整：文件卡片固定高 80 宽 260
                         height: chatItemRow.isFile ? 80 :
                                 (chatItemRow.isText ? textContent.implicitHeight + 20 : 160)
 
@@ -341,13 +353,13 @@ Rectangle {
 
                                     if (!chatItemRow.isMe) {
                                         ctx.strokeStyle = "#E5E7E9"; ctx.lineWidth = 1;
-                                        ctx.beginPath(); ctx.moveTo(8, 0); ctx.lineTo(0, 4); ctx.lineTo(8, 8); stroke();
+                                        ctx.beginPath(); ctx.moveTo(8, 0); ctx.lineTo(0, 4); ctx.lineTo(8, 8);
+                                        ctx.stroke();
                                     }
                                 }
                             }
                         }
 
-                        // 1. 文本内容显示
                         Text {
                             id: textContent
                             visible: chatItemRow.isText
@@ -357,7 +369,6 @@ Rectangle {
                             wrapMode: Text.Wrap; verticalAlignment: Text.AlignVCenter
                         }
 
-                        // 2. 文件卡片显示
                         Item {
                             id: fileCardWrapper
                             visible: chatItemRow.isFile
@@ -385,10 +396,7 @@ Rectangle {
                                     Label {
                                         width: parent.width
                                         text: model.content || "File"
-                                        font.family: "Microsoft YaHei"
-                                        font.pixelSize: 13
-                                        font.bold: true
-                                        color: "#2C3E50"
+                                        font.family: "Microsoft YaHei"; font.pixelSize: 13; font.bold: true; color: "#2C3E50"
                                         elide: Text.ElideMiddle
                                     }
 
@@ -396,17 +404,13 @@ Rectangle {
                                         width: parent.width
                                         Label {
                                             text: model.fileSize || "File Transfer"
-                                            font.family: "Microsoft YaHei"
-                                            font.pixelSize: 11
-                                            color: "#7F8C8D"
+                                            font.family: "Microsoft YaHei"; font.pixelSize: 11; color: "#7F8C8D"
                                         }
 
                                         Item { width: 10; height: 1 }
 
-                                        // 进度与状态文本
                                         Label {
-                                            font.family: "Microsoft YaHei"
-                                            font.pixelSize: 11
+                                            font.family: "Microsoft YaHei"; font.pixelSize: 11
                                             color: model.isDone ? "#27AE60" : "#E67E22"
                                             text: model.isDone ? "✓ Complete" : (model.progress + "%")
                                         }
@@ -414,28 +418,21 @@ Rectangle {
                                 }
                             }
 
-                            // 传输中的细进度条
                             ProgressBar {
                                 id: uploadProgressBar
                                 anchors.bottom: parent.bottom
                                 anchors.left: parent.left
                                 anchors.right: parent.right
                                 height: 4
-                                from: 0
-                                to: 100
+                                from: 0; to: 100
                                 value: model.progress !== undefined ? model.progress : 0
                                 visible: !model.isDone
 
-                                background: Rectangle {
-                                    radius: 2
-                                    color: "#E0E0E0"
-                                }
+                                background: Rectangle { radius: 2; color: "#E0E0E0" }
                                 contentItem: Item {
                                     Rectangle {
                                         width: uploadProgressBar.visualPosition * parent.width
-                                        height: parent.height
-                                        radius: 2
-                                        color: "#2ECC71"
+                                        height: parent.height; radius: 2; color: "#2ECC71"
                                     }
                                 }
                             }
@@ -452,7 +449,6 @@ Rectangle {
                         }
                     }
 
-                    // D. 时间轴标签
                     Label {
                         id: timeLabel
                         text: model.timeStr || ""
@@ -466,26 +462,110 @@ Rectangle {
             }
         }
 
-        // 底部输入与发送控制台
+        // ──► 底部操作与输入控制台 ◄──
         Rectangle {
             id: tool_wid
-            width: parent.width; height: 240; color: "#FFFFFF"
+            width: parent.width; height: 250; color: "#FFFFFF"
             Rectangle { anchors.top: parent.top; width: parent.width; height: 1; color: "#EAEAEA" }
+
+            // ──► 🎯 新增：文件选中暂存预览条 ◄──
+            Rectangle {
+                id: pendingFileBar
+                anchors.top: parent.top
+                anchors.topMargin: 8
+                anchors.left: parent.left
+                anchors.leftMargin: 16
+                anchors.right: parent.right
+                anchors.rightMargin: 16
+                height: visible ? 38 : 0
+                visible: chatPage.pendingFilePath !== ""
+                color: "#EBF5FB"
+                radius: 6
+                border.color: "#AED6F1"
+                border.width: 1
+
+                Row {
+                    anchors.fill: parent
+                    anchors.leftMargin: 10
+                    anchors.rightMargin: 10
+                    spacing: 8
+
+                    Image {
+                        source: "qrc:/rc/chat_picture/filedir.png"
+                        width: 20; height: 20
+                        anchors.verticalCenter: parent.verticalCenter
+                        fillMode: Image.PreserveAspectFit
+                    }
+
+                    Label {
+                        text: chatPage.pendingFileName
+                        font.family: "Microsoft YaHei"
+                        font.pixelSize: 12
+                        font.bold: true
+                        color: "#2980B9"
+                        elide: Text.ElideMiddle
+                        width: parent.width - 60
+                        anchors.verticalCenter: parent.verticalCenter
+                    }
+
+                    // 取消选择按钮
+                    Rectangle {
+                        width: 20; height: 20
+                        radius: 10
+                        color: cancelMouseArea.containsMouse ? "#E74C3C" : "#BDC3C7"
+                        anchors.verticalCenter: parent.verticalCenter
+
+                        Text {
+                            text: "✕"
+                            color: "white"
+                            font.pixelSize: 11
+                            font.bold: true
+                            anchors.centerIn: parent
+                        }
+
+                        MouseArea {
+                            id: cancelMouseArea
+                            anchors.fill: parent
+                            hoverEnabled: true
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: {
+                                chatPage.pendingFilePath = "";
+                                chatPage.pendingFileName = "";
+                            }
+                        }
+                    }
+                }
+            }
 
             // 输入文本编辑区域
             Rectangle {
                 id: chatBoxContainer
-                anchors.top: parent.top; anchors.bottom: send_wid.top; anchors.left: parent.left; anchors.right: parent.right; anchors.margins: 16; anchors.bottomMargin: 8
-                color: "#F5F6F8"; radius: 12; border.width: 1; border.color: chatedit.activeFocus ? "#3498DB" : "#E5E7E9"
+                anchors.top: pendingFileBar.bottom
+                anchors.topMargin: chatPage.pendingFilePath !== "" ? 8 : 12
+                anchors.bottom: send_wid.top
+                anchors.bottomMargin: 8
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.margins: 16
+                color: "#F5F6F8"
+                radius: 12
+                border.width: 1
+                border.color: chatedit.activeFocus ? "#3498DB" : "#E5E7E9"
 
                 ScrollView {
-                    anchors.fill: parent; anchors.margins: 12; clip: true
+                    anchors.fill: parent
+                    anchors.margins: 12
+                    clip: true
                     TextArea {
                         id: chatedit
                         placeholderText: "Type a message..."
                         placeholderTextColor: "#A0AAB5"
-                        font.family: "Microsoft YaHei"; font.pixelSize: 15; color: "#2C3E50"
-                        wrapMode: TextArea.Wrap; selectByMouse: true; background: null
+                        font.family: "Microsoft YaHei"
+                        font.pixelSize: 15
+                        color: "#2C3E50"
+                        wrapMode: TextArea.Wrap
+                        selectByMouse: true
+                        background: null
                     }
                 }
             }
@@ -531,25 +611,56 @@ Rectangle {
                         horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter
                     }
 
+                    // ──► 🎯 核心改造：点击发送时一并分发“文件”与“文字” ◄──
                     onClicked: {
-                        if (chatedit.text.trim() === "") return;
+                        var textContent = chatedit.text.trim();
+                        var hasText = (textContent !== "");
+                        var hasFile = (chatPage.pendingFilePath !== "");
+
+                        if (!hasText && !hasFile) return;
 
                         var currentTime = new Date().toLocaleTimeString(Qt.locale("en_US"), "hh:mm AP");
 
-                        chatHistoryModel.append({
-                            "sender": "me",
-                            "type": "text",
-                            "content": chatedit.text,
-                            "timeStr": currentTime,
-                            "progress": 100,
-                            "isDone": true
-                        });
+                        // 1. 如果有待发送文件，触发文件流水线
+                        if (hasFile) {
+                            chatHistoryModel.append({
+                                "sender": "me",
+                                "type": "file",
+                                "content": chatPage.pendingFileName,
+                                "fileSize": "Preparing...",
+                                "fileUrl": "",
+                                "timeStr": currentTime,
+                                "progress": 0,
+                                "isDone": false
+                            });
 
-                        if (typeof cppBridge !== 'undefined') {
-                            cppBridge.sendMessageFromQml(chatPage.currentFriendName, chatedit.text);
+                            if (typeof cppBridge !== 'undefined') {
+                                cppBridge.uploadFileFromQml(chatPage.currentFriendName, chatPage.pendingFilePath);
+                            }
+
+                            // 清理暂存文件状态
+                            chatPage.pendingFilePath = "";
+                            chatPage.pendingFileName = "";
                         }
 
-                        chatedit.clear();
+                        // 2. 如果输入框有文字，触发普通消息投递
+                        if (hasText) {
+                            chatHistoryModel.append({
+                                "sender": "me",
+                                "type": "text",
+                                "content": textContent,
+                                "timeStr": currentTime,
+                                "progress": 100,
+                                "isDone": true
+                            });
+
+                            if (typeof cppBridge !== 'undefined') {
+                                cppBridge.sendMessageFromQml(chatPage.currentFriendName, textContent);
+                            }
+
+                            chatedit.clear();
+                        }
+
                         chatListView.positionViewAtEnd();
                     }
                 }

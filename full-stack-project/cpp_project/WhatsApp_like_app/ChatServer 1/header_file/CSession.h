@@ -36,8 +36,12 @@ public:
 	void Send(std::string msg, short msg_id);
 	void HandleWrite(const boost::system::error_code& ec, std::shared_ptr<CSession> self);
 	void NotifyOffline();
+	bool isHeartBeatExpired(time_t now);
+	void UpdateHeartBeat();
+	void DealExceptionSession();
 	boost::asio::ip::tcp::socket& GetIoContext();
 	Cserver* _server;
+	atomic<time_t> lastHeartBeat;
 
 private:
 	boost::asio::ip::tcp::socket _socket;

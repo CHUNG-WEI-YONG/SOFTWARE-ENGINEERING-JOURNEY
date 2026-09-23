@@ -93,6 +93,10 @@ void LogicWorker::RegisterCallBacks() {
 	_fun_callbacks[ID_DOWNLOAD_FILE_REQ]= [this](shared_ptr<CSession> session, const short& msg_id, const string& msg_data) {
 		this->DownloadFile(session, msg_id, msg_data);
 		};
+
+	_fun_callbacks[ID_HEART_BEAT_REQ] = [this](shared_ptr<CSession>session, const short& msg_id, const string& msg_data) {
+		this->HeartBeatHandle(session, msg_id, msg_data);
+	};
 }
 
 void LogicWorker::LoginHandler(shared_ptr<CSession> session, const short& msg_id, const string& msg_data) {
@@ -225,19 +229,19 @@ void LogicWorker::LoginHandler(shared_ptr<CSession> session, const short& msg_id
 	//Log in server logic
 	auto config = ConfigMgr::Inst();
 	auto server_name = config["SelfServer"]["Name"];
-	std::string c = "";
-	bool redissuccess = RedisMjr::GetInstance()->HGet(LOGIN_COUNT, server_name, c);
-	int count = 0;
-	if (!c.empty()) {
-		count = std::stoi(c);
-	}
-	count++;
+	//std::string c = "";
+	//bool redissuccess = RedisMjr::GetInstance()->HGet(LOGIN_COUNT, server_name, c);
+	//int count = 0;
+	//if (!c.empty()) {
+	//	count = std::stoi(c);
+	//}
+	//count++;
 
-	std::string count_str = std::to_string(count);
-	bool Setsuccess = RedisMjr::GetInstance()->HSet(LOGIN_COUNT, server_name, count_str);
-	if (!Setsuccess) {
-		return;
-	}
+	//std::string count_str = std::to_string(count);
+	//bool Setsuccess = RedisMjr::GetInstance()->HSet(LOGIN_COUNT, server_name, count_str);
+	//if (!Setsuccess) {
+	//	return;
+	//}
 
 	session->SetUserId(uid);
 
@@ -910,6 +914,19 @@ void LogicWorker::DownloadFile(shared_ptr<CSession> session, const short& msg_id
 		<< " Token: " << token << " File: " << rt["filename"].asString()
 		<< " Size: " << rt["filesz"].asInt64() << " Bytes"
 		<< " Target FileServer: " << host << ":" << port << std::endl;
+}
+
+void LogicWorker::HeartBeatHandle(shared_ptr<CSession> session, const short& msg_id, const string& msg_data)
+{
+	Json::Value value;
+	Json::Reader reader;
+	reader.parse(msg_data, value);
+	int uid = value["from_uid"].asInt();
+
+	session->UpdateHeartBeat();
+	Json::Value rt;
+	rt["error"] = ErrorCodes::Success;
+	session->Send(rt.toStyledString(), ID_HEARTBEAT_RSP);
 }
 
 void LogicSystem::PostMsgtoQue(shared_ptr<LogicNode> msg)
