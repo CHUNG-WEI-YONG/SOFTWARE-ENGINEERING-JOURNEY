@@ -1,4 +1,5 @@
 #include "const.h"
+
 #include "LogicSystem.h"
 #include "Cserver.h"
 #include "MsgNode.h"
@@ -27,6 +28,21 @@ using message::TextChatData;
 using message::KickUserReq;
 using message::KickUserRsp;
 
+
+inline int64_t getCurrentTimestamp() {
+	return std::chrono::duration_cast<std::chrono::milliseconds>(
+		std::chrono::system_clock::now().time_since_epoch()
+	).count();
+}
+
+// 若客户端需要可读时间文本 (如 "2026-10-01 20:58:00")
+inline std::string getCurrentTimeString() {
+	auto now = std::chrono::system_clock::now();
+	std::time_t in_time_t = std::chrono::system_clock::to_time_t(now);
+	std::stringstream ss;
+	ss << std::put_time(std::localtime(&in_time_t), "%Y-%m-%d %H:%M:%S");
+	return ss.str();
+}
 
 
 LogicWorker::LogicWorker():_b_stop(false),_p_server(nullptr) {
@@ -97,6 +113,18 @@ void LogicWorker::RegisterCallBacks() {
 	_fun_callbacks[ID_HEART_BEAT_REQ] = [this](shared_ptr<CSession>session, const short& msg_id, const string& msg_data) {
 		this->HeartBeatHandle(session, msg_id, msg_data);
 	};
+
+	_fun_callbacks[ID_LOAD_CHAT_THREAD_REQ] = [this](shared_ptr<CSession> session, const short& msg_id, const string& msg_data) {
+		this->GetUserThreadHandler(session, msg_id, msg_data);
+		};
+
+	_fun_callbacks[ID_CREATE_PRIVATE_CHAT_REQ] = [this](shared_ptr<CSession> session, const short& msg_id, const string& msg_data) {
+		this->CreateNewPrivateThread(session, msg_id, msg_data);
+	};
+
+	_fun_callbacks[ID_LOAD_CHAT_MSG_REQ] = [this](shared_ptr<CSession>session, const short& msg_id, const string& msg_data) {
+		this->LoadChatMsg(session, msg_id, msg_data);
+	};
 }
 
 void LogicWorker::LoginHandler(shared_ptr<CSession> session, const short& msg_id, const string& msg_data) {
@@ -109,6 +137,7 @@ void LogicWorker::LoginHandler(shared_ptr<CSession> session, const short& msg_id
 
 	auto uid = root["uid"].asInt();
 	auto token = root["token"].asString();
+	
 
 	//auto rsp = StatusGrpcClient::GetInstance()->Login(uid, token);
 
@@ -206,9 +235,10 @@ void LogicWorker::LoginHandler(shared_ptr<CSession> session, const short& msg_id
 			std::string server_curr = cfg["SelfServer"]["Name"];
 			if (server_curr == ip) {
 				auto old_session=UserMgr::GetInstance()->GetSession(uid);
-				if (old_session) {
-					old_session->NotifyOffline();
-					_p_server->ClearSession(old_session->GetSessionId());
+				if (old_session && old_session->GetSessionId() != session->GetSessionId()) {
+						std::cout << "Kick old session: " << old_session->GetSessionId() << std::endl;
+						old_session->NotifyOffline();
+						// ClearSession 会在 NotifyOffline 内部的定时器优雅关闭后执行，这里不需要重复 Clear
 				}
 			}
 			else {
@@ -439,7 +469,7 @@ void LogicWorker::AddFriendApply(shared_ptr<CSession> session, const short& msg_
 	
 }
 
-void LogicWorker::AuthFriendApply(shared_ptr<CSession> session, const short& msg_id, const string& msg_data)
+void LogicWorker::AuthFriendApply  (shared_ptr<CSession> session, const short& msg_id, const string& msg_data)
 {
 	Json::Reader reader;
 	Json::Value value;
@@ -467,6 +497,7 @@ void LogicWorker::AuthFriendApply(shared_ptr<CSession> session, const short& msg
 		rt["icon"] = user_info->icon;
 		rt["nickname"] = user_info->nick;
 		rt["uid"] = to_uid;
+		
 	}
 	rt["error"] = ErrorCodes::Success;
 	Defer defer([this, &session, &rt,msg_id] {
@@ -474,10 +505,26 @@ void LogicWorker::AuthFriendApply(shared_ptr<CSession> session, const short& msg
 		session->Send(rt_str, ID_AUTH_FRIEND_RSP);
 	});
 
-	bool add_res=MysqlMgr::GetInstance()->AddFriend(uid, to_uid, nick);
+	std::vector<std::shared_ptr <message::AddFriendMsg>> chat_datas;
+	int thread_id = 0;
+	bool add_res=MysqlMgr::GetInstance()->AddFriend(uid, to_uid,nick, chat_datas,thread_id);
 	if (!add_res) {
 		rt["error"] = ErrorCodes::Error_Json; // 或其它错误码
 		return;
+	}
+	rt["thread_id"] = thread_id;
+	rt["chat_datas"] = Json::Value(Json::arrayValue);
+	auto chat_time = getCurrentTimestamp();
+	for (const auto& chat_data : chat_datas) {
+		Json::Value chat;
+		chat["sender"] = chat_data->sender_id();
+		chat["msg_id"] = chat_data->msg_id();
+		chat["thread_id"] = thread_id;
+		chat["unique_id"] = chat_data->unique_id();
+		chat["msg_content"] = chat_data->msgcontent();
+		chat["chat_time"] = chat_time;
+		chat["status"] = chat_data->status();
+		rt["chat_datas"].append(chat);
 	}
 
 	auto key = USERIPPREFIX + std::to_string(to_uid);
@@ -496,6 +543,8 @@ void LogicWorker::AuthFriendApply(shared_ptr<CSession> session, const short& msg
 			value["error"] = ErrorCodes::Success;
 			value["fromuid"] = uid;
 			value["to_uid"] = to_uid;
+			value["thread_id"] = thread_id;
+			value["chat_datas"] = rt["chat_datas"];
 			std::string base_key = USER_BASE_INFO + std::to_string(uid);
 			auto sender_info = std::make_shared<UserInfo>();
 			bool findsuccess = GetBaseInfo(base_key, uid, sender_info);
@@ -518,6 +567,13 @@ void LogicWorker::AuthFriendApply(shared_ptr<CSession> session, const short& msg
 	AuthFriendReq req;
 	req.set_fromuid(uid);
 	req.set_touid(to_uid);
+
+	for (const auto& chat_data : chat_datas) {
+		auto text_msg = req.add_textmsgs();
+		text_msg->CopyFrom(*chat_data);
+		text_msg->set_thread_id(thread_id);
+	}
+
 	ChatGrpcClient::GetInstance()->NotifyAuthFriend(to_server, req);
 
 }
@@ -526,53 +582,95 @@ void LogicWorker::DealChatTextMsg(shared_ptr<CSession> session, const short& msg
 {
 	Json::Value value;
 	Json::Reader reader;
-	reader.parse(msg_data, value);
+	if (!reader.parse(msg_data, value)) {
+		return;
+	}
 
 	auto from_uid = value["from_uid"].asInt();
 	auto to_uid = value["to_uid"].asInt();
-	auto chat_msg_id = value["msg_id"].asInt();
+	auto local_id = value["msg_id"].asInt(); // 客户端本地临时分配的 UUID
+	auto thread_id = value["thread_id"].asInt();
+	int chat_msg_id = 0;
 
 	std::string content = value["content"].asString();
 
+	// 🎯 修正 1：强类型枚举转换为 int 传入
+	bool b_saved = MysqlMgr::GetInstance()->SaveNewMsg(
+		from_uid,
+		thread_id,
+		content,
+		static_cast<int>(ChatMsgType::TEXT),
+		chat_msg_id
+	);
+
 	Json::Value rt;
+
+	// 🎯 修正 2：入库失败先填好错误信息，确保 Defer 无论在何处 return 都能把 ACK 弹回客户端
+	if (!b_saved || chat_msg_id <= 0) {
+		rt["error"] = ErrorCodes::SAVE_MSG_FAILED;
+		rt["local_id"] = local_id;
+		rt["thread_id"] = thread_id;
+		session->Send(rt.toStyledString(), ID_TEXT_CHAT_MSG_RSP);
+		return;
+	}
+
+	// 🎯 修正 3：在定义 Defer 前完整装配好发送给发送方的回执包
 	rt["error"] = ErrorCodes::Success;
 	rt["from_uid"] = from_uid;
 	rt["to_uid"] = to_uid;
+	rt["thread_id"] = thread_id;
 	rt["content"] = content;
-	rt["msg_id"] = chat_msg_id;
+	rt["msg_id"] = chat_msg_id; // 真实落库 ID
+	rt["local_id"] = local_id;    // 临时 UUID
 
+	// 保证发送端必定能收到带完整 ID 的 ACK 回应
 	Defer defer([&rt, &session]() {
 		std::string rt_str = rt.toStyledString();
 		session->Send(rt_str, ID_TEXT_CHAT_MSG_RSP);
 		});
 
+	// 🎯 修正 4：类名拼写修正为 RedisMgr，变量名重命名为 b_get_ip
 	auto key = USERIPPREFIX + std::to_string(to_uid);
-	std::string server_ip="";
-	bool success = RedisMjr::GetInstance()->Get(key, server_ip);
-	if (!success) {
+	std::string server_ip = "";
+	bool b_get_ip = RedisMjr::GetInstance()->Get(key, server_ip);
+	if (!b_get_ip) {
+		// 对端不在线，消息已在 MySQL 中持久化，直接 return 让 defer 发送 ACK
 		return;
 	}
 
 	auto& cfg = ConfigMgr::Inst();
 	std::string selfserver = cfg["SelfServer"]["Name"];
 
+	// 1. 同服务器投递
 	if (server_ip == selfserver) {
 		auto to_session = UserMgr::GetInstance()->GetSession(to_uid);
 		if (to_session) {
-			auto rt_str = rt.toStyledString();
-			to_session->Send(rt_str, ID_NOTIFY_TEXT_CHAT_MSG_REQ);
+			Json::Value notify_json;
+			notify_json["error"] = ErrorCodes::Success;
+			notify_json["from_uid"] = from_uid;
+			notify_json["to_uid"] = to_uid;
+			notify_json["thread_id"] = thread_id;
+			notify_json["msg_id"] = chat_msg_id;
+			notify_json["type"] = "text";
+			notify_json["content"] = content;
+
+			to_session->Send(notify_json.toStyledString(), ID_NOTIFY_TEXT_CHAT_MSG_REQ);
 		}
 		return;
 	}
 
+	// 2. 跨服务器通过 gRPC 投递
 	TextChatMsgReq msgReq;
 	msgReq.set_fromuid(from_uid);
 	msgReq.set_touid(to_uid);
-	TextChatData* data=msgReq.add_textmsgs();
+	msgReq.set_thread_id(thread_id);
+
+	TextChatData* data = msgReq.add_textmsgs();
 	data->set_msg_id(chat_msg_id);
 	data->set_msgcontent(content);
-	std::cout << "Receive msg_id is " << chat_msg_id<<std::endl;
-	std::cout << "Content is " << content << std::endl;
+
+	std::cout << "Forward to server: " << server_ip
+		<< ", real msg_id: " << chat_msg_id << std::endl;
 
 	ChatGrpcClient::GetInstance()->NotifyTextChatMsg(server_ip, msgReq);
 
@@ -927,6 +1025,132 @@ void LogicWorker::HeartBeatHandle(shared_ptr<CSession> session, const short& msg
 	Json::Value rt;
 	rt["error"] = ErrorCodes::Success;
 	session->Send(rt.toStyledString(), ID_HEARTBEAT_RSP);
+}
+
+void LogicWorker::GetUserThreadHandler(shared_ptr<CSession> session, const short& msg_id, const string& msg_data)
+{
+	Json::Value value;
+	Json::Reader reader;
+	reader.parse(msg_data, value);
+
+	int uid = value["uid"].asInt();
+	std::cout << "Get thread id for the user: " << uid << endl;
+
+	Json::Value rt;
+	rt["error"] = ErrorCodes::Success;
+	rt["uid"] = uid;
+	auto last_id = value["last_id"].asInt();
+	Defer defer([this, &session, &rt]() {
+		auto rt_str = rt.toStyledString();
+		session->Send(rt_str, ID_LOAD_CHAT_THREAD_RSP);
+		});
+
+	std::vector<std::shared_ptr<ChatThreadInfo>> threads;
+	int page_size = 10;
+	bool load_more = false;
+	int next_last_id = 0;
+	bool res = GetUserThread(uid,last_id ,page_size,threads,load_more,next_last_id);
+	if (!res) {
+		rt["error"] = ErrorCodes::UidInvalid;
+		return;
+	}
+
+	for (auto chat : threads) {
+		Json::Value thread;
+		thread["uid_1"] = chat->_user1_id;
+		thread["uid_2"] = chat->_user2_id;
+		thread["thread_id"] = chat->_thread_id;
+		thread["type"] = chat->_type;
+		rt["threads"].append(thread);
+	}
+
+}
+
+bool LogicWorker::GetUserThread(int uid, int last_id, int page_size,std::vector<std::shared_ptr<ChatThreadInfo>>& threads,bool& load_more,int& next_last_id)
+{
+	return MysqlMgr::GetInstance()->GetUserThread(uid, last_id,page_size,threads,load_more,next_last_id);
+}
+
+void LogicWorker::CreateNewPrivateThread(shared_ptr<CSession> session, const short& msg_id, const string& msg_data)
+{
+	Json::Value value;
+	Json::Reader reader;
+	reader.parse(msg_data, value);
+	int uid = value["uid"].asInt();
+	int to_uid = value["other_uid"].asInt();
+	int thread_id = 0;
+
+	Json::Value rt;
+	rt["uid"] = uid;
+	rt["other_uid"] = to_uid;
+	Defer defer([this, &session, &rt]() {
+		session->Send(rt.toStyledString(), ID_CREATE_PRIVATE_CHAT_RSP);
+	});
+
+	auto success=MysqlMgr::GetInstance()->CreatePrivateChatThread(uid, to_uid, thread_id);
+	if (!success) {
+		rt["error"] = ErrorCodes::UidInvalid;
+		return ;
+	}
+	rt["error"] = ErrorCodes::Success;
+	rt["thread_id"] = thread_id;
+
+	return;
+}
+
+void LogicWorker::LoadChatMsg(shared_ptr<CSession> session, const short& msg_id, const string& msg_data)
+{
+	Json::Value val;
+	Json::Reader reader;
+	reader.parse(msg_data, val);
+	int from_uid = val["uid"].asInt();
+	int to_uid = val["to_uid"].asInt();
+	int thread_id = val["thread_id"].asInt();
+	int last_msg_id = val["last_msg_id"].asInt();
+	int pgsize = val["pgsize"].asInt();
+
+	Json::Value rt;
+	rt["error"] = ErrorCodes::Success;
+	rt["from_uid"] = from_uid;
+	rt["to_uid"] = to_uid;
+	rt["chat_datas"] = Json::arrayValue;
+	rt["thread_id"] = thread_id;
+
+	Defer defer([session, &rt]() {
+		session->Send(rt.toStyledString(), ID_LOAD_CHAT_MSG_RSP);
+		});
+
+	std::shared_ptr<PageResult> pages = MysqlMgr::GetInstance()->LoadChatMsg(thread_id,last_msg_id, pgsize);
+	if (!pages) {
+		rt["error"] = ErrorCodes::LOAD_CHAT_FAILED;
+		return;
+	}
+
+	rt["last_msg_id"] = pages->next_cursor;
+	rt["load_more"] = pages->load_more;
+	for (auto& chat : pages->messages) {
+		Json::Value  chat_data;
+		chat_data["sender"] = chat.sender_id;
+		chat_data["msg_id"] = chat.message_id;
+		chat_data["thread_id"] = chat.thread_id;
+		chat_data["unique_id"] = 0;
+		chat_data["msg_content"] = chat.content;
+		chat_data["created_at"] = chat.created_at;
+		chat_data["updated_at"] = chat.updated_at;
+		chat_data["status"] = chat.status;
+		chat_data["type"] = chat.type;
+
+		if(chat.type == 1 || !chat.filename.empty()) {
+			chat_data["filename"] = chat.filename;
+			chat_data["filesz"] = static_cast<Json::Int64>(chat.filesz);
+			chat_data["file_url"] = chat.file_url;
+			chat_data["token"] = chat.token;
+			chat_data["md5"] = chat.md5;
+		}
+
+		rt["chat_datas"].append(chat_data);
+	}
+
 }
 
 void LogicSystem::PostMsgtoQue(shared_ptr<LogicNode> msg)

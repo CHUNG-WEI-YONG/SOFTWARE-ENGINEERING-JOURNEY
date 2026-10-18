@@ -2,7 +2,7 @@
 #include "ui_loadingdialog.h"
 #include <QMovie>
 
-LoadingDialog::LoadingDialog(QWidget *parent)
+LoadingDialog::LoadingDialog(QWidget *parent,QString tip)
     : QDialog(parent)
     , ui(new Ui::LoadingDialog)
 {
@@ -11,13 +11,14 @@ LoadingDialog::LoadingDialog(QWidget *parent)
     setAttribute(Qt::WA_TranslucentBackground);
     if (parent) {
         setFixedSize(parent->size());
-    } else {
-        setFixedSize(100, 100); // 兜底默认尺寸，防止空指针闪退
     }
 
     QMovie *movie=new QMovie(":/rc/chat_picture/loading.gif");
     ui->loading_lb->setMovie(movie);
     movie->start();
+
+    movie->setScaledSize(ui->loading_lb->size());
+    ui->status_lb->setText(tip);
 }
 
 LoadingDialog::~LoadingDialog()

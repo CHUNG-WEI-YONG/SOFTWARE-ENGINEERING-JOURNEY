@@ -78,15 +78,27 @@ std::shared_ptr<UserInfo> ChatUserWid::GetUserInfo()
     return _user;
 }
 
-std::shared_ptr<ChatData> ChatUserWid::GetChatData()
+void ChatUserWid::SetChatData(std::shared_ptr<ChatThreadData> data)
+{
+    _chat_data=data;
+}
+
+int ChatUserWid::GetThreadId()
+{
+    if (_chat_data) {
+        return _chat_data->GetThreadId();
+    }
+    if (_thread_info) {
+        return _thread_info->_thread_id;
+    }
+    return -1;
+}
+
+std::shared_ptr<ChatThreadData> ChatUserWid::GetChatData()
 {
     return _chat_data;
 }
 
-void ChatUserWid::SetChatData(std::shared_ptr<ChatData> data)
-{
-    _chat_data=data;
-}
 
 void ChatUserWid::updateLastMsg(const QString &last_msg)
 {
@@ -98,6 +110,17 @@ void ChatUserWid::ShowRedPoint(bool show)
 {
     _red_point=show;
     update();
+}
+
+void ChatUserWid::SetThreadInfo(std::shared_ptr<ChatThreadInfo> thread)
+{
+    _thread_info=thread;
+
+}
+
+std::shared_ptr<ChatThreadInfo> ChatUserWid::getThreadInfo()
+{
+    return _thread_info;
 }
 
 void ChatUserWid::paintEvent(QPaintEvent *event)

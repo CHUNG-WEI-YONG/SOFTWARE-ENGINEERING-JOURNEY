@@ -124,6 +124,7 @@ int main() {
 		auto port_str = cfg["SelfServer"]["Port"];
 		uint16_t port = static_cast<uint16_t>(std::stoul(port_str));
 		auto server_ptr = std::make_shared<Cserver>(ioc, port);
+		//std::cout << "Server start at port: " << port << std::endl;
 
 #ifdef _WIN32
 		// Register the Windows console control handler and set the shutdown hook

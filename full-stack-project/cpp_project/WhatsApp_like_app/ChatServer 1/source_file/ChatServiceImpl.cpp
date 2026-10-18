@@ -7,6 +7,15 @@
 #include "CSession.h"
 #include "MySqlMgr.h"
 
+#include <chrono>
+#include <cstdint>
+
+inline int64_t getCurrentTimestamp() {
+	return std::chrono::duration_cast<std::chrono::milliseconds>(
+		std::chrono::system_clock::now().time_since_epoch()
+	).count();
+}
+
 
 ChatServiceImpl::ChatServiceImpl() {
 
@@ -49,6 +58,7 @@ Status ChatServiceImpl::NotifyAuthFriend(ServerContext* context, const AuthFrien
 	if (session == nullptr) {
 		return Status::OK;
 	}
+
 	Json::Value rt;
 	auto user_info = std::make_shared<UserInfo>();
 	auto key = USER_BASE_INFO + std::to_string(from_uid);
@@ -61,11 +71,35 @@ Status ChatServiceImpl::NotifyAuthFriend(ServerContext* context, const AuthFrien
 	}
 	rt["fromuid"] = from_uid;
 	rt["to_uid"] = to_uid;
+	rt["touid"] = to_uid;
 	rt["name"] = user_info->name;
 	rt["nick"] = user_info->nick;
 	rt["icon"] = user_info->icon;
 	rt["desc"] = user_info->desc;
 	rt["sex"] = user_info->sex;
+	int thread_id = 0;
+	rt["chat_datas"] = Json::Value(Json::arrayValue);
+	auto chat_time = getCurrentTimestamp();
+	for (int i = 0;i < req->textmsgs_size();i++) {
+		const auto& text_msg = req->textmsgs(i);
+		if (thread_id == 0 && text_msg.thread_id() > 0) {
+			thread_id = text_msg.thread_id();
+		}
+
+		Json::Value chat;
+		chat["sender"] = text_msg.sender_id();
+		chat["msg_id"] = text_msg.msg_id();
+		chat["thread_id"] = text_msg.thread_id();
+		chat["unique_id"] = text_msg.unique_id();
+		chat["msg_content"] = text_msg.msgcontent();
+		chat["chat_time"] = static_cast<Json::Int64>(chat_time);
+		chat["status"] = text_msg.status();
+		rt["chat_datas"].append(chat);
+	}
+
+	rt["thread_id"] = thread_id;
+
+
 
 	auto rt_str = rt.toStyledString();
 	session->Send(rt_str, ID_NOTIFY_AUTH_FRIEND_REQ);
@@ -77,6 +111,7 @@ Status ChatServiceImpl::NotifyAuthFriend(ServerContext* context, const AuthFrien
 Status ChatServiceImpl::NotifyTextChatMsg(ServerContext* context, const TextChatMsgReq* req, TextChatMsgRsp* rsp) {
 	int to_uid = req->touid();
 	int from_uid = req->fromuid();
+	int thread_id = req->thread_id();
 	auto session = UserMgr::GetInstance()->GetSession(to_uid);
 	if (session == nullptr) {
 		// 目标用户不在这台服务器上（可能刚下线）
@@ -86,18 +121,20 @@ Status ChatServiceImpl::NotifyTextChatMsg(ServerContext* context, const TextChat
 	rsp->set_error(ErrorCodes::Success);
 	rsp->set_fromuid(from_uid);
 	rsp->set_touid(to_uid);
+	rsp->set_thread_id(thread_id);
 
 	Json::Value rt;
 	rt["from_uid"] = from_uid;
 	rt["to_uid"] = to_uid;
 	rt["error"] = ErrorCodes::Success;
+	rt["thread_id"] = thread_id;
 
 	Json::Value text_array;
 	for (auto& msg : req->textmsgs()) {
 		Json::Value element;
 		element["content"] = msg.msgcontent();
 		element["msg_id"] = msg.msg_id();
-		element["unique_id"] = msg.unique_id();
+		//element["unique_id"] = msg.unique_id();
 
 		// 尝试判断 content 是否是包含文件信息的 JSON
 		Json::Value content_json;
@@ -116,7 +153,7 @@ Status ChatServiceImpl::NotifyTextChatMsg(ServerContext* context, const TextChat
 		text_array.append(element);
 	}
 
-	rt["text"] = text_array;
+	rt["text_array"] = text_array;
 
 	std::string rt_str = rt.toStyledString();
 	// 统一用 ID_NOTIFY_TEXT_CHAT_MSG_REQ 下发，客户端解析 text 数组即可

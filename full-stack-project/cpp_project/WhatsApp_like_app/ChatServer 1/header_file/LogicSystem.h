@@ -15,6 +15,7 @@
 #include "message.grpc.pb.h"
 #include "message.pb.h"
 #include "UserMgr.h"
+#include "data.h"
 
 using grpc::Server;
 using grpc::ServerBuilder;
@@ -68,6 +69,10 @@ private:
 	void DealChatFileMsg(shared_ptr<CSession> session, const short& msg_id, const string& msg_data);
 	void DownloadFile(shared_ptr<CSession> session, const short& msg_id, const string& msg_data);
 	void HeartBeatHandle(shared_ptr<CSession> session, const short& msg_id, const string& msg_data);
+	void GetUserThreadHandler(shared_ptr<CSession> session, const short& msg_id, const string& msg_data);
+	bool GetUserThread(int uid,int last_id,int pgsize, std::vector<std::shared_ptr<ChatThreadInfo>>& threads,bool& loadMore,int& lastID);
+	void CreateNewPrivateThread(shared_ptr<CSession> session, const short& msg_id, const string& msg_data);
+	void LoadChatMsg(shared_ptr<CSession> session, const short& msg_id, const string& msg_data);
 	std::thread _worker_thread;
 	std::queue<shared_ptr<LogicNode>> _msg_que;
 	std::mutex _mutex;

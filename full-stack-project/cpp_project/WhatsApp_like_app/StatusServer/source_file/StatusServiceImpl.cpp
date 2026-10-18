@@ -35,32 +35,32 @@ std::string GenerateStringUUID() {
 ChatServer StatusServiceImpl::getChatServer() {
     std::lock_guard<std::mutex> lock(_ChatServerLock);
     auto minServer = _servers.begin()->second;
-    std::string count_lock = LOCK_COUNT;
+    //std::string count_lock = LOCK_COUNT;
 
 
-    ChatServer minServer;
-    int conn_max = INT_MAX;
-    bool has_valid_server = false;
-    for (const auto server : _servers) {
-        std::string count_str ;
-        int count = 0;
-        ChatServer curr = server.second;
-        bool success = RedisMjr::GetInstance()->HGet(LOGIN_COUNT, curr.name, count_str);
-        if (!success) {
-            count = 0;
-        }
-        else {
-            count = std::stoi(count_str);
-        }
-        curr.conn_count = count;
+    //ChatServer minServer;
+    //int conn_max = INT_MAX;
+    //bool has_valid_server = false;
+    //for (const auto server : _servers) {
+    //    std::string count_str ;
+    //    int count = 0;
+    //    ChatServer curr = server.second;
+    //    bool success = RedisMjr::GetInstance()->HGet(LOGIN_COUNT, curr.name, count_str);
+    //    if (!success) {
+    //        count = 0;
+    //    }
+    //    else {
+    //        count = std::stoi(count_str);
+    //    }
+    //    curr.conn_count = count;
 
-        if (!has_valid_server || curr.conn_count < conn_max) {
-            minServer = curr;
-            conn_max = count;
-            has_valid_server = true;
-        }
+    //    if (!has_valid_server || curr.conn_count < conn_max) {
+    //        minServer = curr;
+    //        conn_max = count;
+    //        has_valid_server = true;
+    //    }
 
-    }
+    //}
     return minServer;
 
 }

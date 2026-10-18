@@ -19,6 +19,10 @@ ImageCropperLabel::ImageCropperLabel(int width, int height, QWidget* parent):QLa
 }
 
 void ImageCropperLabel::setOriginalImage(const QPixmap &pixmap) {
+    if (pixmap.isNull() || pixmap.width() <= 0 || pixmap.height() <= 0) {
+        return;
+    }
+
     originalImage = pixmap;
 
     int imgWidth = pixmap.width();

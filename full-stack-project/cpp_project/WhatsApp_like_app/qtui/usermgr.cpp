@@ -9,24 +9,27 @@ UserMgr::~UserMgr()
 
 void UserMgr::Reset()
 {
-    _uid = 0;
-    _token.clear();
-    _logoPath.clear();
-    _user_info.reset(); // 释放 shared_ptr<UserInfo>
+        // 1. 基础认证与身份信息归零
+        _uid = 0;
+        _token.clear();
+        _logoPath.clear();
+        _user_info.reset(); // 释放 UserInfo 智能指针
 
-    // 2. 清空申请列表与好友列表容器
-    _applications.clear();
-    _friend_map.clear();
-    _friend_list.clear();
+        // 2. 好友与申请关系容器清空
+        _friend_map.clear();
+        _friend_list.clear();
+        _applications.clear();
 
-    // 3. 重置分页加载游标
-    _chat_loaded = 0;
-    _contact_loaded = 0;
+        // 3. 分页与列表游标计数复位
+        _chat_loaded = 0;
+        _contact_loaded = 0;
+        last_thread_id = 0;
 
-    // 4. 清空内存中暂存的历史聊天记录缓存
-    _history_cache.clear();
+        // 4. 会话路由与聚合根内存缓存释放 (最关键，防止跨账号数据污染)
+        _thread_map.clear();
+        _uid_to_thread_id.clear();
+        _thread_data_map.clear(); // 释放所有 ChatThreadData 及其内部挂载的多态消息
 
-    qDebug() << "[UserMgr] Successfully reset all user state and caches.";
 }
 
 // void UserMgr::SetName(QString name)
@@ -50,7 +53,7 @@ std::shared_ptr<UserInfo> UserMgr::GetUserInfo()
     return _user_info;
 }
 
-QString UserMgr::returnName()
+QString UserMgr::returnName ()const
 {
     return _user_info->_name;
 }
@@ -60,12 +63,12 @@ void UserMgr::Setlogo(QString path)
     _logoPath=path;
 }
 
-QString UserMgr::returnLogo()
+QString UserMgr::returnLogo() const
 {
     return _logoPath;
 }
 
-int UserMgr::GetUid()
+int UserMgr::GetUid() const
 {
     return _user_info->_uid;
 }
@@ -85,7 +88,7 @@ void UserMgr::add_apply(std::shared_ptr<ApplyInfo> apply)
     _applications.push_back(apply);
 }
 
-QString UserMgr::GetName(){
+QString UserMgr::GetName() const{
     return _user_info->_name;
 }
 
@@ -216,7 +219,93 @@ void UserMgr::UpdateConLoadedCount(){
     _contact_loaded=end;
 }
 
-bool UserMgr::hasHistoryCache(int uid)
+
+
+void UserMgr::SetLastChatThreadId(int last_id)
 {
-    return _history_cache.contains(uid);
+    last_thread_id=last_id;
+}
+
+void UserMgr::SetFriendThreadId(std::shared_ptr<ChatThreadInfo> info, int friend_id)
+{
+    _thread_map[info->_thread_id]=info;
+    _uid_to_thread_id[friend_id]=info->_thread_id;
+}
+
+int UserMgr::GetFriendThreadId(int friend_id)
+{
+
+    auto iter=_uid_to_thread_id.find(friend_id);
+    if(iter==_uid_to_thread_id.end()){
+        return -1;
+    }
+    return iter.value();
+}
+
+std::shared_ptr<ChatThreadData> UserMgr::GetThreadDataByUid(int friend_id)
+{
+    auto thread=GetFriendThreadId(friend_id);
+    return GetThreadData(thread);
+}
+
+std::shared_ptr<ChatThreadData> UserMgr::GetThreadData(int thread_id)
+{
+    auto iter=_thread_data_map.find(thread_id);
+    if(iter==_thread_data_map.end()){
+        return nullptr;
+    }
+    return iter.value();
+}
+
+void UserMgr::AddThreadData( std::shared_ptr<ChatThreadData> data,int friend_id){
+    auto thread_id=UserMgr::getInstance()->GetFriendThreadId(friend_id);
+    if(thread_id<=0){
+        return;
+    }
+    _thread_data_map[thread_id]=data;
+}
+void UserMgr::AddThreadData(int thread_id, std::shared_ptr<ChatThreadData> data)
+{
+    _thread_data_map[thread_id]=data;
+}
+
+bool UserMgr::HasThreadHistory(int thread_id)
+{
+    auto iter=_thread_data_map.find(thread_id);
+    if(iter==_thread_data_map.end())return false;
+    return true;
+}
+
+void UserMgr::AppendMsgToThread(int thread_id, std::shared_ptr<ChatDataBase> msg)
+{
+    if (thread_id <= 0 || !msg) return;
+    auto data = GetThreadData(thread_id);
+    if(!data){
+        int other_uid=(msg->GetSendUid()==_uid)?0:msg->GetSendUid();
+        data = std::make_shared<ChatThreadData>(other_uid, thread_id, msg->GetMsgId());
+        _thread_data_map[thread_id] = data;
+    }
+    data->AddMsg(msg);
+}
+
+void UserMgr::AppendHistoryBatch(int thread_id, const std::vector<std::shared_ptr<ChatDataBase>>& msgs)
+{
+    if (thread_id <= 0 || msgs.empty()) return;
+
+    auto data = GetThreadData(thread_id);
+    if (!data) {
+        data = std::make_shared<ChatThreadData>(0, thread_id, 0);
+        _thread_data_map[thread_id] = data;
+    }
+
+    for (const auto& msg : msgs) {
+        if (msg) {
+            data->AppendMsg(msg->GetMsgId(), msg);
+        }
+    }
+}
+
+std::shared_ptr<ChatThreadData> UserMgr::GetCurrLoadThread()
+{
+
 }

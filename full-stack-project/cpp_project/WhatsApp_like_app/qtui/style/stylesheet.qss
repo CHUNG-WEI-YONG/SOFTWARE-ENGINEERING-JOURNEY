@@ -64,6 +64,15 @@ background-color:rgb(255,255,255)
   background-color:rgb(46,46,46);
 }
 
+#side_settings_lb[state='hover']{
+    border-image:url(:/rc/chat_picture/settings_hover.png);
+}
+
+
+#side_settings_lb[state="press"]{
+    border-image:url(:/rc/chat_picture/settings_press.png);
+}
+
 #add_btn[state='normal']{
     border-image: url(:/rc/chat_picture/add_friend_normal.png);
 }
@@ -826,3 +835,196 @@ LoadingDlg #status_lb {
     font-size: 18px;
     font-family: "Microsoft YaHei";
 }
+
+
+/* ========================================================
+ * 1. 窗口与弹窗基础背景 (Dialogs & Base Windows)
+ * ======================================================== */
+QDialog#LoginDialog,
+QDialog#SigninDialog,
+QDialog#ResetDialog {
+    background-color: #f7f9fa;
+}
+
+/* ========================================================
+ * 2. 标签文本 (Labels)
+ * ======================================================== */
+/* 表单字段提示文本 (User, Email, Password, Code 等) */
+QLabel#user_label,
+QLabel#email_label,
+QLabel#pass_label,
+QLabel#repass_label,
+QLabel#code_label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #4b5563;
+    background: transparent;
+}
+
+/* 错误与警告提示文本 */
+QLabel#error_label {
+    font-size: 12px;
+    font-weight: 500;
+    color: #ef4444; /* 醒目红 */
+    background: transparent;
+    min-height: 18px;
+}
+
+/* 注册成功完成页提示文本 (Page 2) */
+QLabel#tip_lb {
+    font-size: 16px;
+    font-weight: bold;
+    color: #10b981; /* 成功绿 */
+    background: transparent;
+}
+
+QLabel#tip2_lb {
+    font-size: 13px;
+    color: #6b7280;
+    background: transparent;
+}
+
+/* 可点击文字链接 (Forgot Password) */
+ClickedLabel#forgot_label {
+    font-size: 12px;
+    font-weight: 500;
+    color: #2563eb;
+    background: transparent;
+}
+
+ClickedLabel#forgot_label:hover {
+    color: #1d4ed8;
+    text-decoration: underline;
+}
+
+/* 密码显隐小图标按钮 */
+ClickedLabel#pass_visible,
+ClickedLabel#repass_visible {
+    border: none;
+    background-color: transparent;
+}
+
+/* ========================================================
+ * 3. 单行输入框 (QLineEdit)
+ * ======================================================== */
+QLineEdit {
+    background-color: #ffffff;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    padding: 0 10px;
+    font-size: 13px;
+    color: #1f2937;
+    selection-background-color: #2563eb;
+    selection-color: #ffffff;
+}
+
+QLineEdit:hover {
+    border: 1px solid #9ca3af;
+}
+
+QLineEdit:focus {
+    border: 1.5px solid #2563eb;
+    background-color: #ffffff;
+}
+
+QLineEdit:disabled {
+    background-color: #f3f4f6;
+    color: #9ca3af;
+    border: 1px solid #e5e7eb;
+}
+
+/* ========================================================
+ * 4. 按钮系列 (PushButtons)
+ * ======================================================== */
+
+/* --- A. 主要操作按钮 (Primary Action: Login, Confirm) --- */
+QPushButton#login_btn,
+QPushButton#sure_btn,
+QPushButton#confirm_btn {
+    background-color: #2563eb;
+    color: #ffffff;
+    border: none;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    min-height: 30px;
+}
+
+QPushButton#login_btn:hover,
+QPushButton#sure_btn:hover,
+QPushButton#confirm_btn:hover {
+    background-color: #1d4ed8;
+}
+
+QPushButton#login_btn:pressed,
+QPushButton#sure_btn:pressed,
+QPushButton#confirm_btn:pressed {
+    background-color: #1e40af;
+}
+
+QPushButton#login_btn:disabled,
+QPushButton#sure_btn:disabled,
+QPushButton#confirm_btn:disabled {
+    background-color: #93c5fd;
+    color: #f8fafc;
+}
+
+/* --- B. 次要操作 / 轮廓按钮 (Secondary / Outline: Sign In, Cancel, Return) --- */
+QPushButton#signin_btn,
+QPushButton#cancel_btn,
+QPushButton#returnbtn {
+    background-color: #ffffff;
+    color: #374151;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    min-height: 30px;
+}
+
+QPushButton#signin_btn:hover,
+QPushButton#cancel_btn:hover,
+QPushButton#returnbtn:hover {
+    background-color: #f9fafb;
+    border-color: #9ca3af;
+    color: #111827;
+}
+
+QPushButton#signin_btn:pressed,
+QPushButton#cancel_btn:pressed,
+QPushButton#returnbtn:pressed {
+    background-color: #f3f4f6;
+}
+
+/* --- C. 验证码发送按钮 (TimerBtn / GET Code) --- */
+QPushButton#get_btn,
+TimerBtn#get_Code {
+    background-color: #eff6ff;
+    color: #2563eb;
+    border: 1px solid #bfdbfe;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 0 10px;
+    min-height: 25px;
+}
+
+QPushButton#get_btn:hover,
+TimerBtn#get_Code:hover {
+    background-color: #dbeafe;
+    border-color: #93c5fd;
+}
+
+QPushButton#get_btn:pressed,
+TimerBtn#get_Code:pressed {
+    background-color: #bfdbfe;
+}
+
+QPushButton#get_btn:disabled,
+TimerBtn#get_Code:disabled {
+    background-color: #f3f4f6;
+    color: #9ca3af;
+    border-color: #e5e7eb;
+}
+
+

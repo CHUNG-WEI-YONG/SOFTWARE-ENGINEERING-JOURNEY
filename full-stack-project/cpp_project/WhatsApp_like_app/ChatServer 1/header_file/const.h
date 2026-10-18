@@ -53,7 +53,8 @@ enum ErrorCodes {
 	CREATE_CHAT_FAILED = 1012, //创建聊天失败
 	LOAD_CHAT_FAILED = 1013, //加载聊天失败	
 	FILE_NOT_EXIST=1014,
-	SERVER_BUSY=1015
+	SERVER_BUSY=1015,
+	SAVE_MSG_FAILED=1016
 
 };
 
@@ -120,14 +121,7 @@ enum MSG_IDS {
 };
 
 
-//struct UserInfo {
-//	int uid;            // 用户唯一标识 ID
-//	std::string name;   // 用户昵称/姓名
-//	std::string token;  // 用户的当前 Session Token
-//	// 根据你后续的业务需求，还可以在这里扩展如：
-//	// std::string email;
-//	// int status;
-//};
+
 
 struct UserInfo {
 	UserInfo() :name(""), passwd(""), uid(0), email(""), nick(""), desc(""), sex(0), icon(""), back("") {}
@@ -142,6 +136,7 @@ struct UserInfo {
 	std::string back;
 };
 
+
 #define USERIPPREFIX  "uip_"
 #define USERTOKENPREFIX  "utoken_"
 #define IPCOUNTPREFIX  "ipcount_"
@@ -151,6 +146,26 @@ struct UserInfo {
 #define LOCK_PREFIX "lock_"
 #define USER_SESSION_PREFIX "usession_"
 #define LOCK_COUNT "lockcount"
+
+
+enum MsgStatus {
+	UN_READ = 0,  //对方未读
+	SEND_FAILED = 1,  //发送失败
+	READED = 2  //对方已读
+};
+
+//聊天形式，私聊和群聊
+enum class ChatFormType {
+	PRIVATE = 0,
+	GROUP = 1
+};
+
+//聊天消息类型，文本，图片，文件等
+enum class ChatMsgType {
+	TEXT = 0,
+	PIC = 1,
+	FILE = 2
+};
 
 struct ApplyInfo {
 	ApplyInfo()
@@ -175,3 +190,4 @@ struct ApplyInfo {
 	int _sex;
 	int _status;
 };
+

@@ -4,6 +4,7 @@
 #include <QWidget>
 #include "listitembase.h"
 #include "userdata.h"
+
 namespace Ui {
 class ChatUserWid;
 }
@@ -25,10 +26,13 @@ public:
     //void SetInfo(QString name, QString head, QString msg);
     void SetInfo(std::shared_ptr<UserInfo> user);
     std::shared_ptr<UserInfo> GetUserInfo();
-    std::shared_ptr<ChatData> GetChatData();
-    void SetChatData(std::shared_ptr<ChatData> data);
+    std::shared_ptr<ChatThreadData> GetChatData();
+    void SetChatData(std::shared_ptr<ChatThreadData> data);
+    int GetThreadId();
     void updateLastMsg(const QString& last_msg);
     void ShowRedPoint(bool show=false);
+    void SetThreadInfo(std::shared_ptr<ChatThreadInfo> thread);
+    std::shared_ptr<ChatThreadInfo> getThreadInfo();
 
 protected:
     // ──► 新增：绘制事件 ◄──
@@ -41,8 +45,9 @@ private:
     // QString _msg;
     QVariantList m_chatHistory;
     std::shared_ptr<UserInfo> _user;
-    std::shared_ptr<ChatData> _chat_data;
+    std::shared_ptr<ChatThreadData> _chat_data;
     bool _red_point{false};
+    std::shared_ptr<ChatThreadInfo> _thread_info;
 
     // 初始化时或者构造时加两条假数据方便你直接测试：
     void initFakeData(const QString& name) {

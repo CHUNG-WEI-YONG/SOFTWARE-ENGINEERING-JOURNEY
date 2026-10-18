@@ -11,12 +11,14 @@
 
 CSession::~CSession()
 {
+	std::cout << "CSession destroy";
 }
 
-CSession::CSession(boost::asio::io_context& ioc, Cserver* server):_server(server),_socket(ioc),_b_Stop(false),_head_is_parsed(false),_uid(0) {
+CSession::CSession(boost::asio::io_context& ioc, Cserver* server):_server(server),_socket(ioc),_b_Stop(false),_head_is_parsed(false),_uid(0){
 	boost::uuids::uuid u = boost::uuids::random_generator()();
 	_session_id = boost::uuids::to_string(u);	
 	_recv_head_node = std::make_shared<MsgNode>(HEAD_TOTAL_LEN);
+	lastHeartBeat = time(nullptr);
 
 }
 

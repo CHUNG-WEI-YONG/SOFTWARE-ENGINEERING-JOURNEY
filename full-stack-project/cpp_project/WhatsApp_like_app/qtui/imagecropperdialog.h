@@ -46,7 +46,7 @@ public:
         this->setMouseTracking(true);
         this->setModal(true);
 
-        ImageCropperLabel* imageLabel = new ImageCropperLabel(windowWidth, windowHeight, this);
+        imageLabel = new ImageCropperLabel(windowWidth, windowHeight, this);
         imageLabel->setCropper(shape, cropperSize);
         imageLabel->setOutputShape(OutputShape::RECT);
         imageLabel->setOriginalImage(imageIn);

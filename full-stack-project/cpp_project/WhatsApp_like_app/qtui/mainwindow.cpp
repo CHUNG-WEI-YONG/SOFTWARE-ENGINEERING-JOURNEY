@@ -132,6 +132,7 @@ void MainWindow::SlotSwitchChat()
     // 方案 A：让软件启动时直接【撑满全屏】（工业级 IM 软件首选）
     //this->showMaximized();
     this->resize(1000, 750);
+    _chat_dlg->LoadChatList();
 }
 
 void MainWindow::slot_offline()

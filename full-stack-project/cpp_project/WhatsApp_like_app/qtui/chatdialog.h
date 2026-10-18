@@ -22,9 +22,11 @@ public:
     ~ChatDialog();
     void AddUserlist();
     void ClearState(StateWidget *lb);
-    void SetSelectedChatPage(int uid=0);
-    void SetSelectedChatItem(int uid=0);
+    void SetSelectedChatPage(int thread_id=0);
+    void SetSelectedChatItem(int thread_id=0);
     void SwitchToUserChat(std::shared_ptr<UserInfo> user);
+    void LoadChatList();
+    void loadChatMsg();
 
 
 private:
@@ -35,30 +37,31 @@ private:
     void sendFileMsgToChatServer(std::shared_ptr<FileToken> token);
     void updateFileProgressUI(int percent,int to_uid);
     void addInitialFileBubbleUi(std::shared_ptr<FileToken> token);
+    void SetLoading(bool isloading);
     ChatUIMode _mode;
     ChatUIMode _state;
     bool _b_loading;
     Ui::ChatDialog *ui;
     QList<StateWidget*> _lb_list;
     QAction* _clear_action = nullptr;
-    QMap<int,QListWidgetItem*> _chat_items_added;
-    int _curr_chat_uid;
+    //QMap<int,QListWidgetItem*> _chat_items_added;
+    QMap<int ,QListWidgetItem*> _chat_thread_added;
+    int64_t _curr_thread_id = -1;
+    int _curr_chat_uid = 0; // 保留供兼容私聊使用
     QWidget* _last_widget;
-    QMap<int, int> _user_history_cursor;
+    QMap<int, int> _thread_history_cursor;
     ChatBridge* _bridge{nullptr};
     QString _pending_upload_path;
     QString _pending_download_save_path;
     QTimer* _timer;
 
-    //QMap<int, QVariantList> _user_history_cache;
-    //QMap<int,QList<ChatMsg>> _history_cache;
 
 protected:
     bool eventFilter(QObject *watched,QEvent *event)override;
     void handleGlobalMousePress(QMouseEvent *event);
 
 signals:
-    void sig_load_user_history(int uid,int start,int len);
+    void sig_load_user_history(int thread_id,int start,int len);
 
 public slots:
     void slot_loading_user();
@@ -76,13 +79,15 @@ public slots:
     void slot_jump_chat_item_from_info_page(std::shared_ptr<UserInfo>);
     void slot_item_click(QListWidgetItem* item);
     void slot_loadMoreHistory(const QString& user);
-    void slot_load_history_finish(int from_uid,QList<ChatMsg> historyList,int next_last_msg_id);
+    void slot_load_history_finish(int thread_id,const std::vector<std::shared_ptr<ChatDataBase>>& historyList,int next_last_msg_id);
     void slot_send_msg(QString target ,QString text);
-    void slot_text_chat_msg(std::shared_ptr<ChatMsg> msg);
+    void slot_text_chat_msg(std::shared_ptr<ChatDataBase> msg);
     void slot_req_upload_file(const QString& friendName,const QString& filePath);
     void slot_upload_file(std::shared_ptr<FileToken>);
     void slot_req_download_file(const QString& filetoken,const QString& filepath);
     void slot_download_file(std::shared_ptr<FileToken> file);
+    void slot_load_chat_thread(bool load_more,int last_thread_id,std::vector<std::shared_ptr<ChatThreadInfo>> threads);
+    void slot_create_private_chat(int id1,int id2,int thread_id);
 
 
 };

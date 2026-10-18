@@ -9,20 +9,21 @@ class UserMgr:public QObject ,public Singleton<UserMgr>,public std::enable_share
 public:
     UserMgr();
     ~UserMgr();
-    void Reset();
-    friend Singleton<UserMgr>;
-    //void SetName(QString name);
+    // 基础用户信息
     void SetUid(int uid);
+    int GetUid() const;
     void SetToken(QString token);
-    std::shared_ptr<UserInfo> GetUserInfo();
-    QString returnName();
     void Setlogo(QString path);
-    QString returnLogo();
-    int GetUid();
+    QString returnLogo() const;
+    QString returnName() const;
+    QString GetName() const;
+    void SetUserInfo(std::shared_ptr<UserInfo> user);
+    std::shared_ptr<UserInfo> GetUserInfo();
+    void Reset();
+
+    // 好友与申请列表管理
     bool has_added(int uid);
     void add_apply(std::shared_ptr<ApplyInfo> apply);
-    QString GetName();
-    void SetUserInfo(std::shared_ptr<UserInfo> user);
     void AppendApplyList(QJsonArray array);
     bool CheckFriendById(int uid);
     void AddFriend(std::shared_ptr<AuthInfo>);
@@ -30,27 +31,37 @@ public:
     std::shared_ptr<FriendInfo> getFriend(int uid);
     std::shared_ptr<FriendInfo> getFriendByName(QString name);
     void AppendFriendList(QJsonArray array);
+
     std::vector<std::shared_ptr<FriendInfo>> GetChatListPerPage();
     bool isLoadChatFin();
     void UpdateChatLoadedCount();
-    std::vector<std::shared_ptr<FriendInfo>>GetConListPerPage();
+    std::vector<std::shared_ptr<FriendInfo>> GetConListPerPage();
     bool isLoadConFin();
     void UpdateConLoadedCount();
-    bool hasHistoryCache(int uid);
-    void AppendHistoryMsg(int friend_uid, const ChatMsg& msg) {
-        _history_cache[friend_uid].append(msg);
-    }
 
-    void PrependHistoryBatch(int friend_uid, const QList<ChatMsg>& msgs) {
-        auto& list = _history_cache[friend_uid];
-        for (int i = msgs.size() - 1; i >= 0; --i) {
-            list.prepend(msgs[i]);
-        }
-    }
+    // ──► 🎯 核心改造 1：会话关系管理 (Thread ID) ◄──
+    void SetLastChatThreadId(int last_id);
+    int GetLastChatThreadId() const;
+    void SetFriendThreadId(std::shared_ptr<ChatThreadInfo> info, int friend_id);
+    int GetFriendThreadId(int friend_id);
+    std::shared_ptr<ChatThreadData> GetThreadDataByUid(int friend_id);
+    void AddThreadData(std::shared_ptr<ChatThreadData> data,int friend_id);
 
-    QList<ChatMsg> GetHistoryMsgs(int friend_uid) const {
-        return _history_cache.value(friend_uid);
-    }
+    // ──► 🎯 核心改造 2：接入 ChatThreadData 替代旧的 _history_cache ◄──
+    // 获取或按需创建指定会话上下文
+    std::shared_ptr<ChatThreadData> GetThreadData(int thread_id);
+    void AddThreadData(int thread_id, std::shared_ptr<ChatThreadData> data);
+    bool HasThreadHistory(int thread_id);
+
+    // 追加单条已发送/接收的消息
+    void AppendMsgToThread(int thread_id, std::shared_ptr<ChatDataBase> msg);
+
+    // 批量追加拉取回来的历史消息
+    void AppendHistoryBatch(int thread_id, const std::vector<std::shared_ptr<ChatDataBase>>& msgs);
+
+
+
+
 
 private:
     QString _token;
@@ -62,7 +73,10 @@ private:
     int _uid;
     int _chat_loaded;
     int _contact_loaded;
-    QMap<int, QList<ChatMsg>> _history_cache;
+    QMap<int,std::shared_ptr<ChatThreadData>>_thread_data_map;
+    int last_thread_id{0};
+    QMap<int,std::shared_ptr<ChatThreadInfo>> _thread_map;
+    QMap<int , int >_uid_to_thread_id;
 
 
 

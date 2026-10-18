@@ -30,7 +30,7 @@ void SearchList::SetSearchEdit(QWidget *edit)
 void SearchList::waitPending(bool pending)
 {
     if(pending){
-        _loadingDialog=new LoadingDialog(this);
+        _loadingDialog=new LoadingDialog(this,"Searching the friend...");
         _loadingDialog->setModal(true);
         _loadingDialog->show();
         _search_pending=pending;

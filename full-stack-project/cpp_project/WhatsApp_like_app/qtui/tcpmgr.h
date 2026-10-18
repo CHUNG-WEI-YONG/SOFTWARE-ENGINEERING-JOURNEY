@@ -44,11 +44,13 @@ signals:
     void sig_add_auth_friend(std::shared_ptr<AuthInfo>);
     void sig_auth_rsp(std::shared_ptr<AuthRsp>);
     void sig_friend_apply(std::shared_ptr<AddFriendApply>);
-    void sig_load_history_finish(int from_uid,QList<ChatMsg> historyList,int next_last_msg_id);
-    void sig_text_chat_msg(std::shared_ptr<ChatMsg>);
+    void sig_load_history_finish(int thread_id,const std::vector<std::shared_ptr<ChatDataBase>>& historyList,int next_last_msg_id);
+    void sig_text_chat_msg(std::shared_ptr<ChatDataBase>);
     void sig_upload_file(std::shared_ptr<FileToken>);
     void sig_download_file_rsp(std::shared_ptr<FileToken>);
     void sig_offline(const QString& content);
+    void sig_load_chat_thread(bool next_page,int last_thread_id,std::vector<std::shared_ptr<ChatThreadInfo>> chat);
+    void sig_create_private_chat(int user1_id,int user2_id,int thread_id);
 
 
 };

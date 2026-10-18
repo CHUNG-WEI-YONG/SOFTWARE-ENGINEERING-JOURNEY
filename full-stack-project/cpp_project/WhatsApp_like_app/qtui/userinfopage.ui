@@ -13,6 +13,104 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true">/* 页面背景 */
+QWidget#UserInfoPage {
+    background-color: #f5f7fa;
+}
+
+/* 标题 */
+QLabel#label {
+    font-size: 18px;
+    font-weight: bold;
+    color: #1f2937;
+    padding-bottom: 8px;
+}
+
+/* 字段名标签 */
+QLabel#name_lb, QLabel#nick_lb, QLabel#label_4, QLabel#uid_lb {
+    font-size: 13px;
+    font-weight: 600;
+    color: #4b5563;
+}
+
+/* 头像圆角 */
+QLabel#head_lb {
+    border-radius: 40px;
+    border: 2px solid #e5e7eb;
+    background-color: #e5e7eb;
+}
+
+/* 文本输入框 */
+QTextEdit {
+    font-size: 13px;
+    color: #1f2937;
+    background-color: #ffffff;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    padding: 4px 8px;
+}
+
+/* 只读模式下的输入框变浅灰 */
+QTextEdit:read-only {
+    background-color: #f3f4f6;
+    color: #6b7280;
+    border: 1px solid #e5e7eb;
+}
+
+/* 获得焦点的输入框高亮蓝框 */
+QTextEdit:focus {
+    background-color: #ffffff;
+    border: 1px solid #3b82f6;
+}
+
+/* Edit 按钮 */
+QPushButton#pushButton, QPushButton#pushButton_2, QPushButton#pushButton_3 {
+    background-color: #ffffff;
+    color: #2563eb;
+    border: 1px solid #bfdbfe;
+    border-radius: 6px;
+    font-size: 12px;
+}
+QPushButton#pushButton:hover, QPushButton#pushButton_2:hover, QPushButton#pushButton_3:hover {
+    background-color: #eff6ff;
+}
+/* Edit 按钮激活状态 (按下时) */
+QPushButton#pushButton:checked, QPushButton#pushButton_2:checked, QPushButton#pushButton_3:checked {
+    background-color: #2563eb;
+    color: #ffffff;
+}
+
+/* Upload 按钮 */
+QPushButton#upload_btn {
+    background-color: #ffffff;
+    color: #374151;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 500;
+}
+QPushButton#upload_btn:hover {
+    background-color: #f9fafb;
+}
+
+/* Submit 提交按钮 */
+QPushButton#pushButton_4 {
+    background-color: #2563eb;
+    color: #ffffff;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: bold;
+}
+QPushButton#pushButton_4:hover {
+    background-color: #1d4ed8;
+}
+QPushButton#pushButton_4:disabled {
+    background-color: #93c5fd;
+    color: #ffffff;
+}</string>
+  </property>
   <layout class="QHBoxLayout" name="horizontalLayout">
    <item>
     <widget class="QWidget" name="widget" native="true">
@@ -28,7 +126,7 @@
            <property name="sizeHint" stdset="0">
             <size>
              <width>20</width>
-             <height>176</height>
+             <height>20</height>
             </size>
            </property>
           </spacer>
@@ -37,6 +135,9 @@
           <widget class="QLabel" name="label">
            <property name="text">
             <string>Basic Information</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignmentFlag::AlignCenter</set>
            </property>
           </widget>
          </item>
@@ -48,7 +149,7 @@
            <property name="sizeHint" stdset="0">
             <size>
              <width>20</width>
-             <height>176</height>
+             <height>20</height>
             </size>
            </property>
           </spacer>
@@ -58,13 +159,25 @@
            <layout class="QHBoxLayout" name="horizontalLayout_6">
             <item>
              <widget class="QLabel" name="uid_lb">
+              <property name="minimumSize">
+               <size>
+                <width>100</width>
+                <height>40</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>100</width>
+                <height>40</height>
+               </size>
+              </property>
               <property name="text">
                <string>User Uid: </string>
               </property>
              </widget>
             </item>
             <item>
-             <widget class="QLabel" name="uid_eidt">
+             <widget class="QLabel" name="uid_edit">
               <property name="text">
                <string/>
               </property>
@@ -78,23 +191,32 @@
       </item>
       <item>
        <widget class="QWidget" name="widget_3" native="true">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>0</height>
+         </size>
+        </property>
         <layout class="QHBoxLayout" name="horizontalLayout_2">
          <item>
           <widget class="QLabel" name="head_lb">
            <property name="minimumSize">
             <size>
-             <width>100</width>
-             <height>100</height>
+             <width>80</width>
+             <height>80</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
-             <width>100</width>
-             <height>100</height>
+             <width>80</width>
+             <height>80</height>
             </size>
            </property>
            <property name="text">
             <string/>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignmentFlag::AlignCenter</set>
            </property>
           </widget>
          </item>
@@ -113,6 +235,18 @@
          </item>
          <item>
           <widget class="QPushButton" name="upload_btn">
+           <property name="minimumSize">
+            <size>
+             <width>80</width>
+             <height>32</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>100</width>
+             <height>32</height>
+            </size>
+           </property>
            <property name="text">
             <string>Upload</string>
            </property>
@@ -141,8 +275,14 @@
           <widget class="QLabel" name="name_lb">
            <property name="minimumSize">
             <size>
-             <width>100</width>
+             <width>80</width>
              <height>0</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>80</width>
+             <height>16777215</height>
             </size>
            </property>
            <property name="text">
@@ -151,18 +291,21 @@
           </widget>
          </item>
          <item>
-          <widget class="QTextEdit" name="name_edit">
+          <widget class="QLineEdit" name="lineEdit">
            <property name="minimumSize">
             <size>
-             <width>450</width>
-             <height>0</height>
+             <width>400</width>
+             <height>36</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
-             <width>200</width>
-             <height>40</height>
+             <width>16777215</width>
+             <height>36</height>
             </size>
+           </property>
+           <property name="readOnly">
+            <bool>true</bool>
            </property>
           </widget>
          </item>
@@ -171,9 +314,12 @@
            <property name="orientation">
             <enum>Qt::Orientation::Horizontal</enum>
            </property>
+           <property name="sizeType">
+            <enum>QSizePolicy::Policy::Fixed</enum>
+           </property>
            <property name="sizeHint" stdset="0">
             <size>
-             <width>40</width>
+             <width>10</width>
              <height>20</height>
             </size>
            </property>
@@ -189,8 +335,8 @@
            </property>
            <property name="minimumSize">
             <size>
-             <width>40</width>
-             <height>40</height>
+             <width>50</width>
+             <height>32</height>
             </size>
            </property>
            <property name="maximumSize">
@@ -201,6 +347,9 @@
            </property>
            <property name="text">
             <string>Edit</string>
+           </property>
+           <property name="checkable">
+            <bool>true</bool>
            </property>
           </widget>
          </item>
@@ -227,8 +376,14 @@
           <widget class="QLabel" name="nick_lb">
            <property name="minimumSize">
             <size>
-             <width>100</width>
+             <width>80</width>
              <height>0</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>80</width>
+             <height>16777215</height>
             </size>
            </property>
            <property name="text">
@@ -237,18 +392,21 @@
           </widget>
          </item>
          <item>
-          <widget class="QTextEdit" name="nick_edit">
+          <widget class="QLineEdit" name="lineEdit_2">
            <property name="minimumSize">
             <size>
-             <width>450</width>
-             <height>40</height>
+             <width>400</width>
+             <height>36</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
-             <width>400</width>
-             <height>100</height>
+             <width>16777215</width>
+             <height>36</height>
             </size>
+           </property>
+           <property name="readOnly">
+            <bool>true</bool>
            </property>
           </widget>
          </item>
@@ -257,9 +415,12 @@
            <property name="orientation">
             <enum>Qt::Orientation::Horizontal</enum>
            </property>
+           <property name="sizeType">
+            <enum>QSizePolicy::Policy::Fixed</enum>
+           </property>
            <property name="sizeHint" stdset="0">
             <size>
-             <width>40</width>
+             <width>10</width>
              <height>20</height>
             </size>
            </property>
@@ -267,14 +428,23 @@
          </item>
          <item>
           <widget class="QPushButton" name="pushButton_2">
+           <property name="minimumSize">
+            <size>
+             <width>50</width>
+             <height>32</height>
+            </size>
+           </property>
            <property name="maximumSize">
             <size>
-             <width>40</width>
-             <height>40</height>
+             <width>60</width>
+             <height>60</height>
             </size>
            </property>
            <property name="text">
             <string>Edit</string>
+           </property>
+           <property name="checkable">
+            <bool>true</bool>
            </property>
           </widget>
          </item>
@@ -298,11 +468,17 @@
        <widget class="QWidget" name="widget_6" native="true">
         <layout class="QHBoxLayout" name="horizontalLayout_5">
          <item>
-          <widget class="QLabel" name="label_4">
+          <widget class="QLabel" name="description_lb">
            <property name="minimumSize">
             <size>
-             <width>100</width>
+             <width>80</width>
              <height>0</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>80</width>
+             <height>16777215</height>
             </size>
            </property>
            <property name="text">
@@ -311,17 +487,17 @@
           </widget>
          </item>
          <item>
-          <widget class="QTextEdit" name="textEdit_3">
+          <widget class="QTextEdit" name="description_edit">
            <property name="minimumSize">
             <size>
-             <width>450</width>
-             <height>0</height>
+             <width>400</width>
+             <height>80</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
              <width>16777215</width>
-             <height>200</height>
+             <height>120</height>
             </size>
            </property>
           </widget>
@@ -331,9 +507,12 @@
            <property name="orientation">
             <enum>Qt::Orientation::Horizontal</enum>
            </property>
+           <property name="sizeType">
+            <enum>QSizePolicy::Policy::Fixed</enum>
+           </property>
            <property name="sizeHint" stdset="0">
             <size>
-             <width>40</width>
+             <width>10</width>
              <height>20</height>
             </size>
            </property>
@@ -341,6 +520,12 @@
          </item>
          <item>
           <widget class="QPushButton" name="pushButton_3">
+           <property name="minimumSize">
+            <size>
+             <width>50</width>
+             <height>32</height>
+            </size>
+           </property>
            <property name="maximumSize">
             <size>
              <width>40</width>
@@ -349,6 +534,9 @@
            </property>
            <property name="text">
             <string>Edit</string>
+           </property>
+           <property name="checkable">
+            <bool>true</bool>
            </property>
           </widget>
          </item>
@@ -386,6 +574,9 @@
          </item>
          <item>
           <widget class="QPushButton" name="pushButton_4">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
            <property name="text">
             <string>Submit</string>
            </property>

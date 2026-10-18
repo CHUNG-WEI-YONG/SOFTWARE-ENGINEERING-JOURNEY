@@ -7,11 +7,11 @@
 #include "RedisMjr.h"
 
 Cserver::Cserver(boost::asio::io_context& ioc, uint16_t port):_port(port),_ioc(ioc),_acceptor(ioc,tcp::endpoint(tcp::v4(),port)) ,_timer(_ioc,std::chrono::seconds(60)) {
-	auto self = shared_from_this();
+	//auto self = shared_from_this();
 	std::cout << "Server start at port: " << port << std::endl;
 	StartAccept();
-	_timer.async_wait([this,self](const boost::system::error_code& ec) {
-		self->on_timer(ec);
+	_timer.async_wait([this](const boost::system::error_code& ec) {
+		on_timer(ec);
 	});
 
 
@@ -74,21 +74,26 @@ void Cserver::on_timer(const boost::system::error_code &ec)
 	if (ec)return;
 	std::vector<std::shared_ptr<CSession>> _expired_sessions;
 	int session_count = 0;
+
+	std::map<std::string, std::shared_ptr<CSession>> session_copy;
 	{
-		std::lock_guard<std::mutex> lock(_mutex);
-		time_t now = time(nullptr);
-		for (auto iter = _sessions.begin();iter != _sessions.end();++iter) {
-			bool is_expired = iter->second->isHeartBeatExpired(now);
-			if (is_expired) {
-				iter->second->Close();
-				_expired_sessions.push_back(iter->second);
-			}
-			else {
-				session_count++;
-			}
-		}
-		
+		std::lock_guard<mutex> lock(_mutex);
+		session_copy = _sessions;
 	}
+
+	time_t now = time(nullptr);
+	for (auto iter = session_copy.begin();iter != session_copy.end();++iter) {
+		bool is_expired = iter->second->isHeartBeatExpired(now);
+		if (is_expired) {
+			_expired_sessions.push_back(iter->second);
+			iter->second->Close();
+		}
+		else {
+			session_count++;
+		}
+	}
+
+	
 
 	auto& cfg = ConfigMgr::Inst();
 	auto server = cfg["SelfServer"]["Name"];

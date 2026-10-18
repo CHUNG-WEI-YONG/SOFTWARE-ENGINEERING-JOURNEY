@@ -4,13 +4,10 @@
 #include <memory>
 #include <QVariantMap>
 #include <QJsonObject>
+#include "global.h"
 
+class ChatDataBase;
 
-// class UserData
-// {
-// public:
-//     UserData();
-// };
 
 struct FileToken {
     qint64 from_uid{ 0 };
@@ -61,6 +58,38 @@ struct FileToken {
 };
 
 
+struct ChatThreadInfo {
+    int64_t     _thread_id{0};
+    QString _type;          // "private" 或 "group"
+
+    // 私聊特有字段
+    int64_t     _user1_id{0};
+    int64_t     _user2_id{0};
+
+    // 群聊特有字段
+    std::string _group_name;
+    int64_t     _owner_id{0};
+    std::string _avatar_url;
+
+    ChatThreadInfo() = default;
+
+    ChatThreadInfo(int64_t thread_id, const QString& type, int64_t u1 = 0, int64_t u2 = 0)
+        : _thread_id(thread_id), _type(type), _user1_id(u1), _user2_id(u2), _owner_id(0) {}
+
+    // 辅助方法：快速获取私聊中的对方 UID
+    int64_t GetPeerUid(int64_t my_uid) const {
+        if (_type != "private") return 0;
+        return (_user1_id == my_uid) ? _user2_id : _user1_id;
+    }
+
+    bool IsGroup() const {
+        return _type == "group";
+    }
+};
+
+
+
+
 struct SearchInfo {
     int _uid;
     QString _name;
@@ -75,28 +104,42 @@ struct SearchInfo {
         : _uid(uid), _name(name), _nick(nick), _desc(desc), _sex(sex), _icon(icon) {}
 };
 
-struct AuthInfo{
+struct AuthInfo {
     int _uid;
     QString _name;
-    int _sex;
-    int thread_id;
     QString _nick;
     QString _icon;
+    int _sex;
+    int _thread_id;
+    std::vector<std::shared_ptr<ChatDataBase>> _chat_datas;
 
-    AuthInfo(int uid,QString name,QString nick,QString icon,int sex):_uid(uid),_name(name),
-        _sex(sex),_nick(nick),thread_id(0),_icon(icon){};
+    AuthInfo(int uid, QString name, QString nick, QString icon, int sex, int thread_id = 0)
+        : _uid(uid)
+        , _name(name)
+        , _nick(nick)
+        , _icon(icon)
+        , _sex(sex)
+        , _thread_id(thread_id)
+    {}
 };
 
 struct AuthRsp{
     int _uid;
     QString _name;
-    int _sex;
-    int thread_id;
     QString _nick;
     QString _icon;
+    int _sex;
+    int _thread_id;
+    std::vector<std::shared_ptr<ChatDataBase>> _chat_datas;
 
-    AuthRsp(int uid,QString name,QString nick,QString icon,int sex):_uid(uid),_name(name),
-        _sex(sex),_nick(nick),thread_id(0),_icon(icon){};
+    AuthRsp(int uid, QString name, QString nick, QString icon, int sex, int thread_id = 0)
+        : _uid(uid)
+        , _name(name)
+        , _nick(nick)
+        , _icon(icon)
+        , _sex(sex)
+        , _thread_id(thread_id)
+    {}
 };
 struct FriendInfo {
     // Default constructor
@@ -141,149 +184,7 @@ struct FriendInfo {
     QString _last_msg;
 };
 
-struct ChatMsg {
-    int msg_id{0};
-    QString content{""};
-    int from_uid{0};
-    int to_uid{0};
-    QString type{"text"};       // "text" 或 "file"
-    QString timeStr{""};
 
-    // ──► 📁 文件专属元数据字段 ◄──
-    QString filename{""};       // 文件名 (如 "resume.pdf")
-    qint64 filesz{0};           // 文件字节数
-    QString fileszStr{""};      // 格式化后的大小 (如 "12.4 MB")
-    QString token{""};          // 供接收方下载使用的 Token / 凭证
-    QString md5{""};            // 校验和
-
-    // 格式化文件大小辅助函数
-    static QString formatFileSize(qint64 bytes) {
-        if (bytes <= 0) return "0 B";
-        double sizeMb = bytes / (1024.0 * 1024.0);
-        if (sizeMb >= 1.0) {
-            return QString::number(sizeMb, 'f', 2) + " MB";
-        }
-        double sizeKb = bytes / 1024.0;
-        if (sizeKb >= 1.0) {
-            return QString::number(sizeKb, 'f', 1) + " KB";
-        }
-        return QString::number(bytes) + " B";
-    }
-
-    // 序列化给 QML 消费（无论是历史记录还是动态切换都会用到）
-    QVariantMap toVariantMap(int my_uid) const {
-        QVariantMap map;
-        map["msg_id"]   = msg_id;
-        map["sender"]   = (from_uid == my_uid) ? "me" : "other";
-        map["type"]     = type;
-        map["content"]  = (type == "file" && !filename.isEmpty()) ? filename : content;
-        map["fileSize"] = fileszStr;
-        map["fileUrl"]  = token;     // QML 点击下载时，把 token 传递给 C++ 接口
-        map["timeStr"]  = timeStr;
-        return map;
-    }
-
-    // 从通用扁平 QJsonObject 解析
-    static ChatMsg fromJson(const QJsonObject& obj) {
-        ChatMsg msg;
-        msg.msg_id   = obj["msg_id"].toInt();
-        msg.from_uid = obj["from_uid"].toInt();
-        msg.to_uid   = obj["to_uid"].toInt();
-        msg.type     = obj["type"].toString("text");
-        msg.content  = obj["content"].toString();
-        msg.timeStr  = obj["time"].toString();
-        if (msg.timeStr.isEmpty()) {
-            msg.timeStr = QTime::currentTime().toString("hh:mm AP");
-        }
-
-        // 解析可能存在的文件属性
-        msg.parseFileAttributes(obj);
-        return msg;
-    }
-
-    // 从服务端接收到的消息元素与上下文解析
-    static ChatMsg fromJsonObject(const QJsonObject& itemObj, int from_uid, int to_uid) {
-        ChatMsg msg;
-        msg.msg_id   = itemObj["msg_id"].toInt();
-        msg.content  = itemObj["content"].toString();
-        msg.from_uid = from_uid;
-        msg.to_uid   = to_uid;
-        msg.type     = itemObj["type"].toString("text");
-        msg.timeStr  = itemObj["time"].toString();
-        if (msg.timeStr.isEmpty()) {
-            msg.timeStr = QTime::currentTime().toString("hh:mm AP");
-        }
-
-        // 解析文件属性（优先读外层字段，若没有则尝试解析 content 内部的 JSON 字符串）
-        msg.parseFileAttributes(itemObj);
-        return msg;
-    }
-
-private:
-    // 统一解析文件相关的字段
-    void parseFileAttributes(const QJsonObject& obj) {
-        if (type == "file") {
-            // 1. 如果外层直接携带了 filename、filesz、token
-            if (obj.contains("filename") || obj.contains("token")) {
-                filename = obj["filename"].toString();
-                filesz   = obj["filesz"].toVariant().toLongLong();
-                token    = obj["token"].toString();
-                md5      = obj["md5"].toString();
-            }
-            // 2. 如果外层没有，但 content 包含的是文件 JSON 字符串（gRPC 转发场景）
-            else if (!content.isEmpty() && content.startsWith('{')) {
-                QJsonDocument doc = QJsonDocument::fromJson(content.toUtf8());
-                if (!doc.isNull() && doc.isObject()) {
-                    QJsonObject subObj = doc.object();
-                    filename = subObj["filename"].toString();
-                    filesz   = subObj["filesz"].toVariant().toLongLong();
-                    token    = subObj["token"].toString();
-                    md5      = subObj["md5"].toString();
-                }
-            }
-
-            // 兜底处理：若文件名为空则拿 content 替代
-            if (filename.isEmpty()) {
-                filename = content;
-            }
-            fileszStr = formatFileSize(filesz);
-        }
-    }
-};
-
-
-class ChatData{
-public:
-    int _uid{0};
-    QString nick{""};
-    QString name{""};
-    QString icon{""};
-
-    bool _is_online{false};      // 是否在线
-    QString _last_time{""};      // 最后消息时间 (如 "10:30 AM")
-    QString _last_msg{""};       // 最后一条消息预览文本
-    int _unread_count{0};
-
-    QVector<ChatMsg> _msg;
-
-    ChatData()=default;
-    ChatData(int uid,QString name,QString icon):_uid(uid),name(name),icon(icon){};
-    QVariantList getHistoryVariantList(int my_uid) const {
-        QVariantList list;
-        for (const auto& msg : _msg) {
-            list.append(msg.toVariantMap(my_uid)); // 👈 直接复用你写的 toVariantMap
-        }
-        return list;
-    }
-
-    void AppendMsg(const ChatMsg& msg){
-        _msg.append(msg);
-        _last_time=msg.timeStr;
-        _last_msg=msg.content;
-    }
-
-
-};
 
 struct UserInfo {
     int _uid;
@@ -363,5 +264,234 @@ struct ApplyInfo {
     int _status;
 };
 
+
+class ChatDataBase {
+public:
+    ChatDataBase(int msg_id, int thread_id, ChatFormType form_type, ChatMsgType msg_type,
+                 const QString& content, int send_uid, int status, const QString& chat_time = "")
+        : _msg_id(msg_id)
+        , _thread_id(thread_id)
+        , _form_type(form_type)
+        , _msg_type(msg_type)
+        , _content(content)
+        , _send_uid(send_uid)
+        , _status(status)
+        , _chat_time(chat_time) {}
+
+    virtual ~ChatDataBase() = default;
+
+    // 基础属性 Getter
+    int GetMsgId() const { return _msg_id; }
+    int GetThreadId() const { return _thread_id; }
+    int GetSendUid() const { return _send_uid; }
+    int GetStatus() const { return _status; }
+    QString GetContent() const { return _content; }
+    QString GetMsgContent() const { return _content; } // 🎯 修正：内联实现，防止链接错误
+    QString GetChatTime() const { return _chat_time; }
+    ChatMsgType GetMsgType() const { return _msg_type; }
+    ChatFormType GetFormType() const { return _form_type; }
+
+    // 唯一临时标识 Getter / Setter
+    void SetUniqueId(const QString& unique_id) { _unique_id = unique_id; }
+    QString GetUniqueId() const { return _unique_id; } // 🎯 修正：移除冲突的 int 返回版本
+
+    // 状态 Setter
+    void SetMsgId(int msg_id) { _msg_id = msg_id; }
+    void SetStatus(int status) { _status = status; }
+    void SetChatTime(const QString& chat_time) { _chat_time = chat_time; }
+
+    // 🎯 核心虚函数：供 QML 直接渲染统一的数据字典
+    virtual QVariantMap toVariantMap(int my_uid) const {
+        QVariantMap map;
+        map["msg_id"]   = _msg_id;
+        map["sender"]   = (_send_uid == my_uid) ? "me" : "other";
+        map["timeStr"]  = _chat_time;
+        map["status"]   = _status; // 0: sending, 1: success, 2: failed
+        return map;
+    }
+
+protected:
+    QString _unique_id{""};
+    int _msg_id{0};
+    int _thread_id{0};
+    ChatFormType _form_type{ChatFormType::PRIVATE};
+    ChatMsgType _msg_type{ChatMsgType::TEXT};
+    QString _content{""};
+    int _send_uid{0};
+    int _status{1};
+    QString _chat_time{""};
+};
+
+// ──► 2. 文本消息派生类 ◄──
+class TextChatData : public ChatDataBase {
+public:
+    TextChatData(int msg_id, int thread_id, ChatFormType form_type,
+                 const QString& content, int send_uid, int status = 1, const QString& chat_time = "")
+        : ChatDataBase(msg_id, thread_id, form_type, ChatMsgType::TEXT, content, send_uid, status, chat_time) {}
+
+    // 兼容显式指定 msg_type 的构造
+    TextChatData(int msg_id, int thread_id, ChatFormType form_type, ChatMsgType msg_type,
+                 const QString& content, int send_uid, int status = 1, const QString& chat_time = "")
+        : ChatDataBase(msg_id, thread_id, form_type, msg_type, content, send_uid, status, chat_time) {}
+
+    QVariantMap toVariantMap(int my_uid) const override {
+        QVariantMap map = ChatDataBase::toVariantMap(my_uid);
+        map["type"]    = "text";
+        map["content"] = _content;
+        return map;
+    }
+};
+
+// ──► 3. 文件消息派生类 ◄──
+class FileChatData : public ChatDataBase {
+public:
+    FileChatData(int msg_id, int thread_id, ChatFormType form_type, const QString& filename,
+                 qint64 filesz, const QString& token, const QString& md5,
+                 int send_uid, int status = 1, const QString& chat_time = "")
+        : ChatDataBase(msg_id, thread_id, form_type, ChatMsgType::FILE, filename, send_uid, status, chat_time)
+        , _filename(filename)
+        , _filesz(filesz)
+        , _token(token)
+        , _md5(md5) {
+        _fileszStr = formatFileSize(_filesz);
+    }
+
+    QVariantMap toVariantMap(int my_uid) const override {
+        QVariantMap map = ChatDataBase::toVariantMap(my_uid);
+        map["type"]     = "file";
+        map["content"]  = _filename;
+        map["fileSize"] = _fileszStr;
+        map["fileUrl"]  = _token;
+        return map;
+    }
+
+    static QString formatFileSize(qint64 bytes) {
+        if (bytes <= 0) return "0 B";
+        double sizeMb = bytes / (1024.0 * 1024.0);
+        if (sizeMb >= 1.0) return QString::number(sizeMb, 'f', 2) + " MB";
+        double sizeKb = bytes / 1024.0;
+        if (sizeKb >= 1.0) return QString::number(sizeKb, 'f', 1) + " KB";
+        return QString::number(bytes) + " B";
+    }
+
+    QString GetFileName() const { return _filename; }
+    qint64 GetFileSize() const { return _filesz; }
+    QString GetFileToken() const { return _token; }
+    QString GetMd5() const { return _md5; }
+
+private:
+    QString _filename;
+    qint64  _filesz{0};
+    QString _fileszStr{""};
+    QString _token{""};
+    QString _md5{""};
+};
+
+// ──► 4. 会话上下文聚合根 ◄──
+class ChatThreadData {
+public:
+    ChatThreadData(int other_id, int thread_id, int last_msg_id = 0)
+        : _other_id(other_id)
+        , _last_msg_id(last_msg_id)
+        , _thread_id(thread_id)
+        , _last_msg("")
+        , _group_name("") {}
+
+    // 1. 添加一条已确认的消息（自动根据 msg_id 排序并更新最后消息摘要与游标）
+    void AddMsg(std::shared_ptr<ChatDataBase> msg) {
+        if (!msg) return;
+        int msg_id = msg->GetMsgId();
+        _msg_map.insert(msg_id, msg);
+
+        _last_msg = msg->GetContent();
+        if (msg_id > _last_msg_id) {
+            _last_msg_id = msg_id;
+        }
+    }
+
+    // 2. 收到服务端 ACK 后，从未回复队列移动到已确认队列
+    void MoveMsg(std::shared_ptr<ChatDataBase> msg) {
+        if (!msg) return;
+
+        QString unique_id = msg->GetUniqueId();
+        if (!unique_id.isEmpty() && _msg_unrsp_map.contains(unique_id)) {
+            _msg_unrsp_map.remove(unique_id);
+        }
+
+        int msg_id = msg->GetMsgId();
+        _msg_map.insert(msg_id, msg);
+
+        _last_msg = msg->GetContent();
+        if (msg_id > _last_msg_id) {
+            _last_msg_id = msg_id;
+        }
+    }
+
+    // 3. 追加未收到服务端回执的消息（挂载菊花/发送中状态）
+    void AppendUnRspMsg(const QString& unique_id, std::shared_ptr<ChatDataBase> base_msg) {
+        if (unique_id.isEmpty() || !base_msg) return;
+        base_msg->SetUniqueId(unique_id);
+        _msg_unrsp_map.insert(unique_id, base_msg);
+        _last_msg = base_msg->GetContent();
+    }
+
+    // 4. 批量或指定 ID 追加消息（拉取历史记录回填时使用）
+    void AppendMsg(int msg_id, std::shared_ptr<ChatDataBase> base_msg) {
+        if (!base_msg) return;
+
+        // 1. 存入有序红黑树映射表（QMap 默认以 Key/msg_id 升序排列）
+        _msg_map.insert(msg_id, base_msg);
+
+        // 2. 只有当加入的消息 ID 大于等于当前记录的最大 msg_id 时，才更新最新消息摘要
+        if (msg_id >= _last_msg_id) {
+            _last_msg_id = msg_id;
+
+            QString preview = base_msg->GetContent();
+            if (base_msg->GetMsgType() == ChatMsgType::FILE) {
+                preview = QString("[File] %1").arg(base_msg->GetContent());
+            }
+            _last_msg = preview;
+        }
+    }
+
+    // 5. 游标与 ID 管理
+    void SetLastMsgId(int msg_id) { _last_msg_id = msg_id; }
+    int GetLastMsgId() const { return _last_msg_id; }
+
+    void SetOtherId(int other_id) { _other_id = other_id; }
+    int GetOtherId() const { return _other_id; }
+
+    int GetThreadId() const { return _thread_id; }
+
+    // 6. 文本与群名称获取
+    QString GetLastMsg() const { return _last_msg; }
+    void SetLastMsg(const QString& last_msg) { _last_msg = last_msg; }
+
+    QString GetGroupName() const { return _group_name; }
+    void SetGroupName(const QString& group_name) { _group_name = group_name; }
+
+    // 7. 容器访问器
+    QMap<int, std::shared_ptr<ChatDataBase>> GetMsgMap() const { return _msg_map; }
+    QMap<int, std::shared_ptr<ChatDataBase>>& GetMsgMapRef() { return _msg_map; }
+    const QMap<int, std::shared_ptr<ChatDataBase>>& GetMsgMapRef() const { return _msg_map; }
+
+    QMap<QString, std::shared_ptr<ChatDataBase>>& GetMsgUnRspRef() { return _msg_unrsp_map; }
+    const QMap<QString, std::shared_ptr<ChatDataBase>>& GetMsgUnRspRef() const { return _msg_unrsp_map; }
+
+    // 8. 群成员管理
+    void SetGroupMembers(const std::vector<int>& members) { _group_members = members; }
+    const std::vector<int>& GetGroupMembers() const { return _group_members; }
+
+private:
+    int _other_id{0};
+    int _last_msg_id{0};
+    int _thread_id{0};
+    QString _last_msg{""};
+    std::vector<int> _group_members;
+    QString _group_name{""};
+
+    QMap<int, std::shared_ptr<ChatDataBase>> _msg_map;
+    QMap<QString, std::shared_ptr<ChatDataBase>> _msg_unrsp_map;
+};
 
 #endif // USERDATA_H

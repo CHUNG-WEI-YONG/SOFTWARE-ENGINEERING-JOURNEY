@@ -262,6 +262,7 @@ private:
 	std::condition_variable cond_;
 	std::thread  check_thread_;
 	int counter_;
+
 };
 
 
