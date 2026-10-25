@@ -59,6 +59,8 @@ public:
     // 批量追加拉取回来的历史消息
     void AppendHistoryBatch(int thread_id, const std::vector<std::shared_ptr<ChatDataBase>>& msgs);
 
+    std::shared_ptr<ChatThreadData>GetCurrLoadThread();
+
 
 
 
@@ -77,6 +79,7 @@ private:
     int last_thread_id{0};
     QMap<int,std::shared_ptr<ChatThreadInfo>> _thread_map;
     QMap<int , int >_uid_to_thread_id;
+    int _cur_load_chat_index;
 
 
 

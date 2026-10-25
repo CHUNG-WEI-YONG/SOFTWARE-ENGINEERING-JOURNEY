@@ -450,11 +450,19 @@ void TcpMgr::initHandlers()
             return ;
         }
         int error=jsonObj["error"].toInt();
+
+        QString uniqueID=jsonObj["unique_id"].isString()?jsonObj["unique_id"].toString()
+                                                           : QString::number(jsonObj["unique_id"].toInt());
+        int real_msg_id=jsonObj["msg_id"].toInt();
+        int thread_id=jsonObj["thread_id"].toInt();
+
         if(static_cast<ErrorCode>(error)!=ErrorCode::SUCCESS){
             qDebug()<<"Error message Get";
-            emit sig_login_failed(static_cast<ErrorCode>(error));
+            emit sig_text_chat_msg_fail(unique_id);
             return;
         }
+
+        emit sig_text_chat_msg_rsp(uniqueID,real_msg_id,thread_id);
 
         qDebug()<<"Chat message sent successfully";
 
@@ -523,13 +531,19 @@ void TcpMgr::initHandlers()
         for (const auto& itemVal : msgArray) {
             QJsonObject itemObj = itemVal.toObject();
             int msg_id = itemObj["msg_id"].toInt();
-            QString type = itemObj["type"].toString("text");
+            //QString type = itemObj["type"].toString("text");
             QString content = itemObj["content"].toString();
             QString timeStr = itemObj.contains("time") ? itemObj["time"].toString() : defaultTime;
 
             std::shared_ptr<ChatDataBase> chat_msg = nullptr;
+            bool isFile = false;
+            if (itemObj["type"].isDouble()) {
+                isFile = (itemObj["type"].toInt() == static_cast<int>(ChatMsgType::FILE));
+            } else {
+                isFile = (itemObj["type"].toString().toLower() == "file");
+            }
 
-            if (type == "file") {
+            if (isFile) {
                 QString filename = itemObj["filename"].toString();
                 qint64 filesz    = itemObj["filesz"].toVariant().toLongLong();
                 QString token    = itemObj["token"].toString();

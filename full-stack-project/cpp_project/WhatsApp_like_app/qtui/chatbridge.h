@@ -29,6 +29,8 @@ signals:
     void sig_new_file_arrive(const QString& friendName, const QString& fileName,
                              const QString& fileSizeStr, const QString& filePath,
                              const QString& timeStr, const QString& fileToken);
+    void sig_msg_send_success(const QString& uniqueId,int realMsgId);
+    void sig_msg_send_fail(const QString& uniqueId);
 
 
 };

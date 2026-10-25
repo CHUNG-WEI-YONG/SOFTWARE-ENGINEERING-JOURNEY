@@ -397,34 +397,58 @@ public:
         , _last_msg("")
         , _group_name("") {}
 
-    // 1. 添加一条已确认的消息（自动根据 msg_id 排序并更新最后消息摘要与游标）
+    // 1. 添加一条已确认的消息（拉取历史记录回填或收到对端消息时使用）
     void AddMsg(std::shared_ptr<ChatDataBase> msg) {
         if (!msg) return;
         int msg_id = msg->GetMsgId();
         _msg_map.insert(msg_id, msg);
 
-        _last_msg = msg->GetContent();
+        QString preview = msg->GetContent();
+        if (msg->GetMsgType() == ChatMsgType::FILE) {
+            preview = QString("[File] %1").arg(msg->GetContent());
+        }
+        _last_msg = preview;
+
         if (msg_id > _last_msg_id) {
             _last_msg_id = msg_id;
         }
     }
 
-    // 2. 收到服务端 ACK 后，从未回复队列移动到已确认队列
-    void MoveMsg(std::shared_ptr<ChatDataBase> msg) {
-        if (!msg) return;
+    // 2. 收到服务端 ACK 后，完成临时 ID 替换、状态更新与队列迁移
+    void ConfirmMsg(const QString& unique_id, int real_msg_id) {
+        if (unique_id.isEmpty()) return;
 
-        QString unique_id = msg->GetUniqueId();
-        if (!unique_id.isEmpty() && _msg_unrsp_map.contains(unique_id)) {
-            _msg_unrsp_map.remove(unique_id);
+        auto iter = _msg_unrsp_map.find(unique_id);
+        if (iter == _msg_unrsp_map.end()) {
+            return;
         }
 
-        int msg_id = msg->GetMsgId();
-        _msg_map.insert(msg_id, msg);
+        auto msg = iter.value();
+        if (msg) {
+            // (1) 如果发送前把它塞进过 _msg_map，先清除旧的临时 Key 节点
+            int temp_msg_id = msg->GetMsgId();
+            _msg_map.remove(temp_msg_id);
 
-        _last_msg = msg->GetContent();
-        if (msg_id > _last_msg_id) {
-            _last_msg_id = msg_id;
+            // (2) 更改内部属性
+            msg->SetMsgId(real_msg_id);
+            msg->SetStatus(1); // 1: 发送成功/已送达
+
+            // (3) 用真实的 MySQL 自增 ID 重新插入 _msg_map
+            _msg_map.insert(real_msg_id, msg);
+
+            // (4) 维护最大游标与最新预览
+            if (real_msg_id > _last_msg_id) {
+                _last_msg_id = real_msg_id;
+            }
+            QString preview = msg->GetContent();
+            if (msg->GetMsgType() == ChatMsgType::FILE) {
+                preview = QString("[File] %1").arg(msg->GetContent());
+            }
+            _last_msg = preview;
         }
+
+        // (5) 从未回执字典移除
+        _msg_unrsp_map.erase(iter);
     }
 
     // 3. 追加未收到服务端回执的消息（挂载菊花/发送中状态）
@@ -432,20 +456,23 @@ public:
         if (unique_id.isEmpty() || !base_msg) return;
         base_msg->SetUniqueId(unique_id);
         _msg_unrsp_map.insert(unique_id, base_msg);
-        _last_msg = base_msg->GetContent();
+
+        // 同时放进 _msg_map 供本地 UI 立即渲染（带有转圈状态）
+        _msg_map.insert(base_msg->GetMsgId(), base_msg);
+
+        QString preview = base_msg->GetContent();
+        if (base_msg->GetMsgType() == ChatMsgType::FILE) {
+            preview = QString("[File] %1").arg(base_msg->GetContent());
+        }
+        _last_msg = preview;
     }
 
-    // 4. 批量或指定 ID 追加消息（拉取历史记录回填时使用）
+    // 4. 批量追加历史消息
     void AppendMsg(int msg_id, std::shared_ptr<ChatDataBase> base_msg) {
         if (!base_msg) return;
-
-        // 1. 存入有序红黑树映射表（QMap 默认以 Key/msg_id 升序排列）
         _msg_map.insert(msg_id, base_msg);
-
-        // 2. 只有当加入的消息 ID 大于等于当前记录的最大 msg_id 时，才更新最新消息摘要
         if (msg_id >= _last_msg_id) {
             _last_msg_id = msg_id;
-
             QString preview = base_msg->GetContent();
             if (base_msg->GetMsgType() == ChatMsgType::FILE) {
                 preview = QString("[File] %1").arg(base_msg->GetContent());
@@ -454,31 +481,28 @@ public:
         }
     }
 
-    // 5. 游标与 ID 管理
+    // 查找待响应消息（便于发送失败时置为 -1）
+    std::shared_ptr<ChatDataBase> GetUnRspMsg(const QString& unique_id) {
+        auto iter = _msg_unrsp_map.find(unique_id);
+        return (iter != _msg_unrsp_map.end()) ? iter.value() : nullptr;
+    }
+
     void SetLastMsgId(int msg_id) { _last_msg_id = msg_id; }
     int GetLastMsgId() const { return _last_msg_id; }
-
     void SetOtherId(int other_id) { _other_id = other_id; }
     int GetOtherId() const { return _other_id; }
-
     int GetThreadId() const { return _thread_id; }
-
-    // 6. 文本与群名称获取
     QString GetLastMsg() const { return _last_msg; }
     void SetLastMsg(const QString& last_msg) { _last_msg = last_msg; }
-
     QString GetGroupName() const { return _group_name; }
     void SetGroupName(const QString& group_name) { _group_name = group_name; }
 
-    // 7. 容器访问器
     QMap<int, std::shared_ptr<ChatDataBase>> GetMsgMap() const { return _msg_map; }
     QMap<int, std::shared_ptr<ChatDataBase>>& GetMsgMapRef() { return _msg_map; }
     const QMap<int, std::shared_ptr<ChatDataBase>>& GetMsgMapRef() const { return _msg_map; }
-
     QMap<QString, std::shared_ptr<ChatDataBase>>& GetMsgUnRspRef() { return _msg_unrsp_map; }
     const QMap<QString, std::shared_ptr<ChatDataBase>>& GetMsgUnRspRef() const { return _msg_unrsp_map; }
 
-    // 8. 群成员管理
     void SetGroupMembers(const std::vector<int>& members) { _group_members = members; }
     const std::vector<int>& GetGroupMembers() const { return _group_members; }
 
@@ -493,5 +517,4 @@ private:
     QMap<int, std::shared_ptr<ChatDataBase>> _msg_map;
     QMap<QString, std::shared_ptr<ChatDataBase>> _msg_unrsp_map;
 };
-
 #endif // USERDATA_H

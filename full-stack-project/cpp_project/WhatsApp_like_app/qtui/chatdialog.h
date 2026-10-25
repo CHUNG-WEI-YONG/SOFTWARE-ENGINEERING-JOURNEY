@@ -88,6 +88,8 @@ public slots:
     void slot_download_file(std::shared_ptr<FileToken> file);
     void slot_load_chat_thread(bool load_more,int last_thread_id,std::vector<std::shared_ptr<ChatThreadInfo>> threads);
     void slot_create_private_chat(int id1,int id2,int thread_id);
+    void slot_text_chat_msg_rsp(QString unique_id,int real_msg_id,int thread_id);
+    void slot_text_chat_msg_fail(QString unique_id);
 
 
 };

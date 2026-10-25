@@ -13,13 +13,14 @@ Rectangle {
     property string currentFriendIcon: ""
     property bool b_loading_history: false
 
-    // ──► 🎯 新增：待发送文件暂存状态 ◄──
+    // 待发送文件暂存状态
     property string pendingFilePath: ""
     property string pendingFileName: ""
 
     Connections {
         target: cppBridge
 
+        // 切换好友会话
         onSig_user_switched: (name, isOnline, lastTime, iconPath, history) => {
             console.log("🌟 [QML] 切换会话! 目标姓名:", name, "历史记录条数:", (history ? history.length : 0));
             chatPage.currentFriendName = name
@@ -28,7 +29,6 @@ Rectangle {
             title_wid.isOnline = isOnline
             online_time_lb.text = isOnline ? "online" : "last online: " + lastTime
 
-            // 切换好友时清空草稿文件
             chatPage.pendingFilePath = ""
             chatPage.pendingFileName = ""
 
@@ -38,27 +38,39 @@ Rectangle {
                 for (var i = 0; i < history.length; i++) {
                     var itemData = history[i];
                     chatHistoryModel.append({
-                        "sender":   itemData.sender   !== undefined ? itemData.sender   : "other",
-                        "type":     itemData.type     !== undefined ? itemData.type     : "text",
-                        "content":  itemData.content  !== undefined ? itemData.content  : "",
-                        "fileSize": itemData.fileSize !== undefined ? itemData.fileSize : "",
-                        "fileUrl":  itemData.fileUrl  !== undefined ? itemData.fileUrl  : "",
-                        "timeStr":  itemData.timeStr  !== undefined ? itemData.timeStr  : "",
+                        "uniqueId": itemData.unique_id !== undefined ? String(itemData.unique_id) : "",
+                        "msgId":    itemData.msg_id    !== undefined ? itemData.msg_id : 0,
+                        "status":   itemData.status    !== undefined ? itemData.status : 1, // 历史消息默认发送成功(1)
+                        "sender":   itemData.is_self   ? "me" : (itemData.sender !== undefined ? itemData.sender : "other"),
+                        "type":     (itemData.msg_type === 1 || itemData.type === "file") ? "file" : "text",
+                        "content":  itemData.content   !== undefined ? itemData.content  : (itemData.filename || ""),
+                        "fileSize": itemData.filesz    !== undefined ? String(itemData.filesz) : (itemData.fileSize || ""),
+                        "fileUrl":  itemData.token     !== undefined ? itemData.token    : (itemData.fileUrl || ""),
+                        "timeStr":  itemData.time      !== undefined ? itemData.time     : (itemData.timeStr || ""),
                         "progress": 100,
                         "isDone":   true
                     });
                 }
             } else {
-                chatHistoryModel.append({ "sender": "other", "type": "text", "content": "Hello! Welcome to chat.", "timeStr": "10:00 AM", "progress": 100, "isDone": true })
+                chatHistoryModel.append({
+                    "uniqueId": "", "msgId": 0, "status": 1,
+                    "sender": "other", "type": "text",
+                    "content": "Hello! Welcome to chat.", "timeStr": "10:00 AM",
+                    "progress": 100, "isDone": true
+                });
             }
 
             chatPage.b_loading_history = false
             chatListView.positionViewAtEnd()
         }
 
+        // 收到来自对端的新消息
         onSig_new_message_received: (sender, message, timeStr) => {
             if (sender === chatPage.currentFriendName) {
                 chatHistoryModel.append({
+                    "uniqueId": "",
+                    "msgId": 0,
+                    "status": 1,
                     "sender": "other",
                     "type": "text",
                     "content": message,
@@ -70,6 +82,30 @@ Rectangle {
             }
         }
 
+        // ──► 🎯 核心联动：服务端 ACK 响应成功，替换临时 ID，消除 loading 转圈 ◄──
+        onSig_msg_send_success: (uniqueId, realMsgId) => {
+            for (var i = chatHistoryModel.count - 1; i >= 0; --i) {
+                var it = chatHistoryModel.get(i);
+                if (it.sender === "me" && it.uniqueId === String(uniqueId)) {
+                    chatHistoryModel.setProperty(i, "msgId", realMsgId);
+                    chatHistoryModel.setProperty(i, "status", 1); // 1 = 发送成功已确认
+                    break;
+                }
+            }
+        }
+
+        // ──► 🎯 核心联动：服务端返回发送失败，更新为红感叹号 ◄──
+        onSig_msg_send_failed: (uniqueId) => {
+            for (var i = chatHistoryModel.count - 1; i >= 0; --i) {
+                var it = chatHistoryModel.get(i);
+                if (it.sender === "me" && it.uniqueId === String(uniqueId)) {
+                    chatHistoryModel.setProperty(i, "status", -1); // -1 = 失败
+                    break;
+                }
+            }
+        }
+
+        // 向上滚动拉取历史回填
         onSig_append_history_batch: (olderHistory) => {
             if (olderHistory !== undefined && olderHistory.length > 0) {
                 var oldFirstIndex = chatListView.indexAt(chatListView.contentX, chatListView.contentY);
@@ -77,12 +113,15 @@ Rectangle {
                 for (var i = olderHistory.length - 1; i >= 0; i--) {
                     var itemData = olderHistory[i];
                     chatHistoryModel.insert(0, {
-                        "sender":   itemData.sender   !== undefined ? itemData.sender   : "other",
-                        "type":     itemData.type     !== undefined ? itemData.type     : "text",
-                        "content":  itemData.content  !== undefined ? itemData.content  : "",
-                        "fileSize": itemData.fileSize !== undefined ? itemData.fileSize : "",
-                        "fileUrl":  itemData.fileUrl  !== undefined ? itemData.fileUrl  : "",
-                        "timeStr":  itemData.timeStr  !== undefined ? itemData.timeStr  : "",
+                        "uniqueId": itemData.unique_id !== undefined ? String(itemData.unique_id) : "",
+                        "msgId":    itemData.msg_id    !== undefined ? itemData.msg_id : 0,
+                        "status":   itemData.status    !== undefined ? itemData.status : 1,
+                        "sender":   itemData.is_self   ? "me" : (itemData.sender !== undefined ? itemData.sender : "other"),
+                        "type":     (itemData.msg_type === 1 || itemData.type === "file") ? "file" : "text",
+                        "content":  itemData.content   !== undefined ? itemData.content  : (itemData.filename || ""),
+                        "fileSize": itemData.filesz    !== undefined ? String(itemData.filesz) : (itemData.fileSize || ""),
+                        "fileUrl":  itemData.token     !== undefined ? itemData.token    : (itemData.fileUrl || ""),
+                        "timeStr":  itemData.time      !== undefined ? itemData.time     : (itemData.timeStr || ""),
                         "progress": 100,
                         "isDone":   true
                     });
@@ -95,6 +134,7 @@ Rectangle {
             chatPage.b_loading_history = false;
         }
 
+        // 文件到达通知
         onSig_new_file_arrive: (friendName, fileName, fileSizeStr, filePath, timeStr, fileToken) => {
             if (friendName === chatPage.currentFriendName) {
                 var existed = false;
@@ -112,6 +152,9 @@ Rectangle {
 
                 if (!existed) {
                     chatHistoryModel.append({
+                        "uniqueId": "",
+                        "msgId": 0,
+                        "status": 1,
                         "sender": (filePath !== "") ? "me" : "other",
                         "type": "file",
                         "content": fileName,
@@ -187,7 +230,7 @@ Rectangle {
         ]
     }
 
-    // ──► 🎯 原生文件选择弹窗 ◄──
+    // 原生文件选择弹窗
     FileDialog {
         id: fileDialog
         title: "Please choose a file to send"
@@ -210,7 +253,6 @@ Rectangle {
                 fileName = cleanPath.substring(cleanPath.lastIndexOf('\\') + 1);
             }
 
-            // 🎯 仅暂存选择状态，不在此处发送或挂气泡
             chatPage.pendingFilePath = cleanPath;
             chatPage.pendingFileName = fileName;
             console.log("📎 [QML] 文件已就绪待发送:", fileName, "路径:", cleanPath);
@@ -260,7 +302,7 @@ Rectangle {
                         chatPage.b_loading_history = true;
                         console.log("📥 [QML 触顶] 开始拉取好友历史:", chatPage.currentFriendName);
                         if (typeof cppBridge !== 'undefined') {
-                            cppBridge.loadMoreHistoryFromQml(chatPage.currentFriendName);
+                            cppBridge.loadMoreHistoryFromQML(chatPage.currentFriendName);
                         }
                     }
                 }
@@ -307,6 +349,39 @@ Rectangle {
                         anchors.left: chatItemRow.isMe ? undefined : avatar.right
                         anchors.rightMargin: chatItemRow.isMe ? 12 : 0
                         anchors.leftMargin: chatItemRow.isMe ? 0 : 12
+                    }
+
+                    // ──► 🎯 新增：发送状态指示器（仅自己发出的消息显示：发送中转圈 / 失败感叹号） ◄──
+                    Item {
+                        id: statusIndicator
+                        visible: chatItemRow.isMe && (model.status === 0 || model.status === -1)
+                        width: 20; height: 20
+                        anchors.right: bubbleContainer.left
+                        anchors.rightMargin: 8
+                        anchors.verticalCenter: bubbleContainer.verticalCenter
+
+                        // 发送中 loading 小菊花
+                        BusyIndicator {
+                            anchors.fill: parent
+                            running: model.status === 0
+                            visible: model.status === 0
+                        }
+
+                        // 发送失败红色警告感叹号
+                        Rectangle {
+                            anchors.fill: parent
+                            radius: 10
+                            color: "#E74C3C"
+                            visible: model.status === -1
+
+                            Text {
+                                text: "!"
+                                color: "white"
+                                font.bold: true
+                                font.pixelSize: 13
+                                anchors.centerIn: parent
+                            }
+                        }
                     }
 
                     Item {
@@ -462,13 +537,13 @@ Rectangle {
             }
         }
 
-        // ──► 底部操作与输入控制台 ◄──
+        // 底部操作与输入控制台
         Rectangle {
             id: tool_wid
             width: parent.width; height: 250; color: "#FFFFFF"
             Rectangle { anchors.top: parent.top; width: parent.width; height: 1; color: "#EAEAEA" }
 
-            // ──► 🎯 新增：文件选中暂存预览条 ◄──
+            // 文件选中暂存预览条
             Rectangle {
                 id: pendingFileBar
                 anchors.top: parent.top
@@ -508,7 +583,6 @@ Rectangle {
                         anchors.verticalCenter: parent.verticalCenter
                     }
 
-                    // 取消选择按钮
                     Rectangle {
                         width: 20; height: 20
                         radius: 10
@@ -611,7 +685,6 @@ Rectangle {
                         horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter
                     }
 
-                    // ──► 🎯 核心改造：点击发送时一并分发“文件”与“文字” ◄──
                     onClicked: {
                         var textContent = chatedit.text.trim();
                         var hasText = (textContent !== "");
@@ -621,9 +694,12 @@ Rectangle {
 
                         var currentTime = new Date().toLocaleTimeString(Qt.locale("en_US"), "hh:mm AP");
 
-                        // 1. 如果有待发送文件，触发文件流水线
+                        // 1. 发送文件
                         if (hasFile) {
                             chatHistoryModel.append({
+                                "uniqueId": "",
+                                "msgId": 0,
+                                "status": 0, // 发送/上传中
                                 "sender": "me",
                                 "type": "file",
                                 "content": chatPage.pendingFileName,
@@ -638,26 +714,15 @@ Rectangle {
                                 cppBridge.uploadFileFromQml(chatPage.currentFriendName, chatPage.pendingFilePath);
                             }
 
-                            // 清理暂存文件状态
                             chatPage.pendingFilePath = "";
                             chatPage.pendingFileName = "";
                         }
 
-                        // 2. 如果输入框有文字，触发普通消息投递
+                        // 2. 发送文字（注意：无需在 QML 重复 append！C++ 的 slot_send_msg 会生成带 uuid 的完整模型并通过历史/缓存机制维护；若需要前端先上屏，可以上屏并置 status = 0 等待 ACK）
                         if (hasText) {
-                            chatHistoryModel.append({
-                                "sender": "me",
-                                "type": "text",
-                                "content": textContent,
-                                "timeStr": currentTime,
-                                "progress": 100,
-                                "isDone": true
-                            });
-
                             if (typeof cppBridge !== 'undefined') {
                                 cppBridge.sendMessageFromQml(chatPage.currentFriendName, textContent);
                             }
-
                             chatedit.clear();
                         }
 

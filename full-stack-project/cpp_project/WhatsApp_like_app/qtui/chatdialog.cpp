@@ -147,7 +147,8 @@ ChatDialog::ChatDialog(QWidget *parent)
     connect(TcpMgr::getInstance().get(), &TcpMgr::sig_download_file_rsp, this, &ChatDialog::slot_download_file);
     connect(TcpMgr::getInstance().get(),&TcpMgr::sig_load_chat_thread,this,&ChatDialog::slot_load_chat_thread);
     connect(TcpMgr::getInstance().get(),&TcpMgr::sig_create_private_chat,this,&ChatDialog::slot_create_private_chat);
-
+    connect(TcpMgr::getInstance().get(),&TcpMgr::sig_text_chat_msg_rsp,this,&ChatDialog::slot_text_chat_msg_rsp);
+    connect(TcpMgr::getInstance().get(),&TcpMgr::sig_text_chat_msg_fail,this,&ChatDialog::slot_text_chat_msg_fail);
 }
 
 ChatDialog::~ChatDialog()
@@ -553,7 +554,6 @@ void ChatDialog::slot_send_msg(QString target, QString text)
         UserMgr::getInstance()->AddThreadData(thread_id, thread_data);
     }
     thread_data->AppendUnRspMsg(unique_id, text_msg);
-    thread_data->AddMsg(text_msg);
 
     // 5. 更新左侧会话项最后消息预览并置顶
     auto iter = _chat_thread_added.find(thread_id);
@@ -962,6 +962,25 @@ void ChatDialog::slot_create_private_chat(int id1, int id2, int thread_id)
 
 }
 
+void ChatDialog::slot_text_chat_msg_rsp(QString unique_id, int real_msg_id, int thread_id)
+{
+    auto thread_data=UserMgr::getInstance()->GetThreadData(thread_id);
+    if(!thread_data){
+        return;
+    }
+    //auto unrsp=thread_data->GetUnRspMsg(unique_id);
+    thread_data->ConfirmMsg(unique_id,real_msg_id);
+    if(_curr_thread_id==thread_id && _bridge){
+        emit _bridge->sig_msg_send_success(unique_id,real_msg_id);
+    }
+
+}
+
+void ChatDialog::slot_text_chat_msg_fail(QString unique_id)
+{
+    emit _bridge->sig_msg_send_fail(unique_id);
+}
+
 
 void ChatDialog::sendFileMsgToChatServer(std::shared_ptr<FileToken> token)
 {
@@ -1093,6 +1112,7 @@ void ChatDialog::LoadChatList()
 
 void ChatDialog::loadChatMsg()
 {
+
     if (ui->chat_user_list->count() <= 0 || _curr_chat_uid <= 0) {
         qDebug() << "[ChatDialog::loadChatMsg] No active chat session to load.";
         return;
@@ -1137,12 +1157,13 @@ void ChatDialog::loadChatMsg()
     int self_uid = UserMgr::getInstance()->GetUid();
 
     // 初始化该好友的游标位置（从 0 开始表示拉取最新的第一页）
-    _thread_history_cursor[thread_id] = 0;
+    int last_cursor=_thread_history_cursor.value(thread_id,0);
+
 
     QJsonObject root;
     root["uid"]         = self_uid;
     root["to_uid"]      = _curr_chat_uid;
-    root["last_msg_id"] = 0;                   // 游标为 0 代表最新消息起点
+    root["last_msg_id"] = last_cursor;                   // 游标为 0 代表最新消息起点
     root["pgsize"]      = MAX_COUNT_PER_PAGE;  // 每页条数（如 20）
     root["thread_id"] = thread_id;
 

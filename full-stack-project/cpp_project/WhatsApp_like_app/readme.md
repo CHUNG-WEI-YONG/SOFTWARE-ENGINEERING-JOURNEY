@@ -107,3 +107,8 @@ get the fileserver ip address (todo : can save inside mysql the file with the fi
 ,cut the file into package by package through chunk read , it will send the header with token to the fileserver , then it will send the file by read , send , read again process to reduce 
 ram usage of computer, then at the fileserver side it then get the file info from the redis that save by gateserver , then save as a directory , then return a success for ui design
 For downloading it is the same , the qt will get info from chatserver, sending info to fileserver through downloader it will connect to~ fileserver , getr file and then save the file
+
+## DAY 28
+Setting and renewing the full logic for saving the chat memory and message inside the mysql databse , the session is identified by a thread id with private chat type and group chat type 
+, and also the message id is being saved with its content while file message has its id links to a further database which store the url , md5 and other file info , then adding full logic 
+of return the message before during log in and the qt client side logic

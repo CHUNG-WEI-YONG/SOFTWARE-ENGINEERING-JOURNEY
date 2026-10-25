@@ -51,6 +51,8 @@ signals:
     void sig_offline(const QString& content);
     void sig_load_chat_thread(bool next_page,int last_thread_id,std::vector<std::shared_ptr<ChatThreadInfo>> chat);
     void sig_create_private_chat(int user1_id,int user2_id,int thread_id);
+    void sig_text_chat_msg_rsp(QString uniqueID,int real_msg_id,int thread_id);
+    void sig_text_chat_msg_fail(QString uniqueId);
 
 
 };

@@ -608,7 +608,7 @@ void LogicWorker::DealChatTextMsg(shared_ptr<CSession> session, const short& msg
 	// 🎯 修正 2：入库失败先填好错误信息，确保 Defer 无论在何处 return 都能把 ACK 弹回客户端
 	if (!b_saved || chat_msg_id <= 0) {
 		rt["error"] = ErrorCodes::SAVE_MSG_FAILED;
-		rt["local_id"] = local_id;
+		rt["unique_id"] = local_id;
 		rt["thread_id"] = thread_id;
 		session->Send(rt.toStyledString(), ID_TEXT_CHAT_MSG_RSP);
 		return;
@@ -621,7 +621,7 @@ void LogicWorker::DealChatTextMsg(shared_ptr<CSession> session, const short& msg
 	rt["thread_id"] = thread_id;
 	rt["content"] = content;
 	rt["msg_id"] = chat_msg_id; // 真实落库 ID
-	rt["local_id"] = local_id;    // 临时 UUID
+	rt["unique_id"] = local_id;    // 临时 UUID
 
 	// 保证发送端必定能收到带完整 ID 的 ACK 回应
 	Defer defer([&rt, &session]() {

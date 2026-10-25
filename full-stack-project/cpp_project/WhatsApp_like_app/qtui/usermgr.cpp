@@ -308,4 +308,13 @@ void UserMgr::AppendHistoryBatch(int thread_id, const std::vector<std::shared_pt
 std::shared_ptr<ChatThreadData> UserMgr::GetCurrLoadThread()
 {
 
+    if(_cur_load_chat_index<=0||_cur_load_chat_index>=_thread_data_map.size()){
+        return nullptr;
+    }
+    auto iter=_thread_data_map.find(_cur_load_chat_index);
+    if(iter!=_thread_data_map.end()){
+        return _thread_data_map[_cur_load_chat_index];
+    }
+    return nullptr;
 }
+
